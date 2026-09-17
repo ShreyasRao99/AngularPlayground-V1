@@ -1,0 +1,22 @@
+<mat-toolbar class="justify-between align-middle">
+  <div class="flex items-center">
+    <button
+      mat-icon-button
+      aria-label="Toggle navigation menu"
+      [matMenuTriggerFor]="menu"
+      class="md:hidden!"
+    >
+      <mat-icon class="text-white!">menu</mat-icon>
+    </button>
+    <div class="align-center justify-center">Angular Playground V1</div>
+  </div>
+
+  <div class="hidden md:flex text-lg gap-5">
+    <div>Contact</div>
+    <div>Add a question</div>
+  </div>
+</mat-toolbar>
+<mat-menu #menu="matMenu">
+  <button mat-menu-item>Contact</button>
+  <button mat-menu-item>Add a question</button>
+</mat-menu>

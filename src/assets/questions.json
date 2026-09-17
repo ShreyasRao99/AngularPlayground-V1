@@ -1,0 +1,142 @@
+[
+  {
+    "id": 1,
+    "category": "Components",
+    "difficulty": "Beginner",
+    "question": "What is the difference between a component and a directive in Angular?",
+    "answer": "A component is a directive that always has a template. Components are used to build UI building blocks, while directives are used to add behavior or manipulate the DOM. A directive without a template is known as a structural or attribute directive."
+  },
+  {
+    "id": 2,
+    "category": "Components",
+    "difficulty": "Beginner",
+    "question": "What is the difference between ViewChild and ContentChild in Angular?",
+    "answer": "ViewChild queries elements from the component's own view (its template). ContentChild queries elements projected into the component via <ng-content>. In short: ViewChild looks at the component's template, ContentChild looks at what is passed into it."
+  },
+  {
+    "id": 3,
+    "category": "Dependency Injection",
+    "difficulty": "Intermediate",
+    "question": "What is the difference between providedIn: 'root' and providing a service in a component's providers array?",
+    "answer": "providedIn: 'root' creates a single shared (singleton) instance of the service app-wide. Providing it in a component's providers array creates a fresh instance for that component and its children. Use root for app-wide shared state, and component providers for isolated scope."
+  },
+  {
+    "id": 4,
+    "category": "Dependency Injection",
+    "difficulty": "Intermediate",
+    "question": "What is the difference between @Injectable, @Inject, and @Optional?",
+    "answer": "@Injectable marks a class as injectable so it can be injected into other classes. @Inject is used to inject a non-typeable value, such as an InjectionToken constant. @Optional marks a dependency as optional so the injector won't throw an error if it's missing."
+  },
+  {
+    "id": 5,
+    "category": "RxJS",
+    "difficulty": "Intermediate",
+    "question": "What is the difference between Subject, BehaviorSubject, and ReplaySubject?",
+    "answer": "A Subject has no initial value and only emits to subscribers after they subscribe. A BehaviorSubject requires an initial value and immediately emits the current value to new subscribers. A ReplaySubject replays a configurable number of past emissions to new subscribers."
+  },
+  {
+    "id": 6,
+    "category": "RxJS",
+    "difficulty": "Advanced",
+    "question": "What is the difference between switchMap, mergeMap, concatMap, and exhaustMap?",
+    "answer": "switchMap cancels the previous inner observable when a new value arrives. mergeMap subscribes to all inner observables concurrently. concatMap queues inner observables and processes them one at a time in order. exhaustMap ignores new values while an inner observable is still active."
+  },
+  {
+    "id": 7,
+    "category": "Change Detection",
+    "difficulty": "Advanced",
+    "question": "How does Angular's default change detection work, and how can you optimize it?",
+    "answer": "Angular's default change detection runs on every asynchronous event from the root down through all components, comparing bound values via reference checks. To optimize it, use the OnPush change detection strategy, immutable data, signals, and fine-grained change detection where large trees are involved."
+  },
+  {
+    "id": 8,
+    "category": "Change Detection",
+    "difficulty": "Advanced",
+    "question": "What are Angular Signals and how are they different from RxJS Observables?",
+    "answer": "Signals are synchronous, push-based reactive primitives that notify their consumers when their value changes, giving fine-grained updates. Observables are asynchronous streams that support operators and handling multiple values over time. Signals are typically used for state, while RxJS handles async events and side effects."
+  },
+  {
+    "id": 9,
+    "category": "Routing",
+    "difficulty": "Intermediate",
+    "question": "What is the difference between a route guard inside canActivate vs canDeactivate?",
+    "answer": "canActivate runs before a route is activated to decide if the user may enter it. canDeactivate runs when leaving a route, often to confirm unsaved changes. There are also guards for loading (canLoad/resolve) that defer or pre-fetch data."
+  },
+  {
+    "id": 10,
+    "category": "Routing",
+    "difficulty": "Beginner",
+    "question": "What is lazy loading in Angular and what are its benefits?",
+    "answer": "Lazy loading defers loading of feature modules or standalone components until the user navigates to their route. Benefits include a smaller initial bundle, faster startup, on-demand code delivery, and better overall performance."
+  },
+  {
+    "id": 11,
+    "category": "Forms",
+    "difficulty": "Intermediate",
+    "question": "What is the difference between template-driven and reactive forms?",
+    "answer": "Template-driven forms rely on directives in the template and manage the model indirectly in the template. Reactive forms are built programmatically in the component, giving more explicit control, easier validation logic, and better testability, at the cost of more boilerplate."
+  },
+  {
+    "id": 12,
+    "category": "Forms",
+    "difficulty": "Advanced",
+    "question": "How do you create a custom validator in reactive forms?",
+    "answer": "A custom validator is a function that takes a FormControl (or FormGroup) and returns either null if valid or a ValidationErrors object if invalid. It is passed into the FormControl constructor or via validators array, or as a validator on a FormGroup for cross-field validation."
+  },
+  {
+    "id": 13,
+    "category": "Performance",
+    "difficulty": "Advanced",
+    "question": "What are some common techniques to improve Angular application performance?",
+    "answer": "OnPush change detection, signals, lazy loading routes, trackBy in *ngFor, avoiding expensive computations in templates, using pure pipes, tree-shakeable services, deferring non-critical views with @defer, and running heavy work off the UI thread with Web Workers."
+  },
+  {
+    "id": 14,
+    "category": "Performance",
+    "difficulty": "Intermediate",
+    "question": "Why do we use trackBy in *ngFor (now @for) and @defer blocks?",
+    "answer": "trackBy gives Angular a stable identity per item, so re-renders only update changed items instead of recreating all DOM nodes. @defer delays rendering of heavy/resource-intensive blocks until a trigger condition is met, reducing initial render work."
+  },
+  {
+    "id": 15,
+    "category": "Testing",
+    "difficulty": "Intermediate",
+    "question": "What is the difference between TestBed.configureTestingModule and providing mocks manually?",
+    "answer": "TestBed is Angular's testing harness that sets up the module/component and injects dependencies as declared. Mocks can be provided via providers: [...] in withProviders, replacing real services with fakes, letting you unit-test components in isolation without side effects."
+  },
+  {
+    "id": 16,
+    "category": "Testing",
+    "difficulty": "Advanced",
+    "question": "What is the difference between a unit test and an integration test for Angular components?",
+    "answer": "A unit test isolates a component and tests it in isolation, mocking all dependencies. An integration test renders the component with its real (or mostly real) dependencies and tests how it interacts with directives, routing, forms, and services together."
+  },
+  {
+    "id": 17,
+    "category": "Core",
+    "difficulty": "Beginner",
+    "question": "What is the Angular Ivy compiler and its standalone component feature?",
+    "answer": "Ivy is Angular's rendering engine (default since v13). Among its benefits are faster builds, smaller bundles, and better tree-shaking. Standalone components (since v14+) allow components, directives, and pipes to be used without being declared in an NgModule, by importing their dependencies directly."
+  },
+  {
+    "id": 18,
+    "category": "Core",
+    "difficulty": "Beginner",
+    "question": "What is the lifecycle order of Angular component hooks?",
+    "answer": "The typical order is: constructor, ngOnInit, ngDoCheck, ngAfterContentInit, ngAfterContentChecked, ngAfterViewInit, ngAfterViewChecked, and on destroy ngOnDestroy. Always fetch data in ngOnInit rather than the constructor."
+  },
+  {
+    "id": 19,
+    "category": "Security",
+    "difficulty": "Intermediate",
+    "question": "How do you prevent XSS attacks in Angular?",
+    "answer": "Angular sanitizes interpolated and property-bound data by default, which blocks script injection. Avoid bypassing sanitization (e.g., DomSanitizer bypassSecurityTrustHtml) unless necessary, and validate/escape any content rendered as raw HTML."
+  },
+  {
+    "id": 20,
+    "category": "Architecture",
+    "difficulty": "Advanced",
+    "question": "What is state management, and when should you use a library like NgRx instead of services + signals?",
+    "answer": "State management centralizes how data is created, updated, and read in an app. NgRx (Redux-style with actions/reducers/selectors) helps when state is complex, shared across many features, or needs a single unidirectional data flow. For simpler apps, services with signals or subjects are often enough and require less boilerplate."
+  }
+]
