@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
+import { MatExpansionModule } from '@angular/material/expansion';
+import questions from '../shared/questions.json';
 
 @Component({
-  imports: [],
+  imports: [MatExpansionModule],
   selector: 'app-html',
   styleUrl: './html.css',
   templateUrl: './html.html',
 })
 export class Html {
-  constructor() {
-    console.log('lazy loaded');
-  }
+  protected readonly faqs = questions.html;
 }
