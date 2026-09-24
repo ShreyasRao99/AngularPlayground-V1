@@ -1,31 +1,121 @@
 {
   "html": [
     {
+      "id": "html-1",
+      "importance": "medium",
+      "review": false,
       "question": "What is semantic HTML?",
       "answer": "Semantic HTML uses tags that describe their meaning rather than only their appearance — header, nav, main, article, section, aside and footer. It improves accessibility for screen readers and helps search engines understand the page structure, while also making the code easier to read for other developers."
     },
     {
+      "id": "html-2",
+      "importance": "medium",
+      "review": false,
       "question": "What is the difference between a div and a span?",
       "answer": "A div is a block-level container that takes the full available width and starts on a new line, while a span is an inline container that flows inside a line of text. Use a div to group larger layout blocks and a span to style or group a fragment of text without breaking the line."
     },
     {
+      "id": "html-3",
+      "importance": "medium",
+      "review": false,
       "question": "When should I use a class instead of an id?",
       "answer": "An id must be unique on the page and is used when you need to identify a single element — for example as an anchor, or a CSS selector that definitely targets one node. A class can be reused across many elements, so if a style or behaviour applies to more than one element, prefer a class."
     },
     {
+      "id": "html-4",
+      "importance": "medium",
+      "review": false,
       "question": "How do I make an image render well on different screen sizes?",
       "answer": "Let the image scale proportionally with max-width: 100% and height: auto, and provide several source variants using the srcset and sizes attributes so the browser picks the right file for the viewport. Reserve the space with width and height attributes to avoid layout shift while loading."
     },
     {
+      "id": "html-5",
+      "importance": "medium",
+      "review": false,
       "question": "Why is the alt attribute important on images?",
       "answer": "The alt attribute provides a text alternative that is announced by screen readers and shown when the image fails to load. It is required when the image conveys information, and should describe the content or purpose. Decorative images can use an empty alt=\"\", but hiding them without an attribute hurts accessibility."
     },
     {
+      "id": "html-6",
+      "importance": "medium",
+      "review": false,
       "question": "How do I show a block of code on a page?",
       "answer": "Wrap the lines in pre/code tags to keep whitespace and line breaks intact. Escape raw angle brackets as &lt; and &gt; inside the block, and add overflow-x: auto so long lines scroll horizontally instead of breaking the layout."
     }
   ],
-  "css": [],
-  "angular": [],
+  "css": [
+    {
+      "id": "css-1",
+      "importance": "medium",
+      "review": false,
+      "question": "What is the CSS box model?",
+      "answer": "Every element is rendered as a box made of four layers, from the inside out: content, padding, border and margin. Content holds the actual content, padding adds space between content and border, the border frames the box, and margin creates space between this box and its neighbours. box-sizing: border-box makes width and height include padding and border."
+    },
+    {
+      "id": "css-2",
+      "importance": "medium",
+      "review": false,
+      "question": "What is the difference between padding and margin?",
+      "answer": "Padding is the space inside the element, between the content and the border. Margin is the space outside the element, between the border and neighbouring elements. Padding is always part of the element's background; margins collapse with adjacent margins."
+    },
+    {
+      "id": "css-3",
+      "importance": "medium",
+      "review": false,
+      "question": "What is the difference between block, inline and inline-block?",
+      "answer": "Block elements start on a new line and fill the available width. Inline elements flow within a line of text and ignore width and height. Inline-block flows inline but respects width, height and vertical margins like a block, which makes it useful for grid-like layouts."
+    },
+    {
+      "id": "css-4",
+      "importance": "medium",
+      "review": false,
+      "question": "What do align-items and justify-content do in flexbox?",
+      "answer": "justify-content controls the distribution of items along the main axis (the flex container's flex-direction). align-items controls alignment along the cross axis, which is perpendicular to the main axis. For a default row layout, justify-content is horizontal and align-items is vertical."
+    },
+    {
+      "id": "css-5",
+      "importance": "medium",
+      "review": false,
+      "question": "How do you center a block element horizontally?",
+      "answer": "Give the element a width and set margin-inline: auto (or margin-left and margin-right to auto). The auto margins split the remaining space equally on both sides. Flexbox centers with display: flex and justify-content: center for a row of items."
+    }
+  ],
+  "angular": [
+    {
+      "id": "angular-1",
+      "importance": "medium",
+      "review": false,
+      "question": "What is a component in Angular?",
+      "answer": "A component is an Angular building block that combines an HTML template, styles and a TypeScript class that holds the logic and state. Components are standalone by default in modern Angular and import the dependencies they use directly in their imports array."
+    },
+    {
+      "id": "angular-2",
+      "importance": "medium",
+      "review": false,
+      "question": "What is data binding in Angular?",
+      "answer": "Data binding connects the component class to the template. Interpolation {{ }} and property binding [property] flow from class to view, event binding (event) flows from view to class, and two-way binding [(ngModel)] or model() flows both ways."
+    },
+    {
+      "id": "angular-3",
+      "importance": "medium",
+      "review": false,
+      "question": "What is an Angular directive?",
+      "answer": "A directive is a class that extends HTML behaviour — structure or presentation — without an associated template. Attribute directives change an element's appearance or behaviour, while structural directives (like @if and @for) add, remove or repeat elements in the DOM."
+    },
+    {
+      "id": "angular-4",
+      "importance": "medium",
+      "review": false,
+      "question": "What is dependency injection?",
+      "answer": "Dependency injection is how Angular provides the services a component or class needs. A class declares its dependencies in its constructor or with inject(), and Angular's injector resolves them. Services marked providedIn: 'root' are app-wide singletons."
+    },
+    {
+      "id": "angular-5",
+      "importance": "medium",
+      "review": false,
+      "question": "What is the difference between @Input and @Output?",
+      "answer": "@Input lets a parent pass data into a child component's property. @Output emits an event from the child that the parent listens to. They are the two halves of component communication: input flows down, output flows up."
+    }
+  ],
   "misc": []
 }
