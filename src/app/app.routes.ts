@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
-import { Html } from './html/html';
 
 export const routes: Routes = [
   {
     path: '',
-    component: Html,
+    redirectTo: 'html',
+    pathMatch: 'full',
   },
   { path: 'html', loadComponent: () => import('./html/html').then((c) => c.Html) },
   { path: 'css', loadComponent: () => import('./css/css').then((c) => c.Css) },
