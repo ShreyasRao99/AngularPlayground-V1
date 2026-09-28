@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import questions from '../shared/questions.json';
-import { Question } from '../../types/questions';
+import { Question } from '../../types/questions-type';
 
 @Component({
   imports: [MatExpansionModule],
