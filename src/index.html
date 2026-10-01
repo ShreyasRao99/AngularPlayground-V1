@@ -16,6 +16,17 @@
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet"
     />
+    <script>
+      // GitHub Pages serves 404.html for unknown paths. It redirects here with the
+      // original path in ?redirect=, so restore it into the address bar before
+      // Angular bootstraps and reads the initial route.
+      (function () {
+        var redirect = new URLSearchParams(window.location.search).get('redirect');
+        if (redirect) {
+          window.history.replaceState({}, '', redirect);
+        }
+      })();
+    </script>
   </head>
   <body>
     <app-root></app-root>
