@@ -1528,7 +1528,7 @@
       "examples": [
         {
           "title": "OnPush + stable identity in the list",
-          "code": "@Component({ changeDetection: ChangeDetectionStrategy.OnPush, /* ... */ })\nexport class OrderForm {\n  orders = input.required<Order[]>();\n\n  // GOOD - derived, memoised until orders() changes\n  readonly total = computed(() =>\n    this.orders().reduce((s, o) => s + o.amount, 0));\n}\n\n// BAD - the same thing as a getter, which the template re-evaluates every\n// change detection pass instead of caching by dependency\nget total() {\n  return this.orders().reduce((s, o) => s + o.amount, 0);\n}",
+          "code": "// GOOD - derived once, memoised until orders() changes\n@Component({ changeDetection: ChangeDetectionStrategy.OnPush, /* ... */ })\nexport class OrderForm {\n  orders = input.required<Order[]>();\n\n  readonly total = computed(() =>\n    this.orders().reduce((s, o) => s + o.amount, 0),\n  );\n}\n\n// BAD - a getter is re-evaluated by the template on every change detection\n// pass, so this recalculates for the whole array each time anything changes\n@Component({ /* ... */ })\nexport class OrderFormWithGetter {\n  orders = input.required<Order[]>();\n\n  get total() {\n    return this.orders().reduce((s, o) => s + o.amount, 0);\n  }\n}",
           "explanation": "Getters in templates are a classic hidden cost; a computed caches by dependency."
         },
         {
