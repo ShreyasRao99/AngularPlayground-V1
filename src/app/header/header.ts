@@ -10,4 +10,11 @@ import { MatMenuModule } from '@angular/material/menu';
   styleUrl: './header.css',
   templateUrl: './header.html',
 })
-export class Header {}
+export class Header {
+  openFeedback(event: Event): void {
+    event.preventDefault();
+    const recipient = 'shreyasrao20000@gmail.com';
+    const subject = 'Angular Playground V1 - Suggestion/Feedback';
+    window.location.href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}`;
+  }
+}
