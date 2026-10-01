@@ -165,6 +165,22 @@ describe('QuestionList', () => {
     expect(checked?.querySelector('button')?.textContent?.trim()).toBe('Unread');
   });
 
+  it('should not resurrect legacy read state once the new key exists but is empty', async () => {
+    // unmarking the last question stores an empty list, which must not be
+    // mistaken for "no saved state" and re-imported from the legacy key
+    localStorage.setItem('q-read-flags', '[]');
+    localStorage.setItem(
+      'q-flags',
+      JSON.stringify([{ id: 'performance-1', importance: 'high', forLater: true }]),
+    );
+
+    const fixture = await createList();
+    const first = fixture.componentInstance['faqs']()[0];
+
+    expect(first.id).toBe('performance-1');
+    expect(first.isRead).toBe(false);
+  });
+
   it('should not let stale localStorage shadow curated difficulty and scenario labels', async () => {
     localStorage.setItem(
       'q-read-flags',

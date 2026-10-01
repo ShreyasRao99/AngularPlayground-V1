@@ -52,11 +52,14 @@ function toReadMap<T extends { id: string }>(
 // persisted — only the user's read state is, so shipping new labels is not
 // shadowed by a stale localStorage entry.
 function loadReadFlags(): Record<string, boolean> {
-  const current = toReadMap(localStorage.getItem(STORAGE_KEY), (flag: ReadFlag) =>
-    typeof flag?.isRead === 'boolean' ? flag.isRead : null,
-  );
-  if (Object.keys(current).length) {
-    return current;
+  const stored = localStorage.getItem(STORAGE_KEY);
+  // Only read is persisted, so the stored list is empty when nothing is marked
+  // read. Fall back to the legacy key on absence, not on emptiness — otherwise
+  // unmarking the last question would resurrect stale legacy read state.
+  if (stored !== null) {
+    return toReadMap(stored, (flag: ReadFlag) =>
+      typeof flag?.isRead === 'boolean' ? flag.isRead : null,
+    );
   }
 
   const legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
