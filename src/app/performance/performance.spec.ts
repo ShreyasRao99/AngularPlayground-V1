@@ -19,7 +19,7 @@ describe('Performance', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the question list for the performance category', async () => {
+  it('should render the question list for the performance category', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('h1')?.textContent).toContain('Performance Questions');
 

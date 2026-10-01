@@ -19,7 +19,7 @@ describe('Behavioural', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the question list for the behavioural category', async () => {
+  it('should render the question list for the behavioural category', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('h1')?.textContent).toContain('Behavioural Questions');
 

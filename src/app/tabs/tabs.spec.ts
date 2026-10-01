@@ -22,6 +22,7 @@ describe('Tabs', () => {
   });
 
   it('should link to every question category', () => {
+    // `links` is protected, so reach it through the instance by index signature
     const routes = component['links'].map((link) => link.route);
     expect(routes).toEqual([
       '/html',
