@@ -3,8 +3,9 @@
     {
       "id": "html-1",
       "category": "html",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is semantic HTML?",
       "answer": "Semantic HTML uses tags that describe their meaning rather than only their appearance — header, nav, main, article, section, aside and footer. It improves accessibility for screen readers and helps search engines understand the page structure, while also making the code easier to read for other developers.",
       "examples": [
@@ -18,8 +19,9 @@
     {
       "id": "html-2",
       "category": "html",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the difference between a div and a span?",
       "answer": "A div is a block-level container that takes the full available width and starts on a new line, while a span is an inline container that flows inside a line of text. Use a div to group larger layout blocks and a span to style or group a fragment of text without breaking the line.",
       "examples": [
@@ -33,8 +35,9 @@
     {
       "id": "html-3",
       "category": "html",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "When should I use a class instead of an id?",
       "answer": "An id must be unique on the page and is used when you need to identify a single element — for example as an anchor, or a CSS selector that definitely targets one node. A class can be reused across many elements, so if a style or behaviour applies to more than one element, prefer a class.",
       "examples": [
@@ -48,8 +51,9 @@
     {
       "id": "html-4",
       "category": "html",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "How do I make an image render well on different screen sizes?",
       "answer": "Let the image scale proportionally with max-width: 100% and height: auto, and provide several source variants using the srcset and sizes attributes so the browser picks the right file for the viewport. Reserve the space with width and height attributes to avoid layout shift while loading.",
       "examples": [
@@ -63,8 +67,9 @@
     {
       "id": "html-5",
       "category": "html",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Why is the alt attribute important on images?",
       "answer": "The alt attribute provides a text alternative that is announced by screen readers and shown when the image fails to load. It is required when the image conveys information, and should describe the content or purpose. Decorative images can use an empty alt=\"\", but hiding them without an attribute hurts accessibility.",
       "examples": [
@@ -78,8 +83,9 @@
     {
       "id": "html-6",
       "category": "html",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "How do I show a block of code on a page?",
       "answer": "Wrap the lines in pre/code tags to keep whitespace and line breaks intact. Escape raw angle brackets as &lt; and &gt; inside the block, and add overflow-x: auto so long lines scroll horizontally instead of breaking the layout.",
       "examples": [
@@ -93,8 +99,9 @@
     {
       "id": "html-7",
       "category": "html",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the difference between <article> and <section>?",
       "answer": "<article> is a self-contained composition that makes sense on its own - a blog post, a news story, a comment - and could be syndicated or reused independently. <section> is a thematic grouping of related content within a page, usually with a heading. Use section to break up a long page, article for content that stands alone; an article can contain sections.",
       "examples": [
@@ -108,8 +115,9 @@
     {
       "id": "html-8",
       "category": "html",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "How do you correctly associate a <label> with a form control?",
       "answer": "Give the control an id and point the label's for attribute at it, or nest the control inside the label. The association means clicking the label focuses/activates the control and screen readers announce the label text. A placeholder attribute is not a substitute - it disappears when the user types and is poorly announced.",
       "examples": [
@@ -123,8 +131,9 @@
     {
       "id": "html-9",
       "category": "html",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the difference between async and defer on a <script> tag?",
       "answer": "Both load the script without blocking HTML parsing. defer downloads in parallel and executes once the document has been parsed, in order, right before DOMContentLoaded - reliable for scripts that touch the DOM. async downloads in parallel and executes as soon as it is ready, interrupting parsing and ignoring order - fine for analytics but unsafe for interdependent scripts.",
       "examples": [
@@ -138,8 +147,9 @@
     {
       "id": "html-10",
       "category": "html",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the viewport meta tag and why does it matter on mobile?",
       "answer": "<meta name='viewport' content='width=device-width, initial-scale=1'> tells the browser to render at the device width instead of a desktop-width virtual viewport. Without it, mobile browsers zoom out to fit a desktop layout, making text tiny and tap targets hard to hit. It is the HTML precondition for responsive CSS to work.",
       "examples": [
@@ -153,8 +163,9 @@
     {
       "id": "html-11",
       "category": "html",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the difference between <strong>/<em> and <b>/<i>?",
       "answer": "<strong> and <em> carry meaning: strong implies importance (read as emphasis by screen readers, often bold), em adds stress emphasis (often italic). <b> and <i> are purely presentational - b is bold text, i is italic text - and pass no semantic meaning. Prefer the semantic pair and style them with CSS; reserve b/i for purely visual effects.",
       "examples": [
@@ -168,8 +179,9 @@
     {
       "id": "html-12",
       "category": "html",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "How does native browser form validation work and when would you disable it?",
       "answer": "Constraints like required, type='email', min/max length and the pattern attribute are validated by the browser: the form is blocked from submitting and the :invalid pseudo-class lets you style errors. Setting novalidate (or noValidate) on the form disables native bubbles so you can run your own validation - useful when you need consistent messaging or server-side rules.",
       "examples": [
@@ -185,8 +197,9 @@
     {
       "id": "css-1",
       "category": "css",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the CSS box model?",
       "answer": "Every element is rendered as a box made of four layers, from the inside out: content, padding, border and margin. Content holds the actual content, padding adds space between content and border, the border frames the box, and margin creates space between this box and its neighbours. box-sizing: border-box makes width and height include padding and border.",
       "examples": [
@@ -200,8 +213,9 @@
     {
       "id": "css-2",
       "category": "css",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the difference between padding and margin?",
       "answer": "Padding is the space inside the element, between the content and the border. Margin is the space outside the element, between the border and neighbouring elements. Padding is always part of the element's background; margins collapse with adjacent margins.",
       "examples": [
@@ -215,8 +229,9 @@
     {
       "id": "css-3",
       "category": "css",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the difference between block, inline and inline-block?",
       "answer": "Block elements start on a new line and fill the available width. Inline elements flow within a line of text and ignore width and height. Inline-block flows inline but respects width, height and vertical margins like a block, which makes it useful for grid-like layouts.",
       "examples": [
@@ -240,8 +255,9 @@
     {
       "id": "css-4",
       "category": "css",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What do align-items and justify-content do in flexbox?",
       "answer": "justify-content controls the distribution of items along the main axis (the flex container's flex-direction). align-items controls alignment along the cross axis, which is perpendicular to the main axis. For a default row layout, justify-content is horizontal and align-items is vertical.",
       "examples": [
@@ -255,8 +271,9 @@
     {
       "id": "css-5",
       "category": "css",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "How do you center a block element horizontally?",
       "answer": "Give the element a width and set margin-inline: auto (or margin-left and margin-right to auto). The auto margins split the remaining space equally on both sides. Flexbox centers with display: flex and justify-content: center for a row of items.",
       "examples": [
@@ -275,8 +292,9 @@
     {
       "id": "css-6",
       "category": "css",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What are specificity and the cascade, and where does !important fit in?",
       "answer": "The cascade decides which rule wins when selectors conflict; specificity ranks them by id (highest), then class/attribute/pseudo-class, then type selectors, and a style attribute beats all of those normal author rules. !important lifts an author declaration above every normal author rule, including the style attribute, which is why it is a code smell: the only thing that reliably beats it is another !important, so the source of a style becomes unpredictable. Prefer increasing specificity or changing the order and origin of the stylesheet instead.",
       "examples": [
@@ -290,8 +308,9 @@
     {
       "id": "css-7",
       "category": "css",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What are CSS custom properties (variables) and how are themes built with them?",
       "answer": "Custom properties are defined on a selector with --name and read with var(--name). They cascade and can be redefined on a themed container, which is how theming works: define --primary, --bg and --text on :root, then override them on a .dark or [data-theme='dark'] selector. Because they cascade, a component can read var(--primary) and automatically adapt to whichever theme is active.",
       "examples": [
@@ -305,8 +324,9 @@
     {
       "id": "css-8",
       "category": "css",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the difference between position: relative, absolute, fixed and sticky?",
       "answer": "relative offsets an element from its normal flow position without removing it from flow. absolute takes the element out of flow and positions it relative to the nearest positioned ancestor (a relative/absolute parent); without one, relative to the containing block. fixed positions it relative to the viewport, so it stays put while scrolling. sticky toggles between relative and fixed as the element crosses a scroll threshold - useful for section headers.",
       "examples": [
@@ -320,8 +340,9 @@
     {
       "id": "css-9",
       "category": "css",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What are responsive breakpoints and why is mobile-first preferable?",
       "answer": "Breakpoints are viewport widths where the layout changes, defined with media queries (@media (min-width: 768px)). Mobile-first means you write the base styles for small screens and layer on wider layouts with min-width queries, so narrow devices get less CSS and no override churn. Because min-width is additive, wide screens upgrade rather than narrow screens override.",
       "examples": [
@@ -335,8 +356,9 @@
     {
       "id": "css-10",
       "category": "css",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the difference between px, rem, em, % and vw/vh?",
       "answer": "px is a fixed unit; rem is relative to the root font-size (so 2rem scales with the user's base size and stays predictable); em is relative to the element's own font-size and compounds as it nests; % is relative to the parent's size for the same property; vw/vh are 1% of viewport width/height. Prefer rem for spacing and text so zoom and browser font settings work, and %/flex units for layout.",
       "examples": [
@@ -350,8 +372,9 @@
     {
       "id": "css-11",
       "category": "css",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "When would you use CSS Grid and when Flexbox?",
       "answer": "Grid is two-dimensional - it sizes and positions items across explicit rows and columns, ideal for page layouts, card grids and dashboards. Flexbox is one-dimensional - it distributes items along a single axis, ideal for navbars, aligning rows, centering and wrapping lists. Modern usage: Grid for the big layout skeleton, Flexbox for everyday alignment inside cells; they compose, not compete.",
       "examples": [
@@ -367,8 +390,9 @@
     {
       "id": "js-1",
       "category": "javascript",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is hoisting in JavaScript, and how does it differ for var, let and const?",
       "answer": "Hoisting is the default behaviour where declarations are processed before any code runs, so the engine \"knows\" about them at the top of the scope. var declarations (and function declarations) are hoisted and initialised to undefined, so reading them before the line throws nothing - you get undefined. let and const are hoisted too but stay in the temporal dead zone until the declaration executes, so accessing them earlier throws a ReferenceError. Hoisting applies to the declaration, not the assignment.",
       "examples": [
@@ -382,8 +406,9 @@
     {
       "id": "js-2",
       "category": "javascript",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the difference between var, let and const?",
       "answer": "var is function-scoped, hoisted, and can be redeclared - the source of most closure bugs in loops. let is block-scoped, hoisted but not initialised, and cannot be redeclared in the same block, so it is the default choice. const is also block-scoped and cannot be reassigned after initialisation, but note it does not make the value immutable - a const object can still have its properties changed.",
       "examples": [
@@ -402,8 +427,9 @@
     {
       "id": "js-3",
       "category": "javascript",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is a closure?",
       "answer": "A closure is the combination of a function with its lexical environment: an inner function keeps access to the variables of the scope where it was created, even after that outer function has returned. That is how private state, memoisation caches and event handlers that remember their context work.",
       "examples": [
@@ -417,8 +443,9 @@
     {
       "id": "js-4",
       "category": "javascript",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the difference between null and undefined?",
       "answer": "undefined means a value has never been assigned - missing arguments, absent properties, uninitialised lets, and the return value of a function with no return. null is an explicit signal from the developer that there is intentionally no value. In practice: use undefined for absence by default, null to say \"deliberately empty\", and prefer ?? over || so 0 and empty string are not swallowed.",
       "examples": [
@@ -432,8 +459,9 @@
     {
       "id": "js-5",
       "category": "javascript",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What are arrow functions and how do they differ from function declarations?",
       "answer": "An arrow function is a compact anonymous function expression. Two differences matter: it has no own this (this is inherited lexically from where it was defined, so it cannot be used as a method or constructor) and no own arguments or new.target. It also cannot be hoisted as a declaration, and it has no prototype. Use arrows for callbacks; use function expressions when you need dynamic this or arguments.",
       "examples": [
@@ -447,8 +475,9 @@
     {
       "id": "js-6",
       "category": "javascript",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the difference between a function and a method?",
       "answer": "A function is a standalone callable, usually declared at module scope and invoked by name. A method is a function that lives on an object and is invoked as obj.method(), so it receives the object as this. The same function object can be used either way - what changes is how it is called and therefore what this is. A standalone function that does not use this at all is better described as a plain function, not a method.",
       "examples": [
@@ -462,8 +491,9 @@
     {
       "id": "js-7",
       "category": "javascript",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is event propagation, and what are the capture and bubble phases?",
       "answer": "DOM events travel through the tree in three phases. Capture goes from the root down to the target, letting ancestors inspect the event before it arrives. The target phase fires listeners registered on the target itself. Bubble goes back up from the target to the root, which is where most listeners run. addEventListener accepts a third argument - true registers in the capture phase, false (default) or omit registers in the bubble phase.",
       "examples": [
@@ -477,8 +507,9 @@
     {
       "id": "js-8",
       "category": "javascript",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the difference between event.preventDefault() and event.stopPropagation()?",
       "answer": "preventDefault() cancels the default browser action for that event - following a link, submitting a form, checking a checkbox - but the event still travels to other listeners. stopPropagation() stops the event from reaching any further nodes, so ancestor and descendant handlers never run; the default action still happens unless you also call preventDefault(). stopImmediatePropagation() additionally prevents the remaining listeners on the same element.",
       "examples": [
@@ -492,8 +523,9 @@
     {
       "id": "js-9",
       "category": "javascript",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What are the common array methods - map, filter, reduce, forEach - and when do you use each?",
       "answer": "forEach runs a side effect per element and returns undefined - never use it to build a new array. map returns a new array of the same length with each element transformed. filter returns a new array of only the elements that pass a test. reduce folds the array into one value (sum, group, object) and always returns an accumulator you must initialise. Prefer these over raw for loops when you only need a transformation; use .at(), .find(), .some(), .every() and .sort() for the other common cases.",
       "examples": [
@@ -512,8 +544,9 @@
     {
       "id": "js-10",
       "category": "javascript",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the spread operator, and how is it different from rest parameters?",
       "answer": "Spread (...) expands an iterable into individual elements or properties at the call site - used to copy arrays/objects and to pass an array as separate arguments. Rest parameters collect leftover arguments into an array, and rest in destructuring gathers the remaining properties into an object. They use the same three dots but sit in opposite positions: spread produces many values, rest collects many values into one.",
       "examples": [
@@ -527,8 +560,9 @@
     {
       "id": "js-11",
       "category": "javascript",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What are Map, Set and WeakMap, and how do they differ from plain objects and arrays?",
       "answer": "Set holds unique values with fast has/add and preserves insertion order. Map holds key-value pairs with a typed API and reliable iteration, and unlike an object it accepts any value as a key and exposes size, keys(), values() and entries(). WeakMap is the non-enumerable, garbage-collectable variant of Map: keys must be objects and entries vanish when the key is unreachable, which is why it is used for private per-object caches. Use a Set for membership tests instead of indexOf on an array.",
       "examples": [
@@ -547,8 +581,9 @@
     {
       "id": "js-12",
       "category": "javascript",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Why is JavaScript single-threaded, and how can it still handle concurrent work?",
       "answer": "One thread plus one synchronous call stack means code cannot interleave mid-statement, so you never get data races on shared memory - which is why it is safe by default. Concurrency comes from the event loop: the stack runs to completion, then the microtask queue (promise callbacks) is drained, then one macrotask (timers, I/O callbacks) is processed. I/O is delegated to the browser or Node, so while a request is in flight the main thread is free. That is also why a long synchronous loop freezes the UI - and why heavy work goes to a Web Worker.",
       "examples": [
@@ -562,8 +597,9 @@
     {
       "id": "js-13",
       "category": "javascript",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the prototype chain?",
       "answer": "Every JavaScript object has an internal [[Prototype]] link, and property lookup walks that chain until it hits null. Functions inherit from Function.prototype, arrays from Array.prototype, and any object can be linked to your own object so instances share behaviour - that is how \"inheritance\" works in JavaScript, through delegation rather than copying. Object.create(proto) sets the link directly, and class syntax is sugar over the same mechanism.",
       "examples": [
@@ -577,8 +613,9 @@
     {
       "id": "js-14",
       "category": "javascript",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What do call, apply and bind do?",
       "answer": "All three change what this refers to when a function is invoked. call invokes the function immediately with the given this and arguments listed individually. apply invokes it immediately with an array-like list of arguments. bind returns a new function with this permanently bound and arguments partially applied - which is how you keep a handler working when you pass it to addEventListener.",
       "examples": [
@@ -592,8 +629,9 @@
     {
       "id": "js-15",
       "category": "javascript",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What does use strict do?",
       "answer": "It opts a script or function into strict mode, which removes the sloppy-mode escape hatches: undeclared assignments throw instead of creating a global, this inside a plain function call is undefined rather than the global object, duplicate parameters are rejected, and writes to non-writable properties throw instead of failing silently. Modules and class bodies are always strict, so bundler-based Angular code is strict whether you ask for it or not.",
       "examples": [
@@ -607,8 +645,9 @@
     {
       "id": "js-16",
       "category": "javascript",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What are the ES6+ features worth knowing as an Angular developer?",
       "answer": "The ones you meet daily: let/const with block scoping, arrow functions, template literals, destructuring with defaults and rest, spread for copying, classes, ES modules with import/export, and the null-handling operators ?. and ??. Map/Set replaced the need for most object-as-dictionary hacks, and Object.entries/values/fromEntries make transformation easy. Later editions add optional catch binding, logical assignment (??=, ||=) and Array.prototype.at for negative indexing.",
       "examples": [
@@ -622,8 +661,9 @@
     {
       "id": "js-17",
       "category": "javascript",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is Object.assign and how does it differ from object spread?",
       "answer": "Object.assign(target, ...sources) copies own enumerable properties from the sources onto the target and returns that same mutated object. Spreading ({ ...source }) builds a new object instead. They copy the same properties - including symbol-keyed ones - so the only real difference is the target: spread cannot mutate a shared object by accident. Prefer spread in application code. Both are shallow - nested objects are still shared references.",
       "examples": [
@@ -637,8 +677,9 @@
     {
       "id": "js-18",
       "category": "javascript",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "How do you prevent an object from being modified?",
       "answer": "Object.freeze seals an object shallowly: existing properties cannot be reassigned or deleted, and new ones cannot be added. Nested objects are not affected, so for deep protection you freeze recursively. Object.seal allows modification but blocks adding and deleting. Reassigning an existing non-writable property throws a TypeError in strict mode and fails silently in sloppy mode. Freeze also reaches internal slots: a frozen array cannot be pushed to or sorted, because every one of those operations has to write a property on an object that is no longer extensible - that throws in both modes. What freeze never reaches is anything the object references, which is why the recursion above is the part people forget.",
       "examples": [
@@ -652,8 +693,9 @@
     {
       "id": "js-19",
       "category": "javascript",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is type coercion in JavaScript?",
       "answer": "JavaScript implicitly converts values between types when an operator or context demands it, which is why \"4\" - 2 is 2 but \"4\" + 2 is \"42\" - addition concatenates when either side is a string. Comparisons use abstract equality loosely: == coerces types, while === compares type and value. Coercion produces the infamous NaN whenever a string cannot be parsed as a number. Prefer explicit conversion - Number(), String(), Boolean() - and always === over ==.",
       "examples": [
@@ -667,8 +709,9 @@
     {
       "id": "js-20",
       "category": "javascript",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "How do you find the minimum and maximum value in an array?",
       "answer": "Spread the array into Math.min or Math.max. Beware the argument limit: Math.min(...arr) throws a RangeError for arrays with roughly a hundred thousand elements or more, and it also fails on an empty array (Infinity for min, -Infinity for max). For large arrays reduce the values instead, and decide what an empty list should mean for your domain.",
       "examples": [
@@ -684,8 +727,9 @@
     {
       "id": "angular-1",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is a component in Angular?",
       "answer": "A component is an Angular building block that combines an HTML template, styles and a TypeScript class that holds the logic and state. Components are standalone by default in modern Angular and import the dependencies they use directly in their imports array.",
       "examples": [
@@ -699,8 +743,9 @@
     {
       "id": "angular-2",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is data binding in Angular?",
       "answer": "Data binding connects the component class to the template. Interpolation {{ }} and property binding [property] flow from class to view, event binding (event) flows from view to class, and two-way binding [(ngModel)] or model() flows both ways.",
       "examples": [
@@ -729,8 +774,9 @@
     {
       "id": "angular-3",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is an Angular directive?",
       "answer": "A directive is a class that extends HTML behaviour — structure or presentation — without an associated template. Attribute directives change an element's appearance or behaviour, while structural directives add, remove or repeat elements in the DOM - *ngIf and *ngFor are the classic ones, replaced in modern templates by the built-in @if / @for control-flow blocks.",
       "examples": [
@@ -754,8 +800,9 @@
     {
       "id": "angular-4",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is dependency injection?",
       "answer": "Dependency injection is how Angular provides the services a component or class needs. A class declares its dependencies in its constructor or with inject(), and Angular's injector resolves them. Services marked providedIn: 'root' are app-wide singletons.",
       "examples": [
@@ -774,8 +821,9 @@
     {
       "id": "angular-5",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the difference between @Input and @Output, and how do the signal APIs change it?",
       "answer": "@Input lets a parent pass data down into a child, and @Output lets the child emit an event upward - together they are the two halves of component communication. In modern Angular you use the signal APIs rather than the decorators: input() / input.required() on the way in, output() on the way out, and model() when the value both flows down and can be written back up by the child. The behavioural difference is that signal inputs and outputs are reactive - a computed() can derive from them and change detection is notified when they change - whereas decorator inputs are plain properties that you read imperatively.",
       "examples": [
@@ -794,8 +842,9 @@
     {
       "id": "angular-6",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": true,
+      "isRead": false,
       "question": "A user types in a search box and the whole page feels janky. How do you isolate the cause and fix it?",
       "answer": "Profile first: use Angular DevTools to spot components running many change-detection cycles and the Chrome performance tab to confirm what is slow. Common fixes: debounceTime(300) + switchMap on the search stream so every keystroke does not hit the API, move heavy computations out of templates into pipes or a computed, add trackBy, use ChangeDetectionStrategy.OnPush on the growing list, and wrap high-frequency handlers like scroll in runOutsideAngular(ngZone). Fix the root cause rather than sprinkling optimizations.",
       "examples": [
@@ -809,8 +858,9 @@
     {
       "id": "angular-8",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": true,
+      "isRead": false,
       "question": "A sidebar filter and a dashboard list are unrelated components but must stay in sync. How do you implement this?",
       "answer": "Put the shared state in a service: a signal() (or BehaviorSubject if you need an async stream) with read/computed selectors. Keep components dumb - the list reads the signal and re-renders. For parent-to-child data use @Input/@Output; for unrelated components a shared service is the standard answer, and signals today remove the subscription boilerplate the BehaviorSubject approach needed.",
       "examples": [
@@ -824,8 +874,9 @@
     {
       "id": "angular-9",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": true,
+      "isRead": false,
       "question": "The user clicks 'Save' rapidly while a POST is in flight. How do you prevent duplicate requests?",
       "answer": "Use exhaustMap on the click stream: it ignores new emissions while an inner request is running and only accepts the next click after completion. That matches the intent - ignore extra clicks until the request settles. switchMap would cancel the in-flight request, which is wrong for a save; debounceTime would just delay the first click.",
       "examples": [
@@ -839,8 +890,9 @@
     {
       "id": "angular-10",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": true,
+      "isRead": false,
       "question": "A dashboard must show data from three APIs, but only when all three have arrived, and it must update if any of them changes later. What operator do you use and why?",
       "answer": "combineLatest: it emits only once all sources have emitted at least once and keeps emitting whenever any source changes afterwards - exactly 'render once all three exist, update on any change'. forkJoin would be wrong because it emits once and completes, so later changes never re-render. If you only needed the first combined value, forkJoin would be fine.",
       "examples": [
@@ -854,8 +906,9 @@
     {
       "id": "angular-11",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": true,
+      "isRead": false,
       "question": "There is a memory leak in production - memory grows steadily as users navigate. How do you track it down?",
       "answer": "Reproduce in dev with the browser heap snapshot: take two snapshots around a navigation cycle and diff them to find detached DOM nodes or lingering references. Suspect manual subscribe() calls that were never unsubscribed, timers, and addEventListener. Fix by using the async pipe or takeUntilDestroyed(), and centralizing subscriptions so cleanup is a convention, not a discipline.",
       "examples": [
@@ -869,8 +922,9 @@
     {
       "id": "angular-12",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": true,
+      "isRead": false,
       "question": "You need a reusable form input that works both with ngModel and inside a reactive form. How do you build it?",
       "answer": "Implement ControlValueAccessor on a component: writeValue populates the control, registerOnChange/registerOnTouched wire the UI to the form model, and setDisabledState handles enable/disable. Then it can be used with [(ngModel)] or [formControl]/formControlName exactly like a native input.",
       "examples": [
@@ -889,8 +943,9 @@
     {
       "id": "angular-13",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": true,
+      "isRead": false,
       "question": "A stepper form is spread across multiple components but must behave as one form. How do you keep it consistent?",
       "answer": "Own a single FormGroup instance in a parent component and pass it down (@Input) or expose it from a shared service provided at the parent scope. Each step component binds its controls to the same instance via formControlName/formGroup, and the stepper reads validity from one place. A service scoped to the feature route (rather than root) avoids leaking state across navigation.",
       "examples": [
@@ -909,8 +964,9 @@
     {
       "id": "angular-14",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": true,
+      "isRead": false,
       "question": "How do you implement role-based access control - restricting routes by role and hiding UI elements?",
       "answer": "Two layers: a route guard canActivateFn checks whether the logged-in role may enter a route (and redirects otherwise), while a structural directive (like *appHasRole) conditionally renders UI for a role. Keep the user's roles in a shared service/signal read by both. Never rely on hiding UI alone - guards must also enforce the route, and the server must enforce authorization anyway.",
       "examples": [
@@ -924,8 +980,9 @@
     {
       "id": "angular-15",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": true,
+      "isRead": false,
       "question": "Two routes must be lazy-loaded, but only admin users may reach the Reports route. How do you set that up?",
       "answer": "Use a guard that checks the user's role from the auth store before entry. Prefer canMatch (which runs before the module is loaded) over canActivate only, so the lazy Reports bundle is never downloaded for unauthorized users. Pair it with loadComponent routing so admin access and code-splitting both hold.",
       "examples": [
@@ -939,8 +996,9 @@
     {
       "id": "angular-16",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the difference between the constructor and ngOnInit?",
       "answer": "The constructor runs when the component instance is created, before inputs are resolved - Angular best practice is to use it only for dependency injection and minimal setup. ngOnInit runs after the first ngOnChanges, once the component's inputs are set, so it is the right place to read input values and kick off initialization logic or long-lived subscriptions.",
       "examples": [
@@ -954,8 +1012,9 @@
     {
       "id": "angular-17",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the async pipe and how does it prevent memory leaks?",
       "answer": "The async pipe subscribes to an Observable in the template ({{ users$ | async }}) and unsubscribes automatically when the component is destroyed. That removes the need for a manual subscription and the classic leak where a component subscribes in ngOnInit but never unsubscribes in ngOnDestroy. It pairs naturally with OnPush change detection.",
       "examples": [
@@ -969,8 +1028,9 @@
     {
       "id": "angular-18",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What are route guards and which ones do you know?",
       "answer": "Route guards decide whether navigation proceeds. canActivate/canActivateFn checks a route's entry once matched, canMatch blocks the route from even being considered (running before module load - best for lazy security), and canDeactivate asks before leaving a dirty form. They are functions or services returning boolean, an observable/promise, or a redirect URL tree.",
       "examples": [
@@ -984,8 +1044,9 @@
     {
       "id": "angular-19",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is an HTTP interceptor and what are typical use cases?",
       "answer": "An interceptor sits in the request/response pipeline and lets you transform a request or observe a response centrally, instead of repeating logic per call. Common uses: attaching an auth token header, global error handling and retries, logging, and loading indicators. In modern Angular it is implemented as a function returning next.handle(req) in the chain.",
       "examples": [
@@ -999,8 +1060,9 @@
     {
       "id": "angular-20",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is a pipe and the difference between pure and impure pipes?",
       "answer": "A pipe transforms a value in the template ({{ value | date: 'short' }}). A pure pipe's transform runs only when its input reference changes, so Angular skips re-running it on every change detection pass - the default and the fast path. An impure pipe (pure: false) runs on every change detection cycle, needed for stateful transforms, but it costs performance, so make it the exception.",
       "examples": [
@@ -1014,8 +1076,9 @@
     {
       "id": "angular-21",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is content projection (ng-content)?",
       "answer": "Content projection lets a parent component pass markup into a child's template via <ng-content>. In a card or modal component the child defines named slots with <ng-content select=\"[slot='header']\"> and the parent fills them by putting slot=\"header\" on its content, which makes the component reusable without prop-drilling markup. Multi-slot projection uses the select attribute; a catch-all ng-content without select grabs everything else.",
       "examples": [
@@ -1029,8 +1092,9 @@
     {
       "id": "angular-22",
       "category": "angular",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": true,
+      "isRead": false,
       "question": "A username field must show \"already taken\" while the user types, using a backend check. How do you implement it?",
       "answer": "Reach for an AsyncValidator, not a manual subscribe. Angular runs async validators through the same FormControl status pipeline as sync validators, so the control goes PENDING while the check is in flight and then VALID or INVALID - and you wire the disabled state yourself from form.pending, Angular will not do that for you. Two rules matter. Debounce before hitting the network, with a timer inside the validator. And skip re-checking an unchanged value - but note that distinctUntilChanged() belongs on the valueChanges stream that drives the check, not inside the validator, because Angular re-runs the validator as a fresh subscription on every value change and there is no previous emission for it to compare against. Always catchError inside the validator and return null - a network failure is not the user's fault, so it must not mark the field invalid and block submit.",
       "examples": [
@@ -1049,8 +1113,9 @@
     {
       "id": "angular-24",
       "category": "angular",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": true,
+      "isRead": false,
       "question": "A component loads its data in ngOnInit from a service. How do you test that the data actually renders?",
       "answer": "Configure the test with a fake for the dependency, not the real HTTP stack. Provide a spy object with TestBed, assert the component called it, then trigger change detection and assert on the rendered DOM. Use signals plus whenStable rather than relying on a timer, so the test is deterministic. Signal inputs must be set through componentRef.setInput, because assigning to the input field directly bypasses the signal. Also test the failure path - the empty and error states are where component bugs hide.",
       "examples": [
@@ -1069,8 +1134,9 @@
     {
       "id": "angular-25",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": true,
+      "isRead": false,
       "question": "Forms must be generated at runtime from a JSON schema sent by the backend. How do you build them?",
       "answer": "Build the FormGroup imperatively from the schema and drive the template from the same schema, so adding a field needs no component change. Walk the schema, addControl per field, attach validators from declarative hints (required, minLength, email), and use nonNullable controls for inputs so you get strings and numbers instead of null unions. For nested objects recurse into child FormGroups; for anything with conditional visibility or cross-field rules, hand off to a library such as Formly or Angular's signal forms instead of reinventing the DSL. Always cache the generated group when the schema is static, otherwise you recreate controls on every detection cycle.",
       "examples": [
@@ -1089,8 +1155,9 @@
     {
       "id": "angular-26",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": true,
+      "isRead": false,
       "question": "How would you structure a multi-role enterprise Angular app so it stays maintainable as features keep being added?",
       "answer": "Use three layers with a strict dependency direction: core holds singletons and app-wide wiring (interceptors, guards, app config, root services), shared holds reusable presentation (UI components, pipes, directives) that depend only on core, and features holds the domain code - one folder per role or bounded context, each with its own components, routes and models. Lazy-load each feature and gate it with a role guard. The rule that keeps it from rotting is that features must not import from other features; when two features need the same thing it moves to shared or into a small publishable library. Prefer explicit imports over barrel files, because barrels pull unrelated code into every chunk and blur the dependency graph.",
       "examples": [
@@ -1109,8 +1176,9 @@
     {
       "id": "angular-27",
       "category": "angular",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": true,
+      "isRead": false,
       "question": "A third-party chat widget needs its <script> injected and global config loaded. How do you integrate it without breaking SSR or encapsulation?",
       "answer": "Wrap it in a service plus a thin component or directive rather than scattering script tags. Create the service with Renderer2 so the script node is added and later removed through Angular, and only in the browser - guard with isPlatformBrowser or run the work in afterNextRender, which never executes on the server. Load the configuration with provideAppInitializer so the app blocks until the config exists, instead of racing it during bootstrap. If the vendor injects its own styles into document.head, isolate it in a wrapper component with ViewEncapsulation.None; if it needs a framework, add it as an external script in angular.json rather than injecting at runtime. Always keep the cleanup handle - chat widgets keep global listeners.",
       "examples": [
@@ -1129,8 +1197,9 @@
     {
       "id": "angular-29",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": true,
+      "isRead": false,
       "question": "You need to move an application from an older Angular major to a current one. How do you plan the upgrade?",
       "answer": "Upgrade one major at a time with ng update, and never jump two majors in one branch - the migrations assume the previous layout. Before running anything, read the update guide for that version: it lists breaking changes, the required Node and TypeScript and RxJS versions, and flags removed APIs. Then move in this order: Angular packages, then third-party libraries whose majors are coupled to it (Angular Material must match), then tooling and CI images. Let ng update rewrite angular.json, tsconfig and the entry files for you instead of editing them by hand. Afterwards check the bundle budgets, remove obsolete polyfills, rebuild, and fix whatever the compiler flags - deprecations usually surface as compile errors once the old name is removed. Verify on a branch with tests and manual smoke checks before merging.",
       "examples": [
@@ -1149,8 +1218,9 @@
     {
       "id": "angular-30",
       "category": "angular",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": true,
+      "isRead": false,
       "question": "Two separately deployed Angular apps must share one login. How do you implement shared authentication?",
       "answer": "Give ownership of the session to one place and treat the other app as a client of it. Preferred design: a shell or BFF owns an HttpOnly, Secure, SameSite cookie, and each app verifies the session with a cheap GET /me during provideAppInitializer before it bootstraps - so a user with an expired session lands on login instead of rendering a broken shell. Put that logic in a shared library so both apps run identical code. Never store access tokens in localStorage if you can avoid it: anything in localStorage is readable by injected script, so use the cookie plus CSRF protection, and keep any token in memory only. To keep the two apps in sync, broadcast login and logout over BroadcastChannel when they share an origin (cookies ignore the port, so :4300 sees the cookie set by :4200); across origins you need a real shared backend session or an iframe/postMessage broker.",
       "examples": [
@@ -1174,8 +1244,9 @@
     {
       "id": "angular-31",
       "category": "angular",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": true,
+      "isRead": false,
       "question": "Production errors are vague and hard to trace. What do you set up for monitoring?",
       "answer": "Put three layers in place. First, an error tracker (Sentry or similar) with its official Angular integration, which reports uncaught errors and rejections, attaches release and environment tags, and - critically - uploads source maps so the production stack traces are readable. Second, a global ErrorHandler that forwards anything Angular catches to the tracker with user context and scrubs tokens and PII before sending. Third, an HTTP interceptor that normalises every failure into one shape, attaches a correlation id that also goes into your backend logs, and rethrows so callers still handle their own errors. Add breadcrumbs for the user actions leading up to the failure, then alert on thresholds rather than on every error, or the channel gets ignored.",
       "examples": [
@@ -1201,8 +1272,9 @@
     {
       "id": "performance-1",
       "category": "performance",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What happens when a user types a URL into the browser and presses enter?",
       "answer": "The first question of this category, and the one that reveals whether you actually\nunderstand the network or just the framework. Walk it in order without\nskipping: URL parsing, DNS resolution to an IP, TCP connection, TLS handshake,\nthe HTTP request, the response, and then what the browser does with the bytes. Two\ndetails that separate a strong answer from a recited one: DNS and TLS both happen\nbefore any application code runs, and for a single-page app the server usually\nreturns the same index.html for every route - so the router, not the server,\ndecides what the user sees. Mention HTTP/2 or HTTP/3 multiplexing, and be honest\nabout what you have measured versus what you know generally.",
       "examples": [
@@ -1216,8 +1288,9 @@
     {
       "id": "performance-2",
       "category": "performance",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Walk me through how an Angular app boots, step by step. Does it go to app.ts first?",
       "answer": "No - and correcting that misconception inside the answer is valuable, because it\ntests whether you know the order rather than the file names. The order is: the\nbrowser receives index.html, discovers the module script, downloads and executes\nmain.ts, main.ts calls bootstrapApplication with a root component, Angular creates\nthat component, its template renders, and only then does anything user-visible\nappear. The root component class is inert until bootstrapApplication instantiates\nit. Within that you should be able to name where the router fits: the root template\ncontains router-outlet, the router reads the current URL, matches it against the\nroute config, and for a lazy route triggers a dynamic import before the routed\ncomponent is created. Mention that in Angular 21+ this app is zoneless by default,\nso change detection is scheduled by notification rather than by zone.js.",
       "examples": [
@@ -1231,8 +1304,9 @@
     {
       "id": "performance-3",
       "category": "performance",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "How does the browser decide what to fetch from your index.html, and in what order?",
       "answer": "Tests whether you know there is a real parser and a separate preload scanner. The\nbrowser parses HTML incrementally, and the preload scanner runs ahead of the DOM\nparser looking for things it can fetch early - stylesheets, scripts, images, fonts.\nThat is why a script far down the body can already be downloading. Then the priority\nrules kick in: CSS in head is render-blocking, module scripts are deferred so they do\nnot block parsing but do gate DOMContentLoaded, and async scripts have no ordering\nguarantee. Fonts are lazy by default, so they only start once something needs them.\nPractical consequences: preloading a file the preload scanner would have found anyway\nwastes bandwidth, and script tags placed in body get discovered later unless they are\nmodule or defer.",
       "examples": [
@@ -1246,8 +1320,9 @@
     {
       "id": "performance-4",
       "category": "performance",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is code splitting in an Angular app, and how does a lazy route actually load?",
       "answer": "The mechanism to be precise about: the build tool reads the dynamic import in the\nroute configuration, puts that component and its unique dependencies in a separate\nchunk, and leaves it out of the initial bundle. At runtime the router triggers the\nimport, which is just a promise-returning network fetch, and only after it\nresolves is the component created. The important performance consequence is that\nlazy loading moves bytes off the critical path rather than making them smaller,\nand it costs you a round trip on first navigation - so prefetching is the usual\nfollow-up. Be able to explain why a barrel file can defeat splitting, because\nimporting one symbol from a barrel can drag the whole barrel into the chunk\ngraph.",
       "examples": [
@@ -1261,8 +1336,9 @@
     {
       "id": "performance-5",
       "category": "performance",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What are render-blocking resources, how do you find them, and how do you fix them?",
       "answer": "Render-blocking means the browser cannot paint until the resource is parsed, so it\ndirectly caps First Contentful Paint. In Angular you should know that the CLI already\ndoes the main optimisation for you: the application builder inlines critical CSS by\ndefault, so the classic manual critical-CSS dance is usually not something you write\nyourself. What is left for you is knowing what it cannot do - it cannot help with\nthird-party tags, it does not apply to inline styles in templates, and you may need\nto disable or tune it. Also know the trade-off: inlining removes a round trip but\ngrows the HTML and cannot be cached across pages, and a single render-blocking\nstylesheet blocks everything no matter how small it is.",
       "examples": [
@@ -1276,8 +1352,9 @@
     {
       "id": "performance-6",
       "category": "performance",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What are Core Web Vitals, and how do you measure and diagnose each one?",
       "answer": "Three metrics that approximate real user experience, which means the field data\nmatters as much as the lab data. Know what each measures and, more importantly,\nwhat each diagnosis is: LCP is about whether the main content arrives fast, so\nlook at server response, render-blocking resources and image priority; INP is\nabout whether the main thread is free when the user acts, so look at long tasks\nand expensive handlers; CLS is about whether things move after they appear, so\nlook at images without dimensions, web fonts swapping in, and content injected\nabove existing content. The graded detail is being able to distinguish a lab score\nfrom field data and to say which one you would optimise against.",
       "examples": [
@@ -1291,8 +1368,9 @@
     {
       "id": "performance-7",
       "category": "performance",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is a long task, and how does blocking the main thread show up to a user?",
       "answer": "A long task is any script execution over roughly 50ms, and the number is not\narbitrary - it is the point at which the browser cannot reliably keep up with input\nhandling and rendering. The user-visible symptoms are input lag, animations that\nstutter, and INP going up, all of which are the same root cause. The important\ndistinction for an Angular developer is between work that is long but interruptible\nand work that is long and blocking: chunking work with the scheduler or yielding\nbetween frames can make an acceptable task into a fine one, whereas anything inside\na synchronous loop that touches DOM layout will block no matter how you slice it.",
       "examples": [
@@ -1306,8 +1384,9 @@
     {
       "id": "performance-8",
       "category": "performance",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "How do you profile an Angular app and find out what is actually slow?",
       "answer": "Method, not tool names, is the grade. The sequence that works: reproduce\nconsistently, measure before changing anything, find the longest task or the\nlargest cost, and only then optimise - then re-measure to confirm. On top of\nthat, know the Angular-specific tools: the DevTools Performance panel for the\nmain thread, the Angular profiler (or the newer DevTools performance extension\nfeatures) for change detection, and heap snapshots for retained memory. A strong\nanswer includes a case where a profiler contradicted the team belief - that is\nwhat proves you measured rather than assumed.",
       "examples": [
@@ -1321,8 +1400,9 @@
     {
       "id": "performance-9",
       "category": "performance",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "How does change detection affect Angular performance, and what are the ways to reduce its cost?",
       "answer": "Be precise about the mechanism, because this is where vague answers fall apart.\nChange detection walks a tree of components and evaluates bindings. In a zoneless\napp it does not run on a timer or on every event; it is scheduled when Angular\nnotices something that needs rendering - a signal written that a template reads, an\ninput set, a host or template listener firing, markForCheck, or a view being\nattached. That is notification-based, so the wins come from not doing unnecessary\nwork rather than from the scheduler being faster. Know that this is the default in\nAngular 21+, and that zone.js apps still exist and still tick on async events, which\nis why the two behave differently. The levers are OnPush, pure pipes, stable keys,\nand running genuinely framework-free code outside Angular when it does not need to\ntouch the DOM.",
       "examples": [
@@ -1336,8 +1416,9 @@
     {
       "id": "performance-10",
       "category": "performance",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is tree shaking, and how do you verify that it is actually working rather than assuming it?",
       "answer": "This is the verify-it follow-up to the basic definition. Tree shaking removes\nexports nothing imports, and it is easy to claim and hard to confirm. The\nmechanisms are sideEffects metadata so the bundler knows a file has no\nimport-time side effects, static versus dynamic imports, and module format -\nCommonJS modules cannot be statically analysed, so one require-style dependency can\ndefeat the whole thing. Verification is the graded part: look at the actual chunk\ncontents in the build output or the DevTools network panel rather than trusting the\nbuild summary, and know that barrel files, CommonJS interop and accidental\nside-effect imports are the usual leaks.",
       "examples": [
@@ -1351,8 +1432,9 @@
     {
       "id": "performance-11",
       "category": "performance",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What are the usual causes of a slow Angular app, and how do you prioritise which one to fix?",
       "answer": "Good answers are a prioritisation framework rather than a list, because the list is\neasy to recite. The useful ordering is by cost of fix against cost of delay: fix\nnetwork-bound work first, because it is usually both the biggest and the easiest -\na 900ms API call dwarfs any template optimisation. Then main-thread blocking,\nbecause it affects every interaction. Then rendering volume, because it is\nproportional and grows with the product. Then bundle size, which matters most on\nfirst load on bad networks and barely at all once cached. The thing that\ndistinguishes a senior answer is naming what you deliberately did not fix and\nwhy, and saying how you decided where to stop.",
       "examples": [
@@ -1366,8 +1448,9 @@
     {
       "id": "performance-12",
       "category": "performance",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": true,
+      "isRead": false,
       "question": "An Angular app's memory grows steadily in production as users navigate between routes. How do you track down what is retaining the memory?",
       "answer": "This is the diagnostic question, as opposed to the leak question - the graded part\nis distinguishing a real leak from a cache that is behaving correctly, which is\nwhere most investigations go wrong. The method that works is comparison rather\nthan inspection: take a heap snapshot, repeat the suspect interaction several\ntimes, force GC, take another, and diff. A real leak grows monotonically with each\nrepetition, whereas lazy route chunks and caches plateau. Learn to read the\ndominators tree, because the retaining object is usually held by a closure you\ncannot see at the call site. In Angular the causes are almost always one of three:\nan unsubscribed subscription, a listener or timer registered outside Angular, or a\nreference to a detached DOM node.",
       "examples": [
@@ -1381,8 +1464,9 @@
     {
       "id": "performance-13",
       "category": "performance",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the difference between initial load, a reload, and a route transition? How should each be measured?",
       "answer": "They have completely different bottlenecks, and optimising the wrong one is a\nclassic mistake. The initial load has nothing cached, so it is dominated by network\nround trips and parse cost - this is where bundle size, render-blocking resources\nand the number of requests matter. A reload has the browser HTTP cache partly\nwarm but not necessarily the runtime state, so it is dominated by parse and\nexecute time - code cache and bundle size matter more than request count. A route\ntransition happens inside a running app with the framework already loaded, so it\nis dominated by data fetching and rendering work, and bundle size is almost\nirrelevant. Being able to separate them is the whole point of the question.",
       "examples": [
@@ -1396,8 +1480,9 @@
     {
       "id": "performance-14",
       "category": "performance",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "How do prefetching and preloading differ, and when is either worth it?",
       "answer": "Prefetch is for resources you expect to need soon but which must not block anything\nnow; preload is for resources you know you need immediately, fetched at high\npriority and consumed straight away. The distinction matters because a preload on\nsomething the preload scanner would have found anyway is pure loss - it competes\nfor bandwidth and the browser warns you about it. In Angular, route prefetching is\nthe standard win because the routes are known ahead of time, so the trade is\nbandwidth against first-navigation latency. Know that RouterLink has no prefetch\ninput and that preloading is configured at the router provider level, not on a link.",
       "examples": [
@@ -1411,8 +1496,9 @@
     {
       "id": "performance-15",
       "category": "performance",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "How does a service worker change loading performance, and what are the risks?",
       "answer": "The service worker sits between the network and the app and can serve from a\ncache, which turns a network-bound first load into a cache-bound one for repeat\nvisits. That is a large win for returning users on bad networks and it is also\nthe source of the classic failure: a stale app shell served to a user whose\nJavaScript chunks have been evicted, producing a version mismatch errors. Any\nanswer should mention versioned caches and cleanup on activate. Be honest that it\nadds a layer of complexity and a failure mode that does not exist without one,\nand that for a frequently updated internal app it may not be worth it.",
       "examples": [
@@ -1426,8 +1512,9 @@
     {
       "id": "performance-16",
       "category": "performance",
-      "importance": "low",
-      "forLater": false,
+      "difficulty": "basic",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "How do fonts and images affect performance, and how do you load them well?",
       "answer": "Both affect Core Web Vitals in specific ways, which is what makes this a\nperformance question rather than a styling one. Fonts: a late-arriving web font\ncauses a flash of invisible text and then a layout shift as the real font replaces\nthe fallback, so the fix is a size-matched fallback face with metric overrides on\nthe fallback, not on the web font itself. Images: an image without intrinsic\ndimensions causes layout shift when it loads, and a lazy-loaded LCP element is a\ndirect LCP regression. The practical skills are sizing attributes, responsive\nsources, fetchpriority on the LCP image, and preloading exactly one LCP image rather\nthan several candidates.",
       "examples": [
@@ -1441,8 +1528,9 @@
     {
       "id": "performance-17",
       "category": "performance",
-      "importance": "low",
-      "forLater": false,
+      "difficulty": "basic",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the difference between a dev build and a production build in Angular, and why does only one of them tell you about performance?",
       "answer": "Several switches are on in production, and being able to name what each changes is\nthe grade. Correct one common misconception first: AOT has been the default since\nAngular 9, so both ng serve and ng build compile ahead of time, and JIT is\neffectively only something you encounter in TestBed. What production actually\nchanges is minification and mangling, tree shaking, budget enforcement, font and\ncritical-CSS inlining, and output hashing. The practical point that matters: dev\nbuilds enable extra runtime error checking that production strips, so a dev build is\nboth slower and a different program - which is why performance measured on ng serve\nis meaningless.",
       "examples": [
@@ -1456,8 +1544,9 @@
     {
       "id": "performance-18",
       "category": "performance",
-      "importance": "low",
-      "forLater": false,
+      "difficulty": "basic",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "How would you set up bundle budgets, and what happens when one is exceeded?",
       "answer": "The mechanics are easy; the judgement is what is graded. Budgets are declared in\nangular.json and enforced at build time - maximumWarning is advisory,\nmaximumError fails the build. The judgement is picking a number: it should come from\nyour actual current size plus a small allowance, not from a round number, and you\nshould cover both the initial bundle and individual lazy chunks, because a 400kb\nroute chunk fails on first navigation exactly as badly as a large initial bundle\ndoes. The consequence to talk through is what happens when a PR exceeds it: whether\nit blocks before merge, whether there is a waiver process, and who approves. A\nbudget that everyone routinely overrides is worse than no budget, because it is a\nsignal you have chosen to ignore.",
       "examples": [
@@ -1471,8 +1560,9 @@
     {
       "id": "performance-19",
       "category": "performance",
-      "importance": "low",
-      "forLater": false,
+      "difficulty": "basic",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is SSR and hydration, and what does each cost?",
       "answer": "Two separate features that are usually discussed as one, and separating them is the\npoint. SSR renders the component tree to HTML on the server so the user sees content\nbefore JavaScript runs, which fixes LCP on slow networks and makes the page\nindexable. Hydration is then the browser booting Angular over that existing HTML so\nthe app becomes interactive, which requires Angular to find and attach to the\nserver-rendered nodes. The costs: SSR needs a Node runtime in production, a platform\ncheck on every third-party dependency, and a risk of hydration-mismatch errors when\nserver and client disagree. The maturity answer is to be clear about whether you need\nSSR at all, since a CSR app with good caching may not.",
       "examples": [
@@ -1486,8 +1576,9 @@
     {
       "id": "performance-20",
       "category": "performance",
-      "importance": "low",
-      "forLater": false,
+      "difficulty": "basic",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What does a Performance API measurement look like in practice, and how would you trust it?",
       "answer": "Trust is the graded word. In-app marks are useful for route transitions and slow\ninteractions, but they only measure your application - not the network, not the\nbrowser parse, and nothing that happens before your code runs, which is where\nfirst-load problems live. So pair them: browser-native measurement for what the user\nexperiences, application marks for attribution within it. Use performance.mark and\nperformance.measure from the browser Performance API, not perf_hooks, which is a Node\nmodule and will not resolve in a browser bundle. Also be honest about measurement\noverhead and about the difference between a synthetic run and a real user.",
       "examples": [
@@ -1501,8 +1592,9 @@
     {
       "id": "performance-21",
       "category": "performance",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": true,
+      "isRead": false,
       "question": "Customers complain the app takes around 8 seconds to load. Walk me through your diagnosis and fix.",
       "answer": "Measure the phases with Lighthouse/WebPageTest: is it bundle size, blocking JS, API latency or render? Shrink the bundle with lazy loading of routes and @defer blocks for non-critical widgets, enable build-time optimizations, compress images (NgOptimizedImage), and consider SSR with hydration or prerendering for the first paint. Verify each change against Core Web Vitals instead of guessing.",
       "examples": [
@@ -1521,8 +1613,9 @@
     {
       "id": "performance-22",
       "category": "performance",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": true,
+      "isRead": false,
       "question": "A page with very large forms and dropdown lists feels sluggish. What do you optimise, and in what order?",
       "answer": "Work top-down on cost per change-detection cycle, because that is what sluggishness usually means. First, make sure components are OnPush - with default change detection every keypress re-evaluates every template on the page. Second, kill hidden costs inside those templates: getters, function calls and pipes re-run on every check, so precompute into fields or signals (or make a pipe pure). Third, do not ship data you do not need: a 10k-row dropdown should be a remote search-ahead or virtualized list, not 10k options in the initial payload. Fourth, images go through NgOptimizedImage. Finally, if the remaining work is genuinely CPU-bound (sorting/filtering 100k rows), move it off the main thread instead of micro-optimising templates.",
       "examples": [
@@ -1546,8 +1639,9 @@
     {
       "id": "performance-23",
       "category": "performance",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": true,
+      "isRead": false,
       "question": "A Material table with 500+ rows plus filtering and sorting is slow. How do you diagnose and fix it?",
       "answer": "Measure first: open DevTools Performance while interacting, and look at how much time is script versus rendering, and how many DOM nodes exist. The usual causes are too many rows in the DOM, a filter or sort running on every change-detection cycle, and identity churn destroying and rebuilding rows. The fixes map one to one: render only visible rows with CdkVirtualScrollViewport and cdkVirtualFor, keep components OnPush, treat filter and sort as a debounced stream with switchMap so rapid typing collapses into one operation, give rows a stable trackBy so unchanged nodes are reused, and cache the comparator instead of allocating one per cycle. Past roughly 10k rows, filter and sort on the server and virtualize the results.",
       "examples": [
@@ -1568,8 +1662,9 @@
     {
       "id": "rxjs-1",
       "category": "rxjs",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is an Observable in RxJS and how is it different from a Promise?",
       "answer": "An Observable is lazy, cold by default, and can emit multiple values over time; it supports cancellation via unsubscribe() and is composable with operators. A Promise is eager, emits at most one value, is not cancellable, and is not pipeable. For example: new Observable(sub => { interval(1000).subscribe(n => sub.next(n)); return () => clear(); }) emits many values and can be torn down, while fetch() returns a single-value Promise.",
       "examples": [
@@ -1583,8 +1678,9 @@
     {
       "id": "rxjs-2",
       "category": "rxjs",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the difference between cold and hot Observables?",
       "answer": "A cold Observable produces its values inside the subscription (each subscriber gets its own producer/sequence) — e.g., HTTP calls via HttpClient are cold. A hot Observable shares a single producer among subscribers (late subscribers may miss values) — e.g., a DOM event or a Subject/ConnectableObservable. You can convert cold to hot using share(), shareReplay(), publish()/connect(), or multicast().",
       "examples": [
@@ -1598,8 +1694,9 @@
     {
       "id": "rxjs-3",
       "category": "rxjs",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Explain Subjects, BehaviorSubject, ReplaySubject, and AsyncSubject with a common use case.",
       "answer": "Subject: multicast, no initial value, subscribers only get values emitted after subscribing (useful for event buses). BehaviorSubject: requires an initial value, emits the current value to new subscribers (useful for shared auth/user state). ReplaySubject(bufferSize): replays a fixed number of past values to new subscribers (useful for caching chat history). AsyncSubject: emits only the last value and only on completion (useful for one-shot async results).",
       "examples": [
@@ -1613,8 +1710,9 @@
     {
       "id": "rxjs-4",
       "category": "rxjs",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "When should you use combineLatest, forkJoin, withLatestFrom, and merge?",
       "answer": "combineLatest: emits when any source emits, after all have emitted at least once — combine related live values (filters + list). forkJoin: emits once, only after all complete with their last value — parallel one-shot requests that all must finish. withLatestFrom: emits only when the source emits, combining the latest values from others (primary stream drives). merge: concurrently emits values from multiple observables as they arrive (union of event streams).",
       "examples": [
@@ -1628,8 +1726,9 @@
     {
       "id": "rxjs-5",
       "category": "rxjs",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is switchMap, mergeMap, concatMap, and exhaustMap? Give an example for each.",
       "answer": "switchMap: cancels the previous inner observable on a new outer emission — typeahead/search (cancel stale requests). mergeMap (flatMap): subscribes to all inner observables in parallel, emits results as they come — independent parallel calls. concatMap: subscribes sequentially, waits for current inner to complete before next — queued operations (saving drafts in order). exhaustMap: ignores new outer emissions while the current inner is active — login/save button mash prevention.",
       "examples": [
@@ -1643,8 +1742,9 @@
     {
       "id": "rxjs-6",
       "category": "rxjs",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the purpose of share(), shareReplay(), and refCount()?",
       "answer": "share() turns a cold observable hot and replays the source among subscribers; refCount() keeps it alive only while there is >=1 subscriber (unsubscribes upstream when zero). shareReplay({ bufferSize: 1, refCount: true/false }) caches recent values for late subscribers and controls whether it stays alive when no subscribers exist — often used to cache HTTP responses. Use refCount carefully to avoid re-triggering a cold source unexpectedly.",
       "examples": [
@@ -1658,8 +1758,9 @@
     {
       "id": "rxjs-7",
       "category": "rxjs",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "How do you prevent memory leaks when subscribing to Observables?",
       "answer": "Prefer the async pipe in templates (auto-unsubscribes on destroy). For imperative code, unsubscribe() in ngOnDestroy, or use takeUntil() with a destroy Subject, takeUntilDestroyed() (Angular 16+), first(), take(1), or finalize(). Also avoid long-lived global subscriptions without cleanup. For toSignal(), subscriptions are tied to the injection context (DestroyRef) automatically.",
       "examples": [
@@ -1673,8 +1774,9 @@
     {
       "id": "rxjs-8",
       "category": "rxjs",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the difference between map, tap, switchMap and exhaustMap in terms of what they return?",
       "answer": "map: transforms values, returns the same stream type (value -> value). tap (do): side effect only, returns the same observable unchanged (use for logging). switchMap: maps outer value to an inner observable and flattens it, emitting values from the latest inner (projects to Observable). exhaustMap: maps to an inner observable but ignores outer emissions while inner is active (projects to Observable).",
       "examples": [
@@ -1688,8 +1790,9 @@
     {
       "id": "rxjs-9",
       "category": "rxjs",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Give a small example of debouncing a search input with RxJS.",
       "answer": "In a component: fromEvent(this.input.nativeElement, 'input').pipe(debounceTime(300), distinctUntilChanged(), switchMap(q => this.service.search(q)), takeUntilDestroyed()).subscribe(results => this.results.set(results)). This waits 300ms after typing stops, skips duplicates, cancels stale requests on new input, and cleans up on destroy.",
       "examples": [
@@ -1703,8 +1806,9 @@
     {
       "id": "rxjs-10",
       "category": "rxjs",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is error handling in RxJS and when would you use catchError, retry, and retry with a delay?",
       "answer": "catchError: catches an error in the stream and returns a replacement Observable (a fallback value, EMPTY, or a retry attempt) so the stream can carry on. retry(n): re-subscribes immediately up to n times - fine for a single transient blip. retry({ delay }): the modern form, where delay can be a number, a function of the error and retry index (that is how you do exponential backoff), or an observable such as timer(1000). Note that retryWhen() is deprecated in RxJS 7 - reach for retry({ delay }) instead. Handle errors close to where they can be meaningfully recovered, and remember that catchError replaces the stream, so anything downstream of it will not see the failure unless you re-throw.",
       "examples": [
@@ -1720,8 +1824,9 @@
     {
       "id": "signals-1",
       "category": "signals",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is a Signal and how is it different from an RxJS Observable?",
       "answer": "A Signal is a synchronous, granular reactive primitive: a value you read by calling it (count()) and update with set/update, that automatically notifies consumers that depend on it. An Observable is an asynchronous, lazy stream you must subscribe to, with operators for retry, debounce and merging. Signals are ideal for component-local and synchronous UI state; Observables stay the tool for async event streams, HTTP and WebSockets. You bridge the two with toObservable() and toSignal().",
       "examples": [
@@ -1735,8 +1840,9 @@
     {
       "id": "signals-2",
       "category": "signals",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "When would you use signals instead of observables, and can signals replace RxJS completely?",
       "answer": "Use signals when the state is synchronous UI state - selection, toggles, count, a view model - where you want direct value access without the async pipe or subscriptions. Do not try to replace RxJS for genuinely async work like HTTP retries, websockets, or streams that need cancellation and composition. In an interview, the framing is: streams feed signals, signals feed the template - the correct architecture composes both rather than picking one.",
       "examples": [
@@ -1750,8 +1856,9 @@
     {
       "id": "signals-3",
       "category": "signals",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What are computed signals and effects, and when do you use each?",
       "answer": "computed() creates a read-only derived signal that lazily recalculates only when its dependencies change - use it for anything you can derive (total = price() * qty()). effect() runs a side effect whenever the signals it reads change - use it only when you have no reactive alternative: syncing with a non-reactive library, analytics, DOM APIs. It should never be your first choice because it runs as a scheduled pass after change detection rather than at the point of the write, it runs at least once on creation, and it re-runs on every change.",
       "examples": [
@@ -1765,8 +1872,9 @@
     {
       "id": "signals-4",
       "category": "signals",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is the diamond problem in Observables, and why doesn't it occur with signals?",
       "answer": "When two or more derived streams share a common source and are combined, RxJS can glitch - combineLatest emitting multiple times for what is logically one update. Signals are synchronous and batched: if you update two source signals, a computed or effect depending on both recalculates once per batch, not per dependency. That single recalc per write cycle is why signal graphs avoid the duplicate-emission problem.",
       "examples": [
@@ -1780,8 +1888,9 @@
     {
       "id": "signals-5",
       "category": "signals",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "When do you need untracked() inside an effect?",
       "answer": "untracked() removes dependency tracking inside an effect. You need it when an effect reads signals it should not subscribe to - for example reading a value to send to a server or to focus an element, where you do not want the effect to re-run when that value changes. A common failure is an effect that reads several signals and also writes to one, so writes would retrigger it forever; wrapping the write in untracked() breaks the loop.",
       "examples": [
@@ -1795,8 +1904,9 @@
     {
       "id": "signals-6",
       "category": "signals",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": true,
+      "isRead": false,
       "question": "How would you plan a migration from an Angular 12 app that uses RxJS to Signals?",
       "answer": "Plan incrementally instead of a big-bang rewrite. Start with component-local UI state and convert @Input/@Output to signal inputs (input()) so computed() can replace ngOnChanges. Then convert simple BehaviorSubject state in services to signal()/state, leaving HTTP and async pipelines on RxJS. Use the dev tools, keep the graph acyclic (never effect + set()), and rely on the signal-input-migration schematic for automation before touching complex features.",
       "examples": [
@@ -1820,8 +1930,9 @@
     {
       "id": "signals-7",
       "category": "signals",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Are NgOnInit and ngOnChanges still needed in a fully signal-based application?",
       "answer": "Largely no. ngOnChanges is replaced by signal inputs (input()) combined with computed() - derived values recalculate reactively instead of in a hook. NgOnInit mostly becomes unnecessary since you can read signals and start effects inline; data fetching moves into resource()/rxResource(). The lifecycle hooks still exist and remain useful for view concerns like afterNextRender, but the signal-based APIs remove most of the boilerplate they forced.",
       "examples": [
@@ -1835,8 +1946,9 @@
     {
       "id": "signals-8",
       "category": "signals",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is linkedSignal, and why is calling set() inside an effect() considered an anti-pattern?",
       "answer": "linkedSignal creates a writable signal that is linked to a source signal and resets to the source value when the source changes - ideal for a filter dropdown whose selection must reset when the underlying list changes. Writing signal.set() inside an effect() to do the same thing is an anti-pattern because it writes a signal being read by the effect, creating a feedback loop; Angular warns about it in dev mode. Use linkedSignal when the derived value must be writable, and computed() when it must not.",
       "examples": [
@@ -1862,8 +1974,9 @@
     {
       "id": "misc-2",
       "category": "misc",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is AOT vs JIT compilation?",
       "answer": "JIT compiles Angular templates and decorators at runtime in the browser, while AOT compiles them ahead-of-time during the build. AOT is the default today: it catches template errors at build time, runs faster in the browser, and ships less runtime compiler code.",
       "examples": [
@@ -1877,8 +1990,9 @@
     {
       "id": "misc-6",
       "category": "misc",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is a standalone component?",
       "answer": "A standalone component is one that does not belong to an NgModule: it declares its own imports, services, pipes and directives directly in its imports array. Since Angular 19 standalone is the default for new apps and makes lazy-loading routes with loadComponent straightforward.",
       "examples": [
@@ -1894,8 +2008,9 @@
     {
       "id": "behavioural-1",
       "category": "behavioural",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Which behavioural question framework will you use to answer these questions?",
       "answer": "This is often the first question of the loop, and it is a free opportunity either\nway. Weak answers name STAR and stop, or worse, explain that they do not use a\nframework because they answer honestly. Good answers name a small toolkit and match\nthe tool to the shape of the question, because the frameworks differ in which\nspecific weakness they defend against. Say which one you would choose for a given\nquestion, and why, and it sounds deliberate rather than recited.",
       "examples": [
@@ -1909,8 +2024,9 @@
     {
       "id": "behavioural-2",
       "category": "behavioural",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about yourself.",
       "answer": "The most under-prepared question in the loop, and the one where most people\neither recite a resume chronologically or start with their university. It is\nnot a life story - it is a 60 to 90 second argument for why this conversation is\nworth having, ending where this role begins. The structure that works: present\ntense and current role, the two or three things you are actually good at\nbacked by a concrete outcome each, then the bridge into why this role. A good\ntell is naming what you want next, because that frames the rest of the loop.\nKeep it under 90 seconds so there is time for them to ask.",
       "examples": [
@@ -1924,8 +2040,9 @@
     {
       "id": "behavioural-3",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Walk me through your resume.",
       "answer": "Expectation-setting is the graded part: they want to know how you think and\nwhere your story has gaps, not the contents. Narrate around two or three\nthreads rather than going chronologically, and be the one who names the gaps\nfirst - a reorg, a short tenure, a gap, a pivot - because that reads as\nself-awareness rather than being caught on it. For each thread say the problem,\nyour role, and the outcome. Do not narrate every job; if you have five, explain\nwhat changed between them.",
       "examples": [
@@ -1939,8 +2056,9 @@
     {
       "id": "behavioural-4",
       "category": "behavioural",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "What is one weakness of yours?",
       "answer": "The scoring is entirely in which weakness you choose and whether the evidence\nshows you worked on it. The three failing categories: a humblebrag disguised as\na strength, a weakness that is actually someone else's problem (my manager is\nmicromanaging), and a real weakness with no evidence of any attempt to fix it.\nWhat works is a genuine, job-relevant weakness with a specific mitigation you\nput in place, and ideally a story of it failing before the mitigation existed.\nPick something that is real and small enough that the fix is believable - you\ncannot claim to have fixed chronic disorganisation, but you can describe a\nsystem you built to stop losing context.",
       "examples": [
@@ -1954,8 +2072,9 @@
     {
       "id": "behavioural-5",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Where do you see yourself in five years?",
       "answer": "Graded on whether it is compatible with the role rather than on the ambition. A\ncommon failure is an answer that quietly exits - I want to run a team, or move\ninto product - which tells them you will leave. A technically strong answer\nstays on the work, names a direction rather than a job title, and ties it to\nsomething you have already shown you can do. Being vague is safer than being\nwrong, but pure vagueness reads as no ambition. Aim for a direction, a reason it\nsuits you, and one honest uncertainty.",
       "examples": [
@@ -1969,8 +2088,9 @@
     {
       "id": "behavioural-6",
       "category": "behavioural",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a project you are proud of.",
       "answer": "This is the most over-claimed question in the set, and the tell is a project\ndescribed in the plural - we, I - with no account of what you personally decided.\nThe strongest shape: pick a project where the interesting part was your\njudgement, not the volume of work. Say what was hard about the decision, what you\nchose, what you rejected, and what happened. Include a thing that went wrong or\nsomething you would do differently, because an entirely flawless project reads as\neither easy or rehearsed. Scale is not impressive; the decision is.",
       "examples": [
@@ -1984,8 +2104,9 @@
     {
       "id": "behavioural-7",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you had to work in an area you knew nothing about.",
       "answer": "Graded on the method of getting competent, not on the subject matter - nobody\ncares whether it was Kubernetes, a payments integration, or a regex. What they\nare listening for is whether you found the people who knew, whether you made\nyour understanding explicit early enough to be corrected, and how you knew when\nyou were done. The move that raises the level is building a small thing early\nand being visibly wrong in a low-risk place, because that is what actually\nproduces learning faster than reading.",
       "examples": [
@@ -1999,8 +2120,9 @@
     {
       "id": "behavioural-8",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you simplified something complicated.",
       "answer": "Simplification is one of the highest-signal behaviours to demonstrate, and the\nmistake is describing a cleanup as a simplification. A cleanup leaves the same\ncomplexity with fewer lines. A simplification removes the complexity by changing\nthe model: you found that the requirement did not actually need generalising, or\nyou replaced a mechanism that had one use with direct code. Say what was\nsimplified, why the complicated version existed in the first place, and what\ngave you the evidence to safely remove it.",
       "examples": [
@@ -2014,8 +2136,9 @@
     {
       "id": "behavioural-9",
       "category": "behavioural",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you made an unpopular technical decision.",
       "answer": "Not a training story and not a workshop. This is about noticing the current\nstandard was not good enough, deciding so, and changing something systemic about\nhow work got done. The distinction is between improving your own output and\nchanging the default for everyone. A strong answer names what the new standard\nwas, how you made it easy to meet, and what happened to people who did not -\nincluding whether anyone pushed back and what you changed as a result.",
       "examples": [
@@ -2029,8 +2152,9 @@
     {
       "id": "behavioural-10",
       "category": "behavioural",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you had to make an architectural trade-off.",
       "answer": "This is the question senior candidates most often waste on a project summary. The\nstory has to be built around the trade-off itself, with a named alternative a\ncompetent peer would have chosen. For Angular-adjacent work the axes that produce\ngood material: consistency of one state paradigm versus fitting async work;\nmodular monolith versus micro-frontends; SSR and hydration versus CSR under Core\nWeb Vitals pressure; build versus buy; and build-time versus runtime\nconfiguration. Say what you rejected, what it would have cost you, and what would\nmake you reverse.",
       "examples": [
@@ -2044,8 +2168,9 @@
     {
       "id": "behavioural-11",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you worked on something at scale.",
       "answer": "Scale stories fail in two directions: they are either unquantified - we served a\nlot of users - or they are about volume rather than judgement. What is being\ngraded is how the scale changed the shape of the solution. Name a constraint\nthat only exists at scale (blast radius, cost per request, cache invalidation,\nfan-out, noisy neighbours) and the specific mechanism you built because of it.\nInclude the number that made the constraint bite, because an abstraction with no\ntriggering number reads as premature.",
       "examples": [
@@ -2059,8 +2184,9 @@
     {
       "id": "behavioural-12",
       "category": "behavioural",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you failed.",
       "answer": "Failure stories are graded almost entirely on the last third of the answer. The\nsetup can be brief; what matters is whether you own it without a justification\nclause, whether you can name your specific part in a failure that had other\ncontributors, and whether the conclusion is a change in a system or behaviour\nrather than a lesson about being careful. The two failures to avoid: failing at\nsomething with no stakes, and failing at something where you were right and\nunlucky. Also avoid the answer where the only real mistake was someone else's\ndecision you executed - that is not yours to claim.",
       "examples": [
@@ -2074,8 +2200,9 @@
     {
       "id": "behavioural-13",
       "category": "behavioural",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about the biggest mistake you have made.",
       "answer": "This is the same competency as the failure question, asked from the opposite\ndirection: the difference is that a mistake is something you did and a failure is\nsomething that did not work. Practically, expect this to be asked as a follow-up,\nso be consistent - if you tell the same story twice, say so explicitly and give\nthe part they have not heard. The grading emphasis shifts slightly toward the\nconsequence: how bad was it, who was affected, and what did you actually do about\nthe people affected rather than only the system.",
       "examples": [
@@ -2089,8 +2216,9 @@
     {
       "id": "behavioural-14",
       "category": "behavioural",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a production incident you handled.",
       "answer": "The strongest incident answers follow the response rather than the drama. What\nis graded: how quickly you established what was actually happening versus what\npeople were guessing, how you handled the pressure to act before you knew,\nwhether you communicated outward at all, and whether you found the actual cause\nrather than stopping at the proximate trigger. Include the boring operational\nparts - how you decided, who you told, what you wrote down - because that is what\nseparates someone who was there from someone who performed being calm. Ending\nwith a real systemic change, not a promise, is what closes it.",
       "examples": [
@@ -2104,8 +2232,9 @@
     {
       "id": "behavioural-15",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you had to deliver under pressure.",
       "answer": "Pressure stories usually collapse into either heroics - I worked through the night\n- or into process, which reads as defensive. The middle is the graded answer: name\nthe specific pressure (a date, a person, a risk), say what you deliberately did\nnot do, and be honest about whether the pressure changed the quality of the\noutcome. Saying the work was fine, but that you skipped something you would\nnormally do, is far better than implying you did everything at a higher standard.\nAlso worth naming what support you asked for, because asking for help is itself a\nskill being probed.",
       "examples": [
@@ -2119,8 +2248,9 @@
     {
       "id": "behavioural-16",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you had to learn something quickly.",
       "answer": "Distinct from the unfamiliar-domain question: that one is about finding your way\naround a field, this one is about speed under a hard constraint. What is graded is\nthe time-boxing - what you decided to learn, in what order, and what you explicitly\ndecided not to learn - plus whether you knew when to stop. The senior signal is\nnaming a stopping condition, because someone who researches until they are certain\nis slower, not more thorough. Also worth saying how you verified understanding\nrather than assuming it.",
       "examples": [
@@ -2134,8 +2264,9 @@
     {
       "id": "behavioural-17",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you had to say no to a request.",
       "answer": "Saying no is graded on whether it was a real refusal. Requests from the right\nperson for a reason you agreed with are the strongest material - you declined\nbecause the cost landed elsewhere, not because you were busy. What fails is\nagreeing while resenting it, which they can hear, and refusing in a way that\nprotected your pride. The good shape: understand what the request is actually\nfor, name the real constraint, offer the nearest thing you can do instead, and\nsay what you would need in order to say yes. Turning it down and offering an\nalternative is what separates this from being obstructive.",
       "examples": [
@@ -2149,8 +2280,9 @@
     {
       "id": "behavioural-18",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you took responsibility for something that went wrong on someone else's behalf.",
       "answer": "The graded skill is taking the blame in a direction that costs you, without taking\nresponsibility for the competence of someone who did not have it. The failure to\navoid is defending yourself - I was following the spec - because it reads as\nsomeone who will do that when it is inconvenient. Distinguish clearly between\nowning the system (including what you shipped) and attributing the specific\nerror (which was someone else's). Also worth noting whether you did anything\nabout the other person's ability, because a senior version of this answer\nincludes helping them get better rather than absorbing their mistake quietly.",
       "examples": [
@@ -2164,8 +2296,9 @@
     {
       "id": "behavioural-19",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you improved something nobody asked you to improve.",
       "answer": "This overlaps with the unowned-problem question, so the distinction is who owns\nit: here something already had an owner and it was still wrong, and you raised it.\nThe graded elements are the specific problem you found, why the existing owner was\nnot fixing it, and the evidence that the improvement survived after you stopped\npaying attention to it. An improvement that only held while you maintained it\npersonally is a real and common failure, and saying so is better than pretending it\nstuck.",
       "examples": [
@@ -2179,8 +2312,9 @@
     {
       "id": "behavioural-20",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you were wrong about something for a long time.",
       "answer": "This is a much harder question than the failure question, because it requires\nbelieving something, defending it, and being wrong - and the trap is telling a\nstory where you were only ever slightly off. The strong answer commits to a real\nposition, shows the evidence that made you hold it, and describes the moment the\nevidence changed. Being wrong for a long time is normal and saying so is the\npoint; an answer where you were only ever mistaken about details is not the same\nthing and interviewers notice. Note also what you now do differently in how you\nform opinions, since that is the part being graded.",
       "examples": [
@@ -2194,8 +2328,9 @@
     {
       "id": "behavioural-21",
       "category": "behavioural",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a conflict you had with a coworker. How did you resolve it?",
       "answer": "Two things are graded: genuine empathy for the other position, and a real\nresolution. The single most common mistake is telling a story where you were\nsimply right - interviewers discount it because real conflicts do not resolve\nthat cleanly. A strong answer shows you understood the other person well enough\nto steelman them, changed or clarified something in your own position as a\nresult, and ended with a working agreement rather than a victory. Avoid\nconflicts where the other person was incompetent or absent - that reads as\nblame rather than conflict skill.",
       "examples": [
@@ -2209,8 +2344,9 @@
     {
       "id": "behavioural-22",
       "category": "behavioural",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you disagreed with your manager.",
       "answer": "The most-asked behavioural question in tech, and the easiest to sanitise into\nuselessness. Graded items: real tension, a data-based case rather than an\nappeal to taste, and specifically what committing to the final decision cost\nyou. Interviewers listen hardest for the commitment half - someone who only\ndescribes the argument and then says \"and we went with my approach\" has not\ndemonstrated disagree and commit. If the manager decided against you, say what\nyou did and how you made the losing decision work. If you lost badly, that is\na strong answer if you can name what you learned about your judgement.",
       "examples": [
@@ -2224,8 +2360,9 @@
     {
       "id": "behavioural-23",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you had to convince a skeptical stakeholder.",
       "answer": "Influence without authority, graded on mechanics rather than on whether you\nwon. The strong shape: understand their incentives and constraints first,\nchange the evidence rather than restating the argument, and give them something\nthat makes saying yes easy. Weak answers describe being right. Also note what\nhappens if you fail - an answer with no failure path sounds naive. If the\nstakeholder had a legitimate concern you could not resolve, saying so is better\nthan a fantasy where everyone converts.",
       "examples": [
@@ -2239,8 +2376,9 @@
     {
       "id": "behavioural-24",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you had to influence people outside your team.",
       "answer": "The signal is that you understood the other side incentives, not just that you\nadvocated. Name what the other team was measured on and how your request\naffected it - then show how you addressed that cost rather than ignoring it. The\ndistinction from convincing a stakeholder is that here the person gains nothing\nfrom your success, so reciprocity and shared credit matter. A common\nsenior-level tell is whether you ended up owning the change for a team you did\nnot belong to.",
       "examples": [
@@ -2254,8 +2392,9 @@
     {
       "id": "behavioural-25",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time two teams had conflicting priorities.",
       "answer": "The best answer names both sides legitimate interests, shows the data used to\nweigh them, and - the part most candidates skip - says how you mitigated the\ncost to the side that lost. The verdict matters far less than the reasoning. A\nweak answer implies your team was obviously right. Also useful: say how the\ndecision was actually made, because in a real conflict that is often a third\nparty with a different objective, and recognising that is a senior observation.",
       "examples": [
@@ -2269,8 +2408,9 @@
     {
       "id": "behavioural-26",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": true,
+      "isRead": false,
       "question": "How would you handle a teammate who is not pulling their weight?",
       "answer": "A hypothetical, so PSB rather than STAR. The graded balance is directness against\nempathy, and sequencing: private before public, specific before general, and\nescalation as a genuine last resort. The most common failure is jumping straight\nto escalation, or being so gentle that nothing is said directly. A strong answer\nacknowledges the cause is unknown and information-gathering is the first step,\nbecause it might be onboarding, illness, or a misunderstanding about the role\nrather than effort.",
       "examples": [
@@ -2284,8 +2424,9 @@
     {
       "id": "behavioural-27",
       "category": "behavioural",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you showed leadership without having a leadership role.",
       "answer": "The strongest version is not \"I was the tech lead\". It is what you did when it\nwas not obviously your job - the problem nobody assigned, the standard nobody\nwas enforcing, the review nobody had time for. Interviewers are specifically\nlooking for emergent ownership rather than assigned responsibility, so an\nanswer describing duties you were given scores poorly. Say what the situation\nwas, why nobody else was going to pick it up, what you did without being asked,\nand what changed because of it.",
       "examples": [
@@ -2299,8 +2440,9 @@
     {
       "id": "behavioural-28",
       "category": "behavioural",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you mentored someone.",
       "answer": "Graded on whether you identified a specific growth gap and did something\ncalibrated to it, with measurable improvement. Weak answers are either vague\nencouragement, or the story where the mentee succeeded and you take credit. The\ndistinction that raises the level is giving them the problem rather than the\nanswer - the mentoring move where you withhold the solution on purpose. Have a\nnumber: what could they do at the start, what could they do at the end, and over\nwhat period.",
       "examples": [
@@ -2314,8 +2456,9 @@
     {
       "id": "behavioural-29",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you raised the bar for your team.",
       "answer": "Not a training story and not a workshop. This is about noticing that the team's output standard was below what the work deserved, and then making the higher bar reachable rather than aspirational. The graded elements: what the new bar was in observable terms, what you removed or automated so that meeting it was not extra effort, what happened to the people who did not meet it, and whether the bar survived contact with a deadline. A weak version quotes a rule you introduced. A strong one shows what it cost the team to meet, what you yourself had to cut, and whether you held yourself to the same standard.",
       "examples": [
@@ -2329,8 +2472,9 @@
     {
       "id": "behavioural-30",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you had to delegate.",
       "answer": "Graded on whether you built leverage rather than remaining the bottleneck. The\nwrong answer delegates an unimportant task and reports it as delegation. The\nright answer names what you deliberately kept, what you handed over including\nthe parts you wanted to keep, and how you checked without taking it back.\nRedelegating your work and then redoing it because it was not right is the\nclassic self-sabotage answer, and interviewers listen for it.",
       "examples": [
@@ -2344,8 +2488,9 @@
     {
       "id": "behavioural-31",
       "category": "behavioural",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Give me an example of tough or critical feedback you received.",
       "answer": "Graded on ego management and evidence of an actual behaviour change. Defending\nthe critique, or explaining that the reviewer was wrong, is an outright failure\neven if it is true. The strong answer: name the feedback specifically, your\ninitial reaction honestly, what you concluded about whether it was fair, and\nthe specific change you made that persists today. Mentioning that you now ask\nfor feedback more often is a nice touch, because it shows you changed the system\nand not just the behaviour.",
       "examples": [
@@ -2359,8 +2504,9 @@
     {
       "id": "behavioural-32",
       "category": "behavioural",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you gave difficult feedback to a peer.",
       "answer": "Graded on mechanics: private, specific, observable, and paired with a next step.\nThe common failure is a compliment sandwich, which destroys the feedback - the\nperson cannot tell what to change. Naming the SBI structure explicitly is\nhigh-signal. Also graded: whether you asked about intent, which converts telling\ninto a conversation, and whether the behaviour actually changed. If the\nfeedback landed badly, say so and say how you handled it.",
       "examples": [
@@ -2374,8 +2520,9 @@
     {
       "id": "behavioural-33",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time your team's trust was damaged, and how you fixed it.",
       "answer": "Accountability plus repair, without a blame narrative. Graded on whether you\naccepted the damage was yours, whether you were specific about what you did to\nearn trust back, and whether you changed something so it could not recur. Also\ngraded: whether you let the team see the repair period cost you something. A\nvague \"we talked it through\" fails. If your team damaged trust rather than you,\nthe answer should be about what you did as the person in charge - which is\nharder and scores higher.",
       "examples": [
@@ -2389,8 +2536,9 @@
     {
       "id": "behavioural-34",
       "category": "behavioural",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you had a tight deadline with shifting scope.",
       "answer": "Scope discipline is the whole answer: what you cut, why that, and crucially who\nyou told and when. The specific failure being probed is absorbing the scope\nincrease silently and then missing the date, because that converts a\nprioritisation problem into a trust problem. A strong answer names what you\ndeliberately descoped and defends it as scope, not as failure. Pre-communicating\nthe trade is the signal - if you tell people the new date after slipping, you\nhave already lost the point of the question.",
       "examples": [
@@ -2404,8 +2552,9 @@
     {
       "id": "behavioural-35",
       "category": "behavioural",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a project where the requirements were unclear or kept changing.",
       "answer": "What is graded is how you created clarity rather than how you survived it. Four\nmoves tend to separate strong answers: writing the scope down so disagreement\nbecomes concrete, making assumptions explicit rather than silent, shipping\nsomething small to get real feedback, and setting up a mechanism so changes\ncost something. \"I adapted\" is not an answer. Interviewers want to know whether\nyou reduced the ambiguity for the team, not just absorbed it personally.",
       "examples": [
@@ -2419,8 +2568,9 @@
     {
       "id": "behavioural-36",
       "category": "behavioural",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a decision you made with incomplete information.",
       "answer": "Graded on how you handled the uncertainty, not on the outcome being right. Name\nthe uncertainty explicitly, say what you used as a proxy signal, state your\nconfidence level honestly, and explain how you would find out if you were wrong.\nThe advanced move is buying the information cheaply first - a time-boxed spike\nor a query against historical data - which is more senior than deciding under\nuncertainty or waiting for certainty. Weak answers pick one of the two extremes\nwith no acknowledgement of the middle.",
       "examples": [
@@ -2434,8 +2584,9 @@
     {
       "id": "behavioural-37",
       "category": "behavioural",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you shipped something you were not fully confident about.",
       "answer": "The graded skill is making a bounded, reversible bet rather than either stalling\nor shipping recklessly. Name what specifically worried you, how you bounded the\nblast radius - feature flag, canary, limited cohort, or a rollback that was\nactually tested - and how you decided the residual risk was acceptable. Also\nname the check that would have caught you being wrong. What fails this question\nis a story about shipping because of a deadline with no guardrail, and equally a\nstory about endlessly waiting for certainty.",
       "examples": [
@@ -2449,8 +2600,9 @@
     {
       "id": "behavioural-38",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you had to balance quality against speed.",
       "answer": "What is graded is which debt you consciously took on and how you ensured it got\npaid. Every team takes this trade; the answer that scores is one where you named\nthe debt out loud, wrote it down somewhere visible, and either scheduled its\nrepayment or set a condition for it. The failing version either claims there was\nno tradeoff - you were always perfect - or admits to debt that was never repaid\nand never tracked. Naming the condition that would have made you stop is a\nstrong senior signal.",
       "examples": [
@@ -2464,8 +2616,9 @@
     {
       "id": "behavioural-39",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a production risk that nobody else had noticed.",
       "answer": "Graded on proactive detection and, critically, on whether you actually did\nsomething about it. Noticing a risk and raising it in passing is much weaker\nthan noticing it and removing it or forcing a decision. A strong answer makes\nthe risk concrete to a non-engineer - what breaks, who notices, how slowly -\nbecause an unquantified risk loses its urgency. If you raised it and were\nignored, say what you did next, since being overridden and then doing nothing is\nthe weak version.",
       "examples": [
@@ -2479,8 +2632,9 @@
     {
       "id": "behavioural-40",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you had to function under significant ambiguity.",
       "answer": "Sustained productivity despite missing information. Graded on whether you made\nprogress on the parts that were genuinely knowable while isolating the parts\nthat were not, and on how you avoided either guessing confidently or waiting to\nbe told. The senior move is being explicit about your assumptions and about which\ndecisions the ambiguity actually blocks - separating decisions that are\nreversible from those that are not, and stalling only on the irreversible ones.\nSaying what you did not do, and why, is part of the answer.",
       "examples": [
@@ -2494,8 +2648,9 @@
     {
       "id": "behavioural-41",
       "category": "behavioural",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Why are you leaving your current role?",
       "answer": "One of the highest-stakes questions in the loop, and a credibility test. Four\nbeats: the trigger stated neutrally without blaming anyone, a brief description\nof the situation, a specific pull toward the role in front of you, and why this\ncompany specifically. The two common failures are a criticism of your current\nemployer, which reads as a forecast of how you will talk about us, and a generic\npull that could be pasted into any application. If you are leaving because of a\nspecific problem, say it plainly and then show what you did about it.",
       "examples": [
@@ -2509,8 +2664,9 @@
     {
       "id": "behavioural-42",
       "category": "behavioural",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Why should we hire you?",
       "answer": "An opinion question, so PREP rather than STAR. Do not summarise your resume -\nthey already have it. Pick the two or three things you would genuinely contribute\nin the first six months and make each one checkable against something they said\nthey need. Strong answers include a specific weakness in their current setup that\nyou would address, which shows you have thought about the actual job.\nOverclaiming is the risk - every claim you make here becomes a topic they probe.",
       "examples": [
@@ -2524,8 +2680,9 @@
     {
       "id": "behavioural-43",
       "category": "behavioural",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you prioritised safety, ethics or trust over a metric.",
       "answer": "Graded on naming the integrity question cleanly enough that the interviewer\nknows you actually saw it, and on the cost you accepted. Be concrete about the\nkind of problem - a known security regression, a data-handling issue, a\nuser-trust concern - because vague framing means the interviewer cannot tell\nwhether you recognised a real ethical problem or are performing one. Also:\nwhich channel you used, and how you resisted becoming a permanent blocker. The\noutcome matters much less than the cost you chose to bear.",
       "examples": [
@@ -2539,8 +2696,9 @@
     {
       "id": "behavioural-44",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you raised a problem you found that nobody had asked about.",
       "answer": "Distinct from the production-risk question, which is about a system that could fail:\nthis is about a process or quality gap you noticed, where the cost is that the same\nthing happens again. The graded elements are that you raised it rather than sitting\non it, that you raised it in a channel that could act on it rather than the loudest\none, and whether it is still closed. Saying \"it is deprioritised twice and I asked\nagain this month\" is the strongest ending available, because it shows you are still\naccountable rather than relieved to have mentioned it.",
       "examples": [
@@ -2554,8 +2712,9 @@
     {
       "id": "behavioural-45",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about something you did that you are not proud of.",
       "answer": "This is the failure question asked personally rather than professionally, so the\ngrading is about accountability without self-flagellation. What matters: whether\nyou name something real and genuinely uncomfortable, whether you avoid the\ncompliment sandwich, and whether your conclusion is a mechanism rather than an\napology. An answer with a shallow lesson fails even if the story is good. Note\nalso that a small bad thing reads as honest, while a catastrophic one reads as\neither a fabrication or a pattern you have not recognised in yourself.",
       "examples": [
@@ -2569,8 +2728,9 @@
     {
       "id": "behavioural-46",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you sought out perspectives different from your own.",
       "answer": "Graded on whether you actually changed your mind. Seeking perspectives you\nalready agree with is not the competency. The strong answer names who you\ndeliberately went to and why them specifically, states what they told you that\nyou had not considered, and - the part most candidates skip - says plainly where\nthey were right. Wording matters: I was wrong about X is the signal. If your\nconclusion was that you were right, that is a weaker answer and you should be\nable to say why their view did not move you.",
       "examples": [
@@ -2584,8 +2744,9 @@
     {
       "id": "behavioural-47",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time someone was being excluded and you helped.",
       "answer": "The graded distinction is intervening versus observing, and whether you involved\nyourself rather than feeling bad about it. Strong answers are specific about the\nobservable behaviour, safe in the moment, and effective - and they avoid the trap\nof narrating a discrimination story in which you single-handedly corrected a\nsystemic issue. The most credible shape is usually the low-stakes one: a meeting\nwhere someone was talked over, a review where an area of work was dismissed, an\noffhand remark you did not let pass. Graded also: whether you raised it in the\nmoment or privately afterwards, and how you followed up.",
       "examples": [
@@ -2599,8 +2760,9 @@
     {
       "id": "behavioural-48",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a time you worked with someone whose style was very different from yours.",
       "answer": "Graded on whether you genuinely adapted rather than merely tolerated, and on\nwhether you learned something specific about the other approach - ideally\nsomething you adopted. Tolerance is not the competency. A strong answer names the\nspecific difference (planning-first versus exploratory, verbose versus terse,\ncomfortable with ambiguity versus needing closure), describes the specific\nfriction it caused, and describes the concrete change you made to your own\nbehaviour. The follow-up trap is what you learned about yourself - if you only\nlearned about them, the answer is thin.",
       "examples": [
@@ -2614,8 +2776,9 @@
     {
       "id": "behavioural-49",
       "category": "behavioural",
-      "importance": "high",
-      "forLater": false,
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "Tell me about a technical decision where reasonable engineers would disagree. What did you decide?",
       "answer": "This is the highest-value question for a senior candidate and the one most often\nwasted on a project description instead of a decision. Anchor the whole story on\nthe central trade-off - consistency versus availability, build versus buy,\nmonolith versus services. What is being probed is whether you can name the\nalternative a competent peer would have chosen, articulate why you rejected it,\nand state the condition under which you would change your mind. An answer with no\ncredible alternative is not a decision, it is an implementation.",
       "examples": [
@@ -2629,8 +2792,9 @@
     {
       "id": "behavioural-50",
       "category": "behavioural",
-      "importance": "medium",
-      "forLater": false,
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isRead": false,
       "question": "How do you decide what to optimise for when everything is a trade-off?",
       "answer": "A philosophy question, so PREP rather than STAR. The graded content is whether\nyou can name the trade-off explicitly rather than saying it depends - because\nit depends without naming what it depends on is not an answer. Strong responses\ndefine the non-negotiable first (data integrity, user trust, or the constraint\nthat actually binds), then rank the rest, and crucially say what would make them\nre-rank. Saying what you refuse to trade is what distinguishes a senior answer,\nsince most candidates claim to optimise everything equally.",
       "examples": [

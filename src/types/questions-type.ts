@@ -1,4 +1,4 @@
-export type Importance = 'low' | 'medium' | 'high';
+export type Difficulty = 'basic' | 'medium' | 'advanced';
 export type Category =
   | 'html'
   | 'css'
@@ -18,8 +18,9 @@ export interface QuestionExample {
 export interface Question {
   id: string;
   category: Category;
-  importance: Importance;
-  forLater: boolean;
+  difficulty: Difficulty;
+  scenarioBased: boolean;
+  isRead: boolean;
   question: string;
   answer: string;
   examples: QuestionExample[];
