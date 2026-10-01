@@ -7,6 +7,12 @@ type QuestionStoreState = {
   questionData: Question[];
 };
 
+type ReadFlag = { id: string; isRead: boolean };
+type LegacyFlag = { id: string; importance?: string; forLater?: boolean };
+
+const STORAGE_KEY = 'q-read-flags';
+const LEGACY_STORAGE_KEY = 'q-flags';
+
 const seed: Question[] = Object.values(questionsData).flat() as Question[];
 
 const idMigrations: Record<string, string> = {
@@ -19,45 +25,80 @@ const initialState: QuestionStoreState = {
   questionData: [],
 };
 
+function parseArray<T>(raw: string | null): T[] {
+  if (!raw) {
+    return [];
+  }
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as T[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function toReadMap<T extends { id: string }>(
+  raw: string | null,
+  toIsRead: (flag: T) => boolean | null,
+): Record<string, boolean> {
+  const entries = parseArray<T>(raw)
+    .filter((flag) => typeof flag?.id === 'string')
+    .map((flag) => [idMigrations[flag.id] ?? flag.id, toIsRead(flag)] as const)
+    .filter((entry): entry is readonly [string, boolean] => entry[1] !== null);
+  return Object.fromEntries(entries);
+}
+
+// `difficulty` and `scenarioBased` are curated in questions.json and are never
+// persisted — only the user's read state is, so shipping new labels is not
+// shadowed by a stale localStorage entry.
+function loadReadFlags(): Record<string, boolean> {
+  const current = toReadMap(localStorage.getItem(STORAGE_KEY), (flag: ReadFlag) =>
+    typeof flag?.isRead === 'boolean' ? flag.isRead : null,
+  );
+  if (Object.keys(current).length) {
+    return current;
+  }
+
+  const legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
+  if (!legacy) {
+    return {};
+  }
+
+  return toReadMap(legacy, (flag: LegacyFlag) =>
+    typeof flag?.forLater === 'boolean' ? flag.forLater : null,
+  );
+}
+
 export const QuestionStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
   withHooks((store) => ({
     onInit() {
-      const saved = localStorage.getItem('q-flags');
-      if (saved) {
-        const persisted = JSON.parse(saved) as Pick<Question, 'id' | 'importance' | 'forLater'>[];
-        const flags = Object.fromEntries(
-          persisted.map(({ id, importance, forLater }) => [
-            idMigrations[id] ?? id,
-            { importance, forLater },
-          ]),
-        );
-        patchState(store, {
-          questionData: seed.map((q) => ({ ...q, ...flags[q.id] })),
-        });
-      } else {
-        patchState(store, { questionData: seed });
-      }
+      const read = loadReadFlags();
+
+      patchState(store, {
+        questionData: seed.map((question) => ({ ...question, isRead: read[question.id] === true })),
+      });
 
       effect(() => {
         localStorage.setItem(
-          'q-flags',
+          STORAGE_KEY,
           JSON.stringify(
             store
               .questionData()
-              .map(({ id, importance, forLater }) => ({ id, importance, forLater })),
+              .map(({ id, isRead }) => ({ id, isRead }))
+              .filter((flag) => flag.isRead),
           ),
         );
       });
     },
   })),
   withMethods((store) => ({
-    updateDetails(details: Question, type: 'importance' | 'forLater') {
+    toggleRead(id: string) {
       patchState(store, (state) => ({
-        questionData: state.questionData.map((quest) => {
-          return quest.id === details.id ? { ...quest, [type]: details[type] } : quest;
-        }),
+        questionData: state.questionData.map((question) =>
+          question.id === id ? { ...question, isRead: !question.isRead } : question,
+        ),
       }));
     },
   })),
