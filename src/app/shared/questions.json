@@ -8,9 +8,11 @@
       "question": "What is semantic HTML?",
       "answer": "Semantic HTML uses tags that describe their meaning rather than only their appearance — header, nav, main, article, section, aside and footer. It improves accessibility for screen readers and helps search engines understand the page structure, while also making the code easier to read for other developers.",
       "examples": [
-        "Semantic structure of a page",
-        "<body>\n  <header><nav aria-label=\"Main\">...</nav></header>\n  <main>\n    <article>\n      <h1>Title</h1>\n      <section><h2>Details</h2>...</section>\n    </article>\n    <aside>Related links</aside>\n  </main>\n  <footer>...</footer>\n</body>",
-        "header/nav/main/article/section/aside/footer describe meaning, so screen readers and search engines get the structure for free."
+        {
+          "title": "Semantic structure of a page",
+          "code": "<body>\n  <header><nav aria-label=\"Main\">...</nav></header>\n  <main>\n    <article>\n      <h1>Title</h1>\n      <section><h2>Details</h2>...</section>\n    </article>\n    <aside>Related links</aside>\n  </main>\n  <footer>...</footer>\n</body>",
+          "explanation": "header/nav/main/article/section/aside/footer describe meaning, so screen readers and search engines get the structure for free."
+        }
       ]
     },
     {
@@ -21,9 +23,11 @@
       "question": "What is the difference between a div and a span?",
       "answer": "A div is a block-level container that takes the full available width and starts on a new line, while a span is an inline container that flows inside a line of text. Use a div to group larger layout blocks and a span to style or group a fragment of text without breaking the line.",
       "examples": [
-        "block vs inline vs span",
-        "<style>\n  .box { width: 100px; height: 40px; background: #90caf9; }\n  .tag  { background: #ffcc80; }\n</style>\n\n<div class=\"box\"></div>   <!-- block: own line, full width -->\n<span class=\"tag\">A</span><span class=\"tag\">B</span>  <!-- inline: flows in the line -->",
-        "div is block-level, so it breaks the line and stretches; spans sit side by side inside the surrounding text."
+        {
+          "title": "block vs inline vs span",
+          "code": "<style>\n  .box { width: 100px; height: 40px; background: #90caf9; }\n  .tag  { background: #ffcc80; }\n</style>\n\n<div class=\"box\"></div>   <!-- block: own line, full width -->\n<span class=\"tag\">A</span><span class=\"tag\">B</span>  <!-- inline: flows in the line -->",
+          "explanation": "div is block-level, so it breaks the line and stretches; spans sit side by side inside the surrounding text."
+        }
       ]
     },
     {
@@ -34,9 +38,11 @@
       "question": "When should I use a class instead of an id?",
       "answer": "An id must be unique on the page and is used when you need to identify a single element — for example as an anchor, or a CSS selector that definitely targets one node. A class can be reused across many elements, so if a style or behaviour applies to more than one element, prefer a class.",
       "examples": [
-        "id for one node, class for many",
-        "<style>\n  #main-banner { background: gold; }   /* one element only */\n  .chip { border-radius: 999px; }          /* reused everywhere */\n</style>\n\n<div id=\"main-banner\">Sale</div>\n<span class=\"chip\">new</span>\n<span class=\"chip\">beta</span>",
-        "The id must be unique and is what fragment links (#main-banner) and JS lookups use; the class is the reusable hook."
+        {
+          "title": "id for one node, class for many",
+          "code": "<style>\n  #main-banner { background: gold; }   /* one element only */\n  .chip { border-radius: 999px; }          /* reused everywhere */\n</style>\n\n<div id=\"main-banner\">Sale</div>\n<span class=\"chip\">new</span>\n<span class=\"chip\">beta</span>",
+          "explanation": "The id must be unique and is what fragment links (#main-banner) and JS lookups use; the class is the reusable hook."
+        }
       ]
     },
     {
@@ -47,9 +53,11 @@
       "question": "How do I make an image render well on different screen sizes?",
       "answer": "Let the image scale proportionally with max-width: 100% and height: auto, and provide several source variants using the srcset and sizes attributes so the browser picks the right file for the viewport. Reserve the space with width and height attributes to avoid layout shift while loading.",
       "examples": [
-        "Responsive image with srcset",
-        "<img\n  src=\"hero-800.jpg\"\n  srcset=\"hero-400.jpg 400w, hero-800.jpg 800w, hero-1600.jpg 1600w\"\n  sizes=\"(max-width: 640px) 100vw, 50vw\"\n  width=\"1600\" height=\"900\"\n  alt=\"Team reviewing a dashboard\"\n  style=\"max-width:100%;height:auto\">",
-        "srcset+sizes let the browser pick the smallest file that still looks sharp; width/height reserve the box to avoid layout shift."
+        {
+          "title": "Responsive image with srcset",
+          "code": "<img\n  src=\"hero-800.jpg\"\n  srcset=\"hero-400.jpg 400w, hero-800.jpg 800w, hero-1600.jpg 1600w\"\n  sizes=\"(max-width: 640px) 100vw, 50vw\"\n  width=\"1600\" height=\"900\"\n  alt=\"Team reviewing a dashboard\"\n  style=\"max-width:100%;height:auto\">",
+          "explanation": "srcset+sizes let the browser pick the smallest file that still looks sharp; width/height reserve the box to avoid layout shift."
+        }
       ]
     },
     {
@@ -60,9 +68,11 @@
       "question": "Why is the alt attribute important on images?",
       "answer": "The alt attribute provides a text alternative that is announced by screen readers and shown when the image fails to load. It is required when the image conveys information, and should describe the content or purpose. Decorative images can use an empty alt=\"\", but hiding them without an attribute hurts accessibility.",
       "examples": [
-        "Meaningful vs decorative alt",
-        "<img src=\"chart.png\" alt=\"Revenue grew from 2.1M to 3.4M in Q3\">\n\n<img src=\"divider.svg\" alt=\"\">   <!-- decorative: say nothing -->\n\n<img src=\"icon.png\">               <!-- no alt at all: screen readers read the filename -->",
-        "Describe the information for content images; use alt=\"\" for decoration so it is skipped, and never omit alt for meaningful images."
+        {
+          "title": "Meaningful vs decorative alt",
+          "code": "<img src=\"chart.png\" alt=\"Revenue grew from 2.1M to 3.4M in Q3\">\n\n<img src=\"divider.svg\" alt=\"\">   <!-- decorative: say nothing -->\n\n<img src=\"icon.png\">               <!-- no alt at all: screen readers read the filename -->",
+          "explanation": "Describe the information for content images; use alt=\"\" for decoration so it is skipped, and never omit alt for meaningful images."
+        }
       ]
     },
     {
@@ -73,9 +83,11 @@
       "question": "How do I show a block of code on a page?",
       "answer": "Wrap the lines in pre/code tags to keep whitespace and line breaks intact. Escape raw angle brackets as &lt; and &gt; inside the block, and add overflow-x: auto so long lines scroll horizontally instead of breaking the layout.",
       "examples": [
-        "Code block that survives long lines",
-        "<pre><code class=\"language-ts\">const total = items\n  .filter(i =&gt; i.active)\n  .reduce((s, i) =&gt; s + i.price, 0);</code></pre>\n\n<style>\n  pre { overflow-x: auto; }\n  code { font-family: ui-monospace, monospace; }\n</style>",
-        "pre keeps whitespace and newlines, escaped &lt; &gt; stop the browser parsing tags, and overflow-x keeps one long line from breaking the layout."
+        {
+          "title": "Code block that survives long lines",
+          "code": "<pre><code class=\"language-ts\">const total = items\n  .filter(i =&gt; i.active)\n  .reduce((s, i) =&gt; s + i.price, 0);</code></pre>\n\n<style>\n  pre { overflow-x: auto; }\n  code { font-family: ui-monospace, monospace; }\n</style>",
+          "explanation": "pre keeps whitespace and newlines, escaped &lt; &gt; stop the browser parsing tags, and overflow-x keeps one long line from breaking the layout."
+        }
       ]
     },
     {
@@ -178,9 +190,11 @@
       "question": "What is the CSS box model?",
       "answer": "Every element is rendered as a box made of four layers, from the inside out: content, padding, border and margin. Content holds the actual content, padding adds space between content and border, the border frames the box, and margin creates space between this box and its neighbours. box-sizing: border-box makes width and height include padding and border.",
       "examples": [
-        "Box model with content-box vs border-box",
-        ".card {\n  width: 200px;\n  padding: 20px;\n  border: 5px solid #333;\n  box-sizing: content-box;  /* total width = 250px */\n}\n\n*, *::before, *::after { box-sizing: border-box; }\n/* now width:200px INCLUDES padding+border -> total stays 200px */",
-        "content-box measures only the content; border-box makes width/height include padding and border, which is why global resets set it."
+        {
+          "title": "Box model with content-box vs border-box",
+          "code": ".card {\n  width: 200px;\n  padding: 20px;\n  border: 5px solid #333;\n  box-sizing: content-box;  /* total width = 250px */\n}\n\n*, *::before, *::after { box-sizing: border-box; }\n/* now width:200px INCLUDES padding+border -> total stays 200px */",
+          "explanation": "content-box measures only the content; border-box makes width/height include padding and border, which is why global resets set it."
+        }
       ]
     },
     {
@@ -191,9 +205,11 @@
       "question": "What is the difference between padding and margin?",
       "answer": "Padding is the space inside the element, between the content and the border. Margin is the space outside the element, between the border and neighbouring elements. Padding is always part of the element's background; margins collapse with adjacent margins.",
       "examples": [
-        "Padding is inside, margin is outside",
-        ".btn {\n  padding: 8px 16px;   /* inside the border */\n  margin: 12px;          /* between this and neighbours */\n  border: 2px solid;\n}",
-        "Padding grows the element and shows its background; margin separates elements and can collapse with an adjacent margin."
+        {
+          "title": "Padding is inside, margin is outside",
+          "code": ".btn {\n  padding: 8px 16px;   /* inside the border */\n  margin: 12px;          /* between this and neighbours */\n  border: 2px solid;\n}",
+          "explanation": "Padding grows the element and shows its background; margin separates elements and can collapse with an adjacent margin."
+        }
       ]
     },
     {
@@ -204,9 +220,21 @@
       "question": "What is the difference between block, inline and inline-block?",
       "answer": "Block elements start on a new line and fill the available width. Inline elements flow within a line of text and ignore width and height. Inline-block flows inline but respects width, height and vertical margins like a block, which makes it useful for grid-like layouts.",
       "examples": [
-        "inline-block",
-        ".badge { display: inline-block; width: 80px; height: 24px; }",
-        "Flows inline but respects width, height and vertical margin - a building block for chip/button rows."
+        {
+          "title": "block",
+          "code": ".header { display: block; }  /* full width, own line */",
+          "explanation": "The default for div, p, section - takes the available width and starts a new line."
+        },
+        {
+          "title": "inline",
+          "code": ".tag { display: inline; }   /* width/height ignored, stays in the line */",
+          "explanation": "The default for span, a, strong - flows with the surrounding text."
+        },
+        {
+          "title": "inline-block",
+          "code": ".badge { display: inline-block; width: 80px; height: 24px; }",
+          "explanation": "Flows inline but respects width, height and vertical margin - a building block for chip/button rows."
+        }
       ]
     },
     {
@@ -217,9 +245,11 @@
       "question": "What do align-items and justify-content do in flexbox?",
       "answer": "justify-content controls the distribution of items along the main axis (the flex container's flex-direction). align-items controls alignment along the cross axis, which is perpendicular to the main axis. For a default row layout, justify-content is horizontal and align-items is vertical.",
       "examples": [
-        "Row vs column flexbox",
-        ".row  { display: flex; flex-direction: row;            justify-content: space-between; align-items: center; }\n.col  { display: flex; flex-direction: column;         justify-content: space-between; align-items: stretch; }",
-        "justify-content works along flex-direction (main axis), align-items across it (cross axis) - swap the two when you switch direction."
+        {
+          "title": "Row vs column flexbox",
+          "code": ".row  { display: flex; flex-direction: row;            justify-content: space-between; align-items: center; }\n.col  { display: flex; flex-direction: column;         justify-content: space-between; align-items: stretch; }",
+          "explanation": "justify-content works along flex-direction (main axis), align-items across it (cross axis) - swap the two when you switch direction."
+        }
       ]
     },
     {
@@ -230,9 +260,16 @@
       "question": "How do you center a block element horizontally?",
       "answer": "Give the element a width and set margin-inline: auto (or margin-left and margin-right to auto). The auto margins split the remaining space equally on both sides. Flexbox centers with display: flex and justify-content: center for a row of items.",
       "examples": [
-        "Centering with flexbox",
-        ".wrapper { display: flex; justify-content: center; align-items: center; height: 100vh; }\n.centered { width: 300px; }",
-        "Centres both axes without knowing the size, and works for any number of children."
+        {
+          "title": "Centering with auto margins",
+          "code": ".box { width: 300px; margin-inline: auto; }  /* splits leftover space evenly */",
+          "explanation": "Works for a single block element with a known width."
+        },
+        {
+          "title": "Centering with flexbox",
+          "code": ".wrapper { display: flex; justify-content: center; align-items: center; height: 100vh; }\n.centered { width: 300px; }",
+          "explanation": "Centres both axes without knowing the size, and works for any number of children."
+        }
       ]
     },
     {
@@ -335,9 +372,11 @@
       "question": "What is a component in Angular?",
       "answer": "A component is an Angular building block that combines an HTML template, styles and a TypeScript class that holds the logic and state. Components are standalone by default in modern Angular and import the dependencies they use directly in their imports array.",
       "examples": [
-        "A standalone component",
-        "import { Component, inject } from '@angular/core';\nimport { UserCard } from './user-card';\n\n@Component({\n  selector: 'app-user-list',\n  imports: [UserCard],\n  template: `@for (u of users(); track u.id) { <app-user-card [user]=\"u\" /> }`,\n})\nexport class UserList {\n  private readonly store = inject(UserStore);\n  readonly users = computed(() => this.store.active());\n}",
-        "Template, styles and class in one place; everything it needs is listed in imports."
+        {
+          "title": "A standalone component",
+          "code": "import { Component, inject } from '@angular/core';\nimport { UserCard } from './user-card';\n\n@Component({\n  selector: 'app-user-list',\n  imports: [UserCard],\n  template: `@for (u of users(); track u.id) { <app-user-card [user]=\"u\" /> }`,\n})\nexport class UserList {\n  private readonly store = inject(UserStore);\n  readonly users = computed(() => this.store.active());\n}",
+          "explanation": "Template, styles and class in one place; everything it needs is listed in imports."
+        }
       ]
     },
     {
@@ -348,9 +387,26 @@
       "question": "What is data binding in Angular?",
       "answer": "Data binding connects the component class to the template. Interpolation {{ }} and property binding [property] flow from class to view, event binding (event) flows from view to class, and two-way binding [(ngModel)] or model() flows both ways.",
       "examples": [
-        "Two-way binding",
-        "<input [ngModel]=\"name()\" (ngModelChange)=\"name.set($event)\" />",
-        "Expands to a property binding plus an event binding; with signals you usually write both sides explicitly."
+        {
+          "title": "Interpolation",
+          "code": "<h1>Hello {{ user().name }}</h1>",
+          "explanation": "Class -> view, rendered as text (escaped)."
+        },
+        {
+          "title": "Property binding",
+          "code": "<img [src]=\"avatarUrl()\" [disabled]=\"isPending()\" />",
+          "explanation": "Sets a DOM/component property instead of an attribute."
+        },
+        {
+          "title": "Event binding",
+          "code": "<button (click)=\"save()\">Save</button>",
+          "explanation": "View -> class: the handler receives a native or $event value."
+        },
+        {
+          "title": "Two-way binding",
+          "code": "<input [ngModel]=\"name()\" (ngModelChange)=\"name.set($event)\" />",
+          "explanation": "Expands to a property binding plus an event binding; with signals you usually write both sides explicitly."
+        }
       ]
     },
     {
@@ -361,9 +417,21 @@
       "question": "What is an Angular directive?",
       "answer": "A directive is a class that extends HTML behaviour — structure or presentation — without an associated template. Attribute directives change an element's appearance or behaviour, while structural directives (like @if and @for) add, remove or repeat elements in the DOM.",
       "examples": [
-        "Attribute directive",
-        "<button matButton appAutofocus>Go</button>",
-        "Attribute directives change behaviour or appearance of the host element without adding markup."
+        {
+          "title": "Component directive",
+          "code": "<app-header [title]=\"pageTitle()\" />",
+          "explanation": "A component is a directive with a template - it adds a new element to the DOM."
+        },
+        {
+          "title": "Structural directive",
+          "code": "@if (isLoggedIn()) { <app-admin /> }",
+          "explanation": "Structural directives add or remove DOM (@if/@for/@switch are built-ins now)."
+        },
+        {
+          "title": "Attribute directive",
+          "code": "<button matButton appAutofocus>Go</button>",
+          "explanation": "Attribute directives change behaviour or appearance of the host element without adding markup."
+        }
       ]
     },
     {
@@ -374,9 +442,16 @@
       "question": "What is dependency injection?",
       "answer": "Dependency injection is how Angular provides the services a component or class needs. A class declares its dependencies in its constructor or with inject(), and Angular's injector resolves them. Services marked providedIn: 'root' are app-wide singletons.",
       "examples": [
-        "Component-provided service",
-        "@Component({\n  providers: [DraftForm],\n})\nexport class Editor {}",
-        "A new instance per component, which is how you keep state from leaking between component instances."
+        {
+          "title": "Root-provided service",
+          "code": "@Injectable({ providedIn: 'root' })\nexport class ApiClient {\n  private readonly http = inject(HttpClient);\n}\n\n// anywhere: private readonly api = inject(ApiClient);",
+          "explanation": "One instance for the whole app - inject it without listing it anywhere."
+        },
+        {
+          "title": "Component-provided service",
+          "code": "@Component({\n  providers: [DraftForm],\n})\nexport class Editor {}",
+          "explanation": "A new instance per component, which is how you keep state from leaking between component instances."
+        }
       ]
     },
     {
@@ -387,9 +462,16 @@
       "question": "What is the difference between @Input and @Output?",
       "answer": "@Input lets a parent pass data into a child component's property. @Output emits an event from the child that the parent listens to. They are the two halves of component communication: input flows down, output flows up.",
       "examples": [
-        "Output from a child",
-        "removed = output<string>();\n// <app-tag (removed)=\"onRemoved($event)\" />",
-        "Child emits upward so the parent can react - the other half of component communication."
+        {
+          "title": "Input into a child",
+          "code": "id = input.required<string>();\nlabel = input('Untitled');",
+          "explanation": "Parent passes data down: <app-tag [id]=\"tagId\" />"
+        },
+        {
+          "title": "Output from a child",
+          "code": "removed = output<string>();\n// <app-tag (removed)=\"onRemoved($event)\" />",
+          "explanation": "Child emits upward so the parent can react - the other half of component communication."
+        }
       ]
     },
     {
@@ -400,9 +482,11 @@
       "question": "A user types in a search box and the whole page feels janky. How do you isolate the cause and fix it?",
       "answer": "Profile first: use Angular DevTools to spot components running many change-detection cycles and the Chrome performance tab to confirm what is slow. Common fixes: debounceTime(300) + switchMap on the search stream so every keystroke does not hit the API, move heavy computations out of templates into pipes or a computed, add trackBy, use ChangeDetectionStrategy.OnPush on the growing list, and wrap high-frequency handlers like scroll in runOutsideAngular(ngZone). Fix the root cause rather than sprinkling optimizations.",
       "examples": [
-        "Debounce + cancel + isolate",
-        "// template\n<input #box (input)=\"search(box.value)\" />\n\nsearch(term: string) {\n  this.results = toSignal(\n    this.term$.pipe(\n      debounceTime(300),\n      distinctUntilChanged(),\n      switchMap(t => this.api.search(t)),   // cancels the previous request\n    ),\n    { initialValue: [] },\n  );\n}\n\n@Component({ changeDetection: ChangeDetectionStrategy.OnPush })",
-        "Fix the cause: one request per settled term, stale responses dropped, and the list re-renders on its own dependency only."
+        {
+          "title": "Debounce + cancel + isolate",
+          "code": "// template\n<input #box (input)=\"search(box.value)\" />\n\nsearch(term: string) {\n  this.results = toSignal(\n    this.term$.pipe(\n      debounceTime(300),\n      distinctUntilChanged(),\n      switchMap(t => this.api.search(t)),   // cancels the previous request\n    ),\n    { initialValue: [] },\n  );\n}\n\n@Component({ changeDetection: ChangeDetectionStrategy.OnPush })",
+          "explanation": "Fix the cause: one request per settled term, stale responses dropped, and the list re-renders on its own dependency only."
+        }
       ]
     },
     {
@@ -413,9 +497,16 @@
       "question": "Customers complain the app takes around 8 seconds to load. Walk me through your diagnosis and fix.",
       "answer": "Measure the phases with Lighthouse/WebPageTest: is it bundle size, blocking JS, API latency or render? Shrink the bundle with lazy loading of routes and @defer blocks for non-critical widgets, enable build-time optimizations, compress images (NgOptimizedImage), and consider SSR with hydration or prerendering for the first paint. Verify each change against Core Web Vitals instead of guessing.",
       "examples": [
-        "Defer the heavy widget",
-        "<app-dashboard>\n  @defer (on viewport) { <app-revenue-chart /> } @placeholder { <app-skeleton /> }\n</app-dashboard>",
-        "@defer splits a component out of the initial bundle and loads it when it becomes visible or on interaction."
+        {
+          "title": "Route-level lazy loading",
+          "code": "{ path: 'reports', loadComponent: () => import('./reports/reports').then(c => c.Reports) }",
+          "explanation": "Each route ships its own chunk, so first paint only downloads what the landing page needs."
+        },
+        {
+          "title": "Defer the heavy widget",
+          "code": "<app-dashboard>\n  @defer (on viewport) { <app-revenue-chart /> } @placeholder { <app-skeleton /> }\n</app-dashboard>",
+          "explanation": "@defer splits a component out of the initial bundle and loads it when it becomes visible or on interaction."
+        }
       ]
     },
     {
@@ -426,9 +517,11 @@
       "question": "A sidebar filter and a dashboard list are unrelated components but must stay in sync. How do you implement this?",
       "answer": "Put the shared state in a service: a signal() (or BehaviorSubject if you need an async stream) with read/computed selectors. Keep components dumb - the list reads the signal and re-renders. For parent-to-child data use @Input/@Output; for unrelated components a shared service is the standard answer, and signals today remove the subscription boilerplate the BehaviorSubject approach needed.",
       "examples": [
-        "Shared service with signals",
-        "@Injectable({ providedIn: 'root' })\nexport class FilterStore {\n  private readonly role = signal<UserRole | 'all'>('all');\n  readonly users = computed(() => {\n    const r = this.role();\n    return r === 'all' ? this.all() : this.all().filter(u => u.role === r);\n  });\n  setRole(r: UserRole | 'all') { this.role.set(r); }\n}",
-        "The sidebar writes, the list reads - no parent, no Input/Output plumbing, and derived data stays consistent."
+        {
+          "title": "Shared service with signals",
+          "code": "@Injectable({ providedIn: 'root' })\nexport class FilterStore {\n  private readonly role = signal<UserRole | 'all'>('all');\n  readonly users = computed(() => {\n    const r = this.role();\n    return r === 'all' ? this.all() : this.all().filter(u => u.role === r);\n  });\n  setRole(r: UserRole | 'all') { this.role.set(r); }\n}",
+          "explanation": "The sidebar writes, the list reads - no parent, no Input/Output plumbing, and derived data stays consistent."
+        }
       ]
     },
     {
@@ -439,9 +532,11 @@
       "question": "The user clicks 'Save' rapidly while a POST is in flight. How do you prevent duplicate requests?",
       "answer": "Use exhaustMap on the click stream: it ignores new emissions while an inner request is running and only accepts the next click after completion. That matches the intent - ignore extra clicks until the request settles. switchMap would cancel the in-flight request, which is wrong for a save; debounceTime would just delay the first click.",
       "examples": [
-        "Ignore clicks while saving",
-        "save$ = new Subject<void>();\n\nsave() {\n  this.save$.pipe(\n    exhaustMap(() => this.api.save(this.form.value).pipe(\n      finalize(() => this.saving.set(false)),\n    )),\n  ).subscribe();\n}",
-        "exhaustMap drops emissions while the inner request is in flight, so one click means one request."
+        {
+          "title": "Ignore clicks while saving",
+          "code": "save$ = new Subject<void>();\n\nsave() {\n  this.save$.pipe(\n    exhaustMap(() => this.api.save(this.form.value).pipe(\n      finalize(() => this.saving.set(false)),\n    )),\n  ).subscribe();\n}",
+          "explanation": "exhaustMap drops emissions while the inner request is in flight, so one click means one request."
+        }
       ]
     },
     {
@@ -452,9 +547,11 @@
       "question": "A dashboard must show data from three APIs, but only when all three have arrived, and it must update if any of them changes later. What operator do you use and why?",
       "answer": "combineLatest: it emits only once all sources have emitted at least once and keeps emitting whenever any source changes afterwards - exactly 'render once all three exist, update on any change'. forkJoin would be wrong because it emits once and completes, so later changes never re-render. If you only needed the first combined value, forkJoin would be fine.",
       "examples": [
-        "combineLatest vs forkJoin",
-        "// live: re-emit when any source changes after all have arrived\ncombineLatest([profile$, prefs$, permissions$]).subscribe(render);\n\n// one-shot: last value of each, only after all complete\nforkJoin([a$, b$]).subscribe(renderOnce);",
-        "combineLatest fits 'render when everything is present and keep updating'; forkJoin fits 'wait for a batch of requests'."
+        {
+          "title": "combineLatest vs forkJoin",
+          "code": "// live: re-emit when any source changes after all have arrived\ncombineLatest([profile$, prefs$, permissions$]).subscribe(render);\n\n// one-shot: last value of each, only after all complete\nforkJoin([a$, b$]).subscribe(renderOnce);",
+          "explanation": "combineLatest fits 'render when everything is present and keep updating'; forkJoin fits 'wait for a batch of requests'."
+        }
       ]
     },
     {
@@ -465,9 +562,11 @@
       "question": "There is a memory leak in production - memory grows steadily as users navigate. How do you track it down?",
       "answer": "Reproduce in dev with the browser heap snapshot: take two snapshots around a navigation cycle and diff them to find detached DOM nodes or lingering references. Suspect manual subscribe() calls that were never unsubscribed, timers, and addEventListener. Fix by using the async pipe or takeUntilDestroyed(), and centralizing subscriptions so cleanup is a convention, not a discipline.",
       "examples": [
-        "Finding and fixing the leak",
-        "// leaking\nngOnInit() { this.timer$.subscribe(() => this.tick()); }\n\n// fixed - cleanup tied to the destroy ref\nprivate readonly destroyRef = inject(DestroyRef);\n\nngOnInit() {\n  this.timer$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.tick());\n}",
-        "In the heap snapshot, detached DOM retained by a live subscription is the giveaway; takeUntilDestroyed (or the async pipe) makes cleanup automatic."
+        {
+          "title": "Finding and fixing the leak",
+          "code": "// leaking\nngOnInit() { this.timer$.subscribe(() => this.tick()); }\n\n// fixed - cleanup tied to the destroy ref\nprivate readonly destroyRef = inject(DestroyRef);\n\nngOnInit() {\n  this.timer$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.tick());\n}",
+          "explanation": "In the heap snapshot, detached DOM retained by a live subscription is the giveaway; takeUntilDestroyed (or the async pipe) makes cleanup automatic."
+        }
       ]
     },
     {
@@ -478,9 +577,16 @@
       "question": "You need a reusable form input that works both with ngModel and inside a reactive form. How do you build it?",
       "answer": "Implement ControlValueAccessor on a component: writeValue populates the control, registerOnChange/registerOnTouched wire the UI to the form model, and setDisabledState handles enable/disable. Then it can be used with [(ngModel)] or [formControl]/formControlName exactly like a native input.",
       "examples": [
-        "Using it",
-        "<app-rating [(ngModel)]=\"score\" />\n\n<form [formGroup]=\"form\">\n  <app-rating formControlName=\"score\" />\n</form>",
-        "One component, both form APIs, because it speaks the CVA contract."
+        {
+          "title": "ControlValueAccessor",
+          "code": "@Component({ selector: 'app-rating', providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => Rating), multi: true }] })\nexport class Rating implements ControlValueAccessor {\n  private onChange: (v: number) => void = () => {};\n  writeValue(v: number): void { this.value = v; }\n  registerOnChange(fn: (v: number) => void): void { this.onChange = fn; }\n  registerOnTouched(fn: () => void): void { this.onTouched = fn; }\n  setDisabledState(d: boolean): void { this.disabled = d; }\n}",
+          "explanation": "Implementing the four methods makes the component bindable by both ngModel and formControlName."
+        },
+        {
+          "title": "Using it",
+          "code": "<app-rating [(ngModel)]=\"score\" />\n\n<form [formGroup]=\"form\">\n  <app-rating formControlName=\"score\" />\n</form>",
+          "explanation": "One component, both form APIs, because it speaks the CVA contract."
+        }
       ]
     },
     {
@@ -491,9 +597,16 @@
       "question": "A stepper form is spread across multiple components but must behave as one form. How do you keep it consistent?",
       "answer": "Own a single FormGroup instance in a parent component and pass it down (@Input) or expose it from a shared service provided at the parent scope. Each step component binds its controls to the same instance via formControlName/formGroup, and the stepper reads validity from one place. A service scoped to the feature route (rather than root) avoids leaking state across navigation.",
       "examples": [
-        "Scoped service alternative",
-        "@Component({ providers: [CheckoutForm] })   // one instance per checkout flow",
-        "Providing the form on the parent (or a route-scoped service) avoids stale state surviving navigation."
+        {
+          "title": "One FormGroup, several steps",
+          "code": "// stepper (parent) owns the group\nform = inject(FormBuilder).group({\n  address: this.fb.group({ city: ['', Validators.required] }),\n  payment: this.fb.group({ card: ['', Validators.required] }),\n});\n\n// each step child\n@Component({ selector: 'app-address-step' })\nexport class AddressStep {\n  form = input.required<FormGroup>();   // passed, not duplicated\n}",
+          "explanation": "The step components never own form state - they render and validate parts of the parent's instance."
+        },
+        {
+          "title": "Scoped service alternative",
+          "code": "@Component({ providers: [CheckoutForm] })   // one instance per checkout flow",
+          "explanation": "Providing the form on the parent (or a route-scoped service) avoids stale state surviving navigation."
+        }
       ]
     },
     {
@@ -504,9 +617,11 @@
       "question": "How do you implement role-based access control - restricting routes by role and hiding UI elements?",
       "answer": "Two layers: a route guard canActivateFn checks whether the logged-in role may enter a route (and redirects otherwise), while a structural directive (like *appHasRole) conditionally renders UI for a role. Keep the user's roles in a shared service/signal read by both. Never rely on hiding UI alone - guards must also enforce the route, and the server must enforce authorization anyway.",
       "examples": [
-        "Route guard + structural directive",
-        "// guard\ncanMatch: [() => {\n  const auth = inject(AuthService);\n  return auth.roles().includes('admin') ? true : inject(Router).createUrlTree(['/login']);\n}]\n\n// directive\n@Directive({ selector: '[appHasRole]' })\nexport class HasRole {\n  roles = input.required<string[]>();\n  private readonly tpl = inject(TemplateRef<unknown>);\n  private readonly vcr = inject(ViewContainerRef);\n  // render the embedded view only when the current user has the role\n}",
-        "The guard protects the route and (with canMatch) the download; the directive only shapes the UI. The backend must still authorise."
+        {
+          "title": "Route guard + structural directive",
+          "code": "// guard\ncanMatch: [() => {\n  const auth = inject(AuthService);\n  return auth.roles().includes('admin') ? true : inject(Router).createUrlTree(['/login']);\n}]\n\n// directive\n@Directive({ selector: '[appHasRole]' })\nexport class HasRole {\n  roles = input.required<string[]>();\n  private readonly tpl = inject(TemplateRef<unknown>);\n  private readonly vcr = inject(ViewContainerRef);\n  // render the embedded view only when the current user has the role\n}",
+          "explanation": "The guard protects the route and (with canMatch) the download; the directive only shapes the UI. The backend must still authorise."
+        }
       ]
     },
     {
@@ -517,9 +632,11 @@
       "question": "Two routes must be lazy-loaded, but only admin users may reach the Reports route. How do you set that up?",
       "answer": "Use a guard that checks the user's role from the auth store before entry. Prefer canMatch (which runs before the module is loaded) over canActivate only, so the lazy Reports bundle is never downloaded for unauthorized users. Pair it with loadComponent routing so admin access and code-splitting both hold.",
       "examples": [
-        "canMatch keeps the bundle private",
-        "{ path: 'reports',\n  canMatch: [adminGuard],   // runs BEFORE the chunk is fetched\n  loadComponent: () => import('./reports/reports').then(c => c.Reports) }",
-        "canActivate checks after the route is matched (chunk already requested); canMatch blocks earlier, so unauthorised users never download the code."
+        {
+          "title": "canMatch keeps the bundle private",
+          "code": "{ path: 'reports',\n  canMatch: [adminGuard],   // runs BEFORE the chunk is fetched\n  loadComponent: () => import('./reports/reports').then(c => c.Reports) }",
+          "explanation": "canActivate checks after the route is matched (chunk already requested); canMatch blocks earlier, so unauthorised users never download the code."
+        }
       ]
     },
     {
@@ -837,9 +954,11 @@
       "question": "What is tree shaking?",
       "answer": "Tree shaking is a build-time optimization where the bundler removes dead or unused code that is never referenced, resulting in a smaller bundle. It only works on modules that are side-effect-free, which is why Angular marks its libraries with sideEffects: false — so util imports that aren't used can be eliminated.",
       "examples": [
-        "Tree shaking needs side-effect-free metadata",
-        "// package.json of an Angular library\n{\n  \"name\": \"my-lib\",\n  \"sideEffects\": false\n}\n\n// effectful import survives the bundler even if unused\nimport './polyfills';",
-        "With sideEffects: false the bundler can drop unused exports entirely; modules with side effects must be marked or kept."
+        {
+          "title": "Tree shaking needs side-effect-free metadata",
+          "code": "// package.json of an Angular library\n{\n  \"name\": \"my-lib\",\n  \"sideEffects\": false\n}\n\n// effectful import survives the bundler even if unused\nimport './polyfills';",
+          "explanation": "With sideEffects: false the bundler can drop unused exports entirely; modules with side effects must be marked or kept."
+        }
       ]
     },
     {
@@ -850,9 +969,11 @@
       "question": "What is AOT vs JIT compilation?",
       "answer": "JIT compiles Angular templates and decorators at runtime in the browser, while AOT compiles them ahead-of-time during the build. AOT is the default today: it catches template errors at build time, runs faster in the browser, and ships less runtime compiler code.",
       "examples": [
-        "AOT vs JIT at runtime",
-        "// JIT - compiles in the browser (needs the compiler shipped to the client)\nimport '@angular/compiler';\n\n// AOT - compiled during ng build; template errors fail the BUILD",
-        "AOT shifts compilation to the build step: smaller runtime bundle, faster startup, template errors caught in CI."
+        {
+          "title": "AOT vs JIT at runtime",
+          "code": "// JIT - compiles in the browser (needs the compiler shipped to the client)\nimport '@angular/compiler';\n\n// AOT - compiled during ng build; template errors fail the BUILD",
+          "explanation": "AOT shifts compilation to the build step: smaller runtime bundle, faster startup, template errors caught in CI."
+        }
       ]
     },
     {
@@ -863,9 +984,16 @@
       "question": "What is hydration and why does it matter?",
       "answer": "Hydration is the process that attaches the JavaScript runtime behaviour (event listeners, signals, data binding) to server-rendered HTML after load. The browser first paints the server HTML instantly, then Angular 'adopts' it instead of re-creating the whole DOM, which makes the page feel fast.",
       "examples": [
-        "Skipping hydration for a subtree",
-        "<app-heavy-chart hydrate=\"never\"></app-heavy-chart>",
-        "hydrate=\"never\" leaves that subtree as static HTML until it must become interactive, cutting JS work on first load."
+        {
+          "title": "Hydration annotations in the DOM",
+          "code": "<app-root ngh=\"0\" ngh-ref=\"ng-component\"><h1>Server HTML</h1></app-root>",
+          "explanation": "Angular looks for these markers to attach listeners and bindings to existing markup instead of re-rendering the DOM."
+        },
+        {
+          "title": "Skipping hydration for a subtree",
+          "code": "<app-heavy-chart hydrate=\"never\"></app-heavy-chart>",
+          "explanation": "hydrate=\"never\" leaves that subtree as static HTML until it must become interactive, cutting JS work on first load."
+        }
       ]
     },
     {
@@ -876,9 +1004,16 @@
       "question": "What are Angular signals and how do they relate to RxJS?",
       "answer": "Signals are synchronous, granular reactive primitives — a value that notifies its dependents when it changes. They cover a lot of 'one value over time' cases more simply than RxJS Observables, but they are not a replacement: RxJS remains the tool for event streams, streaming values and side-effect pipelines. The two integrate via toObservable and toSignal.",
       "examples": [
-        "Observable feeding a signal",
-        "readonly user = toSignal(this.userService.user$, { initialValue: null });",
-        "toObservable/toSignal keep async streams usable while the view stays signal-based."
+        {
+          "title": "Signals feeding a template",
+          "code": "readonly total = signal(0);\nreadonly doubled = computed(() => this.total() * 2);",
+          "explanation": "signals() reads synchronously in the template - {{ doubled() }} - no async pipe, no manual subscription."
+        },
+        {
+          "title": "Observable feeding a signal",
+          "code": "readonly user = toSignal(this.userService.user$, { initialValue: null });",
+          "explanation": "toObservable/toSignal keep async streams usable while the view stays signal-based."
+        }
       ]
     },
     {
@@ -889,9 +1024,16 @@
       "question": "What is change detection and how does zoneless mode change it?",
       "answer": "Change detection is how Angular decides what to update in the DOM when state changes. In classic apps it runs on every event via Zone.js, scanning the component tree. Zoneless apps drop Zone.js: state changes are only triggered by explicitly scheduled signals (notify/effect), so change detection runs exactly when data actually changes - fewer unnecessary runs, less overhead.",
       "examples": [
-        "Explicit notification for non-signal writes",
-        "this.renderer.setAttribute(el, 'aria-busy', 'true'); this.notify();",
-        "Anything that mutates state outside signals needs notify() so the app knows to check again."
+        {
+          "title": "Signals replace zone-triggered checks",
+          "code": "count = signal(0);\nincrement() { this.count.update(c => c + 1); }   // notifies only what reads count()",
+          "explanation": "Without Zone.js, change detection is scheduled by signal notification instead of every patched browser event."
+        },
+        {
+          "title": "Explicit notification for non-signal writes",
+          "code": "this.renderer.setAttribute(el, 'aria-busy', 'true'); this.notify();",
+          "explanation": "Anything that mutates state outside signals needs notify() so the app knows to check again."
+        }
       ]
     },
     {
@@ -902,9 +1044,11 @@
       "question": "What is a standalone component?",
       "answer": "A standalone component is one that does not belong to an NgModule: it declares its own imports, services, pipes and directives directly in its imports array. Since Angular 19 standalone is the default for new apps and makes lazy-loading routes with loadComponent straightforward.",
       "examples": [
-        "Standalone is just an imports array",
-        "@Component({\n  selector: 'app-card',\n  standalone: true,          // default since v19\n  imports: [MatButton, DatePipe],\n  template: `<button matButton>{{ date | date }}</button>`,\n})\nexport class Card {}",
-        "No NgModule to register: dependencies are declared on the component itself, which is what makes loadComponent lazy routes trivial."
+        {
+          "title": "Standalone is just an imports array",
+          "code": "@Component({\n  selector: 'app-card',\n  standalone: true,          // default since v19\n  imports: [MatButton, DatePipe],\n  template: `<button matButton>{{ date | date }}</button>`,\n})\nexport class Card {}",
+          "explanation": "No NgModule to register: dependencies are declared on the component itself, which is what makes loadComponent lazy routes trivial."
+        }
       ]
     }
   ],

@@ -3,16 +3,14 @@
     <mat-expansion-panel>
       <mat-expansion-panel-header>
         <mat-panel-title>
-          <span
-            class="mr-2 tabular-nums text-[color:var(--mat-sys-primary)]"
-          >{{ $index + 1 }}.</span>
+          <span class="mr-2 tabular-nums text-[color:var(--mat-sys-primary)]"
+            >{{ $index + 1 }}.</span
+          >
           {{ faq.question }}
         </mat-panel-title>
       </mat-expansion-panel-header>
 
-      <p
-        class="mx-4 mb-2 leading-relaxed text-[color:var(--mat-sys-on-surface-variant)]"
-      >
+      <p class="mx-4 mb-2 leading-relaxed text-[color:var(--mat-sys-on-surface-variant)]">
         {{ faq.answer }}
       </p>
 
@@ -20,9 +18,7 @@
         <section class="mx-4 mb-4 flex flex-col gap-4">
           @for (example of faq.examples; track example.title) {
             <div>
-              <h3
-                class="mb-2 text-sm font-semibold text-[color:var(--mat-sys-on-surface)]"
-              >
+              <h3 class="mb-2 text-sm font-semibold text-[color:var(--mat-sys-on-surface)]">
                 {{ example.title }}
               </h3>
               <pre
