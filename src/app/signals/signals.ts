@@ -3,8 +3,8 @@ import { QuestionList } from '../shared/question-list/question-list';
 
 @Component({
   imports: [QuestionList],
-  selector: 'app-css',
+  selector: 'app-signals',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './css.html',
+  templateUrl: './signals.html',
 })
-export class Css {}
+export class Signals {}

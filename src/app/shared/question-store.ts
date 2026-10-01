@@ -14,15 +14,16 @@ const initialState: QuestionStoreState = {
 };
 
 export const QuestionStore = signalStore(
+  { providedIn: 'root' },
   withState(initialState),
   withHooks((store) => ({
     onInit() {
       const saved = localStorage.getItem('q-flags');
       if (saved) {
-        const flags = JSON.parse(saved) as Record<
-          string,
-          Pick<Question, 'importance' | 'forLater'>
-        >;
+        const persisted = JSON.parse(saved) as Pick<Question, 'id' | 'importance' | 'forLater'>[];
+        const flags = Object.fromEntries(
+          persisted.map(({ id, importance, forLater }) => [id, { importance, forLater }]),
+        );
         patchState(store, {
           questionData: seed.map((q) => ({ ...q, ...flags[q.id] })),
         });
