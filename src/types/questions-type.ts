@@ -1,5 +1,14 @@
 export type Importance = 'low' | 'medium' | 'high';
-export type Category = 'html' | 'css' | 'javascript' | 'angular' | 'rxjs' | 'signals' | 'misc';
+export type Category =
+  | 'html'
+  | 'css'
+  | 'javascript'
+  | 'angular'
+  | 'performance'
+  | 'rxjs'
+  | 'signals'
+  | 'misc'
+  | 'behavioural';
 export interface QuestionExample {
   title: string;
   code: string;

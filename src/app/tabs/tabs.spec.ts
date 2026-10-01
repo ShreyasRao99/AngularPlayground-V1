@@ -20,4 +20,20 @@ describe('Tabs', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should link to every question category', () => {
+    // `links` is protected, so reach it through the instance by index signature
+    const routes = component['links'].map((link) => link.route);
+    expect(routes).toEqual([
+      '/html',
+      '/css',
+      '/angular',
+      '/javascript',
+      '/performance',
+      '/rxjs',
+      '/signals',
+      '/misc',
+      '/behavioural',
+    ]);
+  });
 });

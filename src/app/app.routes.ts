@@ -13,7 +13,15 @@ export const routes: Routes = [
     path: 'javascript',
     loadComponent: () => import('./javascript/javascript').then((c) => c.Javascript),
   },
+  {
+    path: 'performance',
+    loadComponent: () => import('./performance/performance').then((c) => c.Performance),
+  },
   { path: 'rxjs', loadComponent: () => import('./rxjs/rxjs').then((c) => c.RxJS) },
   { path: 'signals', loadComponent: () => import('./signals/signals').then((c) => c.Signals) },
   { path: 'misc', loadComponent: () => import('./misc/misc').then((c) => c.Misc) },
+  {
+    path: 'behavioural',
+    loadComponent: () => import('./behavioural/behavioural').then((c) => c.Behavioural),
+  },
 ];

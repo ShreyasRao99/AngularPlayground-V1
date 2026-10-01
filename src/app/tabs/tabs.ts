@@ -32,6 +32,10 @@ export class Tabs {
       route: '/javascript',
     },
     {
+      label: 'PERFORMANCE',
+      route: '/performance',
+    },
+    {
       label: 'RXJS',
       route: '/rxjs',
     },
@@ -42,6 +46,10 @@ export class Tabs {
     {
       label: 'MISC',
       route: '/misc',
+    },
+    {
+      label: 'BEHAVIOURAL',
+      route: '/behavioural',
     },
   ];
 }
