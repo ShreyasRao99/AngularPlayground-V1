@@ -4,6 +4,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
 
+const FEEDBACK_RECIPIENT = 'shreyasrao20000@gmail.com';
+const FEEDBACK_SUBJECT = 'Angular Playground V1 - Suggestion/Feedback';
+
 @Component({
   imports: [MatToolbarModule, MatButtonModule, MatIconModule, MatMenuModule],
   selector: 'app-header',
@@ -11,10 +14,10 @@ import { MatMenuModule } from '@angular/material/menu';
   templateUrl: './header.html',
 })
 export class Header {
+  readonly feedbackMailto = `mailto:${FEEDBACK_RECIPIENT}?subject=${encodeURIComponent(FEEDBACK_SUBJECT)}`;
+
   openFeedback(event: Event): void {
     event.preventDefault();
-    const recipient = 'shreyasrao20000@gmail.com';
-    const subject = 'Angular Playground V1 - Suggestion/Feedback';
-    window.location.href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}`;
+    window.location.href = this.feedbackMailto;
   }
 }
