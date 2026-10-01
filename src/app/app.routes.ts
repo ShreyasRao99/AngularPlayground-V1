@@ -20,6 +20,7 @@ export const routes: Routes = [
   { path: 'rxjs', loadComponent: () => import('./rxjs/rxjs').then((c) => c.RxJS) },
   { path: 'signals', loadComponent: () => import('./signals/signals').then((c) => c.Signals) },
   { path: 'misc', loadComponent: () => import('./misc/misc').then((c) => c.Misc) },
+  { path: 'poc', loadComponent: () => import('./poc/poc').then((c) => c.Poc) },
   {
     path: 'behavioural',
     loadComponent: () => import('./behavioural/behavioural').then((c) => c.Behavioural),

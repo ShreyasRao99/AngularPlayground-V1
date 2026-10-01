@@ -48,6 +48,10 @@ export class Tabs {
       route: '/misc',
     },
     {
+      label: 'POC',
+      route: '/poc',
+    },
+    {
       label: 'Behavioural',
       route: '/behavioural',
     },

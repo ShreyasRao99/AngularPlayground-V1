@@ -5,7 +5,7 @@
 }
 
 /*
- * Nine categories are wider than a phone viewport, so fade the trailing edge to
+ * Ten categories are wider than a phone viewport, so fade the trailing edge to
  * signal there is more to scroll to. Only applied on small screens — at md and
  * up every tab fits and a permanent fade would just dim the last one.
  */
