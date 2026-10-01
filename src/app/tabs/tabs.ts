@@ -28,6 +28,18 @@ export class Tabs {
       route: '/angular',
     },
     {
+      label: 'JAVASCRIPT',
+      route: '/javascript',
+    },
+    {
+      label: 'RXJS',
+      route: '/rxjs',
+    },
+    {
+      label: 'SIGNALS',
+      route: '/signals',
+    },
+    {
       label: 'MISC',
       route: '/misc',
     },

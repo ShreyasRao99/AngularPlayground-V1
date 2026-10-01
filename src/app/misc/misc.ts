@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { QuestionList } from '../shared/question-list/question-list';
 
 @Component({
-  imports: [],
+  imports: [QuestionList],
   selector: 'app-misc',
-  styleUrl: './misc.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './misc.html',
 })
 export class Misc {}

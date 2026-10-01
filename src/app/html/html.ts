@@ -1,14 +1,10 @@
-import { Component } from '@angular/core';
-import { MatExpansionModule } from '@angular/material/expansion';
-import questions from '../shared/questions.json';
-import { Question } from '../../types/questions-type';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { QuestionList } from '../shared/question-list/question-list';
 
 @Component({
-  imports: [MatExpansionModule],
+  imports: [QuestionList],
   selector: 'app-html',
-  styleUrl: './html.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './html.html',
 })
-export class Html {
-  protected readonly faqs: Question[] = questions.html as Question[];
-}
+export class Html {}

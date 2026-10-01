@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { QuestionList } from '../shared/question-list/question-list';
 
 @Component({
-  imports: [],
+  imports: [QuestionList],
   selector: 'app-angular',
-  styleUrl: './angular.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './angular.html',
 })
 export class Angular {}

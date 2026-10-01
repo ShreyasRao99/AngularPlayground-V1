@@ -2,120 +2,1521 @@
   "html": [
     {
       "id": "html-1",
+      "category": "html",
       "importance": "medium",
       "forLater": false,
       "question": "What is semantic HTML?",
-      "answer": "Semantic HTML uses tags that describe their meaning rather than only their appearance — header, nav, main, article, section, aside and footer. It improves accessibility for screen readers and helps search engines understand the page structure, while also making the code easier to read for other developers."
+      "answer": "Semantic HTML uses tags that describe their meaning rather than only their appearance — header, nav, main, article, section, aside and footer. It improves accessibility for screen readers and helps search engines understand the page structure, while also making the code easier to read for other developers.",
+      "examples": [
+        "Semantic structure of a page",
+        "<body>\n  <header><nav aria-label=\"Main\">...</nav></header>\n  <main>\n    <article>\n      <h1>Title</h1>\n      <section><h2>Details</h2>...</section>\n    </article>\n    <aside>Related links</aside>\n  </main>\n  <footer>...</footer>\n</body>",
+        "header/nav/main/article/section/aside/footer describe meaning, so screen readers and search engines get the structure for free."
+      ]
     },
     {
       "id": "html-2",
+      "category": "html",
       "importance": "medium",
       "forLater": false,
       "question": "What is the difference between a div and a span?",
-      "answer": "A div is a block-level container that takes the full available width and starts on a new line, while a span is an inline container that flows inside a line of text. Use a div to group larger layout blocks and a span to style or group a fragment of text without breaking the line."
+      "answer": "A div is a block-level container that takes the full available width and starts on a new line, while a span is an inline container that flows inside a line of text. Use a div to group larger layout blocks and a span to style or group a fragment of text without breaking the line.",
+      "examples": [
+        "block vs inline vs span",
+        "<style>\n  .box { width: 100px; height: 40px; background: #90caf9; }\n  .tag  { background: #ffcc80; }\n</style>\n\n<div class=\"box\"></div>   <!-- block: own line, full width -->\n<span class=\"tag\">A</span><span class=\"tag\">B</span>  <!-- inline: flows in the line -->",
+        "div is block-level, so it breaks the line and stretches; spans sit side by side inside the surrounding text."
+      ]
     },
     {
       "id": "html-3",
+      "category": "html",
       "importance": "medium",
       "forLater": false,
       "question": "When should I use a class instead of an id?",
-      "answer": "An id must be unique on the page and is used when you need to identify a single element — for example as an anchor, or a CSS selector that definitely targets one node. A class can be reused across many elements, so if a style or behaviour applies to more than one element, prefer a class."
+      "answer": "An id must be unique on the page and is used when you need to identify a single element — for example as an anchor, or a CSS selector that definitely targets one node. A class can be reused across many elements, so if a style or behaviour applies to more than one element, prefer a class.",
+      "examples": [
+        "id for one node, class for many",
+        "<style>\n  #main-banner { background: gold; }   /* one element only */\n  .chip { border-radius: 999px; }          /* reused everywhere */\n</style>\n\n<div id=\"main-banner\">Sale</div>\n<span class=\"chip\">new</span>\n<span class=\"chip\">beta</span>",
+        "The id must be unique and is what fragment links (#main-banner) and JS lookups use; the class is the reusable hook."
+      ]
     },
     {
       "id": "html-4",
+      "category": "html",
       "importance": "medium",
       "forLater": false,
       "question": "How do I make an image render well on different screen sizes?",
-      "answer": "Let the image scale proportionally with max-width: 100% and height: auto, and provide several source variants using the srcset and sizes attributes so the browser picks the right file for the viewport. Reserve the space with width and height attributes to avoid layout shift while loading."
+      "answer": "Let the image scale proportionally with max-width: 100% and height: auto, and provide several source variants using the srcset and sizes attributes so the browser picks the right file for the viewport. Reserve the space with width and height attributes to avoid layout shift while loading.",
+      "examples": [
+        "Responsive image with srcset",
+        "<img\n  src=\"hero-800.jpg\"\n  srcset=\"hero-400.jpg 400w, hero-800.jpg 800w, hero-1600.jpg 1600w\"\n  sizes=\"(max-width: 640px) 100vw, 50vw\"\n  width=\"1600\" height=\"900\"\n  alt=\"Team reviewing a dashboard\"\n  style=\"max-width:100%;height:auto\">",
+        "srcset+sizes let the browser pick the smallest file that still looks sharp; width/height reserve the box to avoid layout shift."
+      ]
     },
     {
       "id": "html-5",
+      "category": "html",
       "importance": "medium",
       "forLater": false,
       "question": "Why is the alt attribute important on images?",
-      "answer": "The alt attribute provides a text alternative that is announced by screen readers and shown when the image fails to load. It is required when the image conveys information, and should describe the content or purpose. Decorative images can use an empty alt=\"\", but hiding them without an attribute hurts accessibility."
+      "answer": "The alt attribute provides a text alternative that is announced by screen readers and shown when the image fails to load. It is required when the image conveys information, and should describe the content or purpose. Decorative images can use an empty alt=\"\", but hiding them without an attribute hurts accessibility.",
+      "examples": [
+        "Meaningful vs decorative alt",
+        "<img src=\"chart.png\" alt=\"Revenue grew from 2.1M to 3.4M in Q3\">\n\n<img src=\"divider.svg\" alt=\"\">   <!-- decorative: say nothing -->\n\n<img src=\"icon.png\">               <!-- no alt at all: screen readers read the filename -->",
+        "Describe the information for content images; use alt=\"\" for decoration so it is skipped, and never omit alt for meaningful images."
+      ]
     },
     {
       "id": "html-6",
+      "category": "html",
       "importance": "medium",
       "forLater": false,
       "question": "How do I show a block of code on a page?",
-      "answer": "Wrap the lines in pre/code tags to keep whitespace and line breaks intact. Escape raw angle brackets as &lt; and &gt; inside the block, and add overflow-x: auto so long lines scroll horizontally instead of breaking the layout."
+      "answer": "Wrap the lines in pre/code tags to keep whitespace and line breaks intact. Escape raw angle brackets as &lt; and &gt; inside the block, and add overflow-x: auto so long lines scroll horizontally instead of breaking the layout.",
+      "examples": [
+        "Code block that survives long lines",
+        "<pre><code class=\"language-ts\">const total = items\n  .filter(i =&gt; i.active)\n  .reduce((s, i) =&gt; s + i.price, 0);</code></pre>\n\n<style>\n  pre { overflow-x: auto; }\n  code { font-family: ui-monospace, monospace; }\n</style>",
+        "pre keeps whitespace and newlines, escaped &lt; &gt; stop the browser parsing tags, and overflow-x keeps one long line from breaking the layout."
+      ]
+    },
+    {
+      "id": "html-7",
+      "category": "html",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is the difference between <article> and <section>?",
+      "answer": "<article> is a self-contained composition that makes sense on its own - a blog post, a news story, a comment - and could be syndicated or reused independently. <section> is a thematic grouping of related content within a page, usually with a heading. Use section to break up a long page, article for content that stands alone; an article can contain sections.",
+      "examples": [
+        {
+          "title": "<article> vs <section>",
+          "code": "<article>\n  <h2>Blog Post</h2>\n  <section>\n    <h3>Intro</h3>\n    <p>...</p>\n  </section>\n</article>",
+          "explanation": "article is standalone/reusable; section groups related content with a heading."
+        }
+      ]
+    },
+    {
+      "id": "html-8",
+      "category": "html",
+      "importance": "medium",
+      "forLater": false,
+      "question": "How do you correctly associate a <label> with a form control?",
+      "answer": "Give the control an id and point the label's for attribute at it, or nest the control inside the label. The association means clicking the label focuses/activates the control and screen readers announce the label text. A placeholder attribute is not a substitute - it disappears when the user types and is poorly announced.",
+      "examples": [
+        {
+          "title": "Label association",
+          "code": "<label for=\"email\">Email</label>\n<input id=\"email\" type=\"email\">\n\n<!-- or nested -->\n<label>Email <input type=\"email\"></label>",
+          "explanation": "Use for+id or nesting for accessibility and click-to-focus."
+        }
+      ]
+    },
+    {
+      "id": "html-9",
+      "category": "html",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is the difference between async and defer on a <script> tag?",
+      "answer": "Both load the script without blocking HTML parsing. defer downloads in parallel and executes once the document has been parsed, in order, right before DOMContentLoaded - reliable for scripts that touch the DOM. async downloads in parallel and executes as soon as it is ready, interrupting parsing and ignoring order - fine for analytics but unsafe for interdependent scripts.",
+      "examples": [
+        {
+          "title": "async vs defer",
+          "code": "<!-- executes as soon as loaded, order not guaranteed -->\n<script async src=\"analytics.js\"></script>\n\n<!-- executes after parsing, in order -->\n<script defer src=\"vendor.js\"></script>\n<script defer src=\"app.js\"></script>",
+          "explanation": "defer preserves execution order and runs before DOMContentLoaded."
+        }
+      ]
+    },
+    {
+      "id": "html-10",
+      "category": "html",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is the viewport meta tag and why does it matter on mobile?",
+      "answer": "<meta name='viewport' content='width=device-width, initial-scale=1'> tells the browser to render at the device width instead of a desktop-width virtual viewport. Without it, mobile browsers zoom out to fit a desktop layout, making text tiny and tap targets hard to hit. It is the HTML precondition for responsive CSS to work.",
+      "examples": [
+        {
+          "title": "Viewport meta",
+          "code": "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">",
+          "explanation": "Ensures mobile renders at device width for responsive layouts."
+        }
+      ]
+    },
+    {
+      "id": "html-11",
+      "category": "html",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is the difference between <strong>/<em> and <b>/<i>?",
+      "answer": "<strong> and <em> carry meaning: strong implies importance (read as emphasis by screen readers, often bold), em adds stress emphasis (often italic). <b> and <i> are purely presentational - b is bold text, i is italic text - and pass no semantic meaning. Prefer the semantic pair and style them with CSS; reserve b/i for purely visual effects.",
+      "examples": [
+        {
+          "title": "Semantic vs presentational",
+          "code": "<p>This is <strong>important</strong> and <em>emphasized</em>.</p>\n<p>This is <b>bold</b> and <i>italic</i>.</p>",
+          "explanation": "strong/em carry meaning; b/i are purely visual."
+        }
+      ]
+    },
+    {
+      "id": "html-12",
+      "category": "html",
+      "importance": "medium",
+      "forLater": false,
+      "question": "How does native browser form validation work and when would you disable it?",
+      "answer": "Constraints like required, type='email', min/max length and the pattern attribute are validated by the browser: the form is blocked from submitting and the :invalid pseudo-class lets you style errors. Setting novalidate (or noValidate) on the form disables native bubbles so you can run your own validation - useful when you need consistent messaging or server-side rules.",
+      "examples": [
+        {
+          "title": "Form validation",
+          "code": "<form novalidate (ngSubmit)=\"submit()\">\n  <input required type=\"email\">\n  <button>Submit</button>\n</form>",
+          "explanation": "novalidate disables native validation for custom error handling."
+        }
+      ]
     }
   ],
   "css": [
     {
       "id": "css-1",
+      "category": "css",
       "importance": "medium",
       "forLater": false,
       "question": "What is the CSS box model?",
-      "answer": "Every element is rendered as a box made of four layers, from the inside out: content, padding, border and margin. Content holds the actual content, padding adds space between content and border, the border frames the box, and margin creates space between this box and its neighbours. box-sizing: border-box makes width and height include padding and border."
+      "answer": "Every element is rendered as a box made of four layers, from the inside out: content, padding, border and margin. Content holds the actual content, padding adds space between content and border, the border frames the box, and margin creates space between this box and its neighbours. box-sizing: border-box makes width and height include padding and border.",
+      "examples": [
+        "Box model with content-box vs border-box",
+        ".card {\n  width: 200px;\n  padding: 20px;\n  border: 5px solid #333;\n  box-sizing: content-box;  /* total width = 250px */\n}\n\n*, *::before, *::after { box-sizing: border-box; }\n/* now width:200px INCLUDES padding+border -> total stays 200px */",
+        "content-box measures only the content; border-box makes width/height include padding and border, which is why global resets set it."
+      ]
     },
     {
       "id": "css-2",
+      "category": "css",
       "importance": "medium",
       "forLater": false,
       "question": "What is the difference between padding and margin?",
-      "answer": "Padding is the space inside the element, between the content and the border. Margin is the space outside the element, between the border and neighbouring elements. Padding is always part of the element's background; margins collapse with adjacent margins."
+      "answer": "Padding is the space inside the element, between the content and the border. Margin is the space outside the element, between the border and neighbouring elements. Padding is always part of the element's background; margins collapse with adjacent margins.",
+      "examples": [
+        "Padding is inside, margin is outside",
+        ".btn {\n  padding: 8px 16px;   /* inside the border */\n  margin: 12px;          /* between this and neighbours */\n  border: 2px solid;\n}",
+        "Padding grows the element and shows its background; margin separates elements and can collapse with an adjacent margin."
+      ]
     },
     {
       "id": "css-3",
+      "category": "css",
       "importance": "medium",
       "forLater": false,
       "question": "What is the difference between block, inline and inline-block?",
-      "answer": "Block elements start on a new line and fill the available width. Inline elements flow within a line of text and ignore width and height. Inline-block flows inline but respects width, height and vertical margins like a block, which makes it useful for grid-like layouts."
+      "answer": "Block elements start on a new line and fill the available width. Inline elements flow within a line of text and ignore width and height. Inline-block flows inline but respects width, height and vertical margins like a block, which makes it useful for grid-like layouts.",
+      "examples": [
+        "inline-block",
+        ".badge { display: inline-block; width: 80px; height: 24px; }",
+        "Flows inline but respects width, height and vertical margin - a building block for chip/button rows."
+      ]
     },
     {
       "id": "css-4",
+      "category": "css",
       "importance": "medium",
       "forLater": false,
       "question": "What do align-items and justify-content do in flexbox?",
-      "answer": "justify-content controls the distribution of items along the main axis (the flex container's flex-direction). align-items controls alignment along the cross axis, which is perpendicular to the main axis. For a default row layout, justify-content is horizontal and align-items is vertical."
+      "answer": "justify-content controls the distribution of items along the main axis (the flex container's flex-direction). align-items controls alignment along the cross axis, which is perpendicular to the main axis. For a default row layout, justify-content is horizontal and align-items is vertical.",
+      "examples": [
+        "Row vs column flexbox",
+        ".row  { display: flex; flex-direction: row;            justify-content: space-between; align-items: center; }\n.col  { display: flex; flex-direction: column;         justify-content: space-between; align-items: stretch; }",
+        "justify-content works along flex-direction (main axis), align-items across it (cross axis) - swap the two when you switch direction."
+      ]
     },
     {
       "id": "css-5",
+      "category": "css",
       "importance": "medium",
       "forLater": false,
       "question": "How do you center a block element horizontally?",
-      "answer": "Give the element a width and set margin-inline: auto (or margin-left and margin-right to auto). The auto margins split the remaining space equally on both sides. Flexbox centers with display: flex and justify-content: center for a row of items."
+      "answer": "Give the element a width and set margin-inline: auto (or margin-left and margin-right to auto). The auto margins split the remaining space equally on both sides. Flexbox centers with display: flex and justify-content: center for a row of items.",
+      "examples": [
+        "Centering with flexbox",
+        ".wrapper { display: flex; justify-content: center; align-items: center; height: 100vh; }\n.centered { width: 300px; }",
+        "Centres both axes without knowing the size, and works for any number of children."
+      ]
+    },
+    {
+      "id": "css-6",
+      "category": "css",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What are specificity and the cascade, and where does !important fit in?",
+      "answer": "The cascade decides which rule wins when selectors conflict; specificity ranks them by id (highest), class/attribute/pseudo-class, and type selectors, with inline styles winning over all of them. !important overrides the cascade entirely - which is why it is a code smell: it is hard to beat without another !important and makes the source of a style unpredictable. Prefer increasing specificity or the origin of the stylesheet instead.",
+      "examples": [
+        {
+          "title": "Specificity example",
+          "code": "/* specificity: 0,0,1 */ p {}\n/* 0,1,0 */ .note {}\n/* 1,0,0 */ #main {}\n/* wins over all except another !important */ .foo { color: red !important; }",
+          "explanation": "Cascade + specificity decide; !important breaks the normal order."
+        }
+      ]
+    },
+    {
+      "id": "css-7",
+      "category": "css",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What are CSS custom properties (variables) and how are themes built with them?",
+      "answer": "Custom properties are defined on a selector with --name and read with var(--name). They cascade and can be redefined on a themed container, which is how theming works: define --primary, --bg and --text on :root, then override them on a .dark or [data-theme='dark'] selector. Because they cascade, a component can read var(--primary) and automatically adapt to whichever theme is active.",
+      "examples": [
+        {
+          "title": "CSS variables for theming",
+          "code": ":root {\n  --bg: #fff;\n  --text: #111;\n}\n\n[data-theme='dark'] {\n  --bg: #111;\n  --text: #fff;\n}\n\nbody {\n  background: var(--bg);\n  color: var(--text);\n}",
+          "explanation": "Redefining on a container/theme selector cascades to all children."
+        }
+      ]
+    },
+    {
+      "id": "css-8",
+      "category": "css",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is the difference between position: relative, absolute, fixed and sticky?",
+      "answer": "relative offsets an element from its normal flow position without removing it from flow. absolute takes the element out of flow and positions it relative to the nearest positioned ancestor (a relative/absolute parent); without one, relative to the containing block. fixed positions it relative to the viewport, so it stays put while scrolling. sticky toggles between relative and fixed as the element crosses a scroll threshold - useful for section headers.",
+      "examples": [
+        {
+          "title": "Positioning",
+          "code": ".parent { position: relative; height: 200px; }\n.child-abs { position: absolute; top: 10px; right: 10px; }\n.sticky { position: sticky; top: 0; }",
+          "explanation": "absolute relative to nearest positioned ancestor; sticky toggles on scroll."
+        }
+      ]
+    },
+    {
+      "id": "css-9",
+      "category": "css",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What are responsive breakpoints and why is mobile-first preferable?",
+      "answer": "Breakpoints are viewport widths where the layout changes, defined with media queries (@media (min-width: 768px)). Mobile-first means you write the base styles for small screens and layer on wider layouts with min-width queries, so narrow devices get less CSS and no override churn. Because min-width is additive, wide screens upgrade rather than narrow screens override.",
+      "examples": [
+        {
+          "title": "Mobile-first",
+          "code": "/* base mobile */ .grid { display: block; }\n/* tablet+ */ @media (min-width: 768px) { .grid { display: grid; grid-template-columns: 1fr 1fr; } }",
+          "explanation": "min-width queries add layout as viewport grows."
+        }
+      ]
+    },
+    {
+      "id": "css-10",
+      "category": "css",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is the difference between px, rem, em, % and vw/vh?",
+      "answer": "px is a fixed unit; rem is relative to the root font-size (so 2rem scales with the user's base size and stays predictable); em is relative to the element's own font-size and compounds as it nests; % is relative to the parent's size for the same property; vw/vh are 1% of viewport width/height. Prefer rem for spacing and text so zoom and browser font settings work, and %/flex units for layout.",
+      "examples": [
+        {
+          "title": "Units",
+          "code": "html { font-size: 16px; }\n.card { padding: 1rem; /* 16px */ margin: 0.5em; /* relative to current font */ width: 50%; height: 50vh; }",
+          "explanation": "rem predictable for spacing; em compounds; % parent-based; vh/vw viewport-based."
+        }
+      ]
+    },
+    {
+      "id": "css-11",
+      "category": "css",
+      "importance": "medium",
+      "forLater": false,
+      "question": "When would you use CSS Grid and when Flexbox?",
+      "answer": "Grid is two-dimensional - it sizes and positions items across explicit rows and columns, ideal for page layouts, card grids and dashboards. Flexbox is one-dimensional - it distributes items along a single axis, ideal for navbars, aligning rows, centering and wrapping lists. Modern usage: Grid for the big layout skeleton, Flexbox for everyday alignment inside cells; they compose, not compete.",
+      "examples": [
+        {
+          "title": "Grid vs Flexbox",
+          "code": ".layout { display: grid; grid-template-columns: 200px 1fr; gap: 1rem; }\n.nav { display: flex; gap: .5rem; justify-content: space-between; align-items: center; }",
+          "explanation": "Grid 2D layout skeleton; Flexbox 1D alignment."
+        }
+      ]
     }
   ],
   "angular": [
     {
       "id": "angular-1",
+      "category": "angular",
       "importance": "medium",
       "forLater": false,
       "question": "What is a component in Angular?",
-      "answer": "A component is an Angular building block that combines an HTML template, styles and a TypeScript class that holds the logic and state. Components are standalone by default in modern Angular and import the dependencies they use directly in their imports array."
+      "answer": "A component is an Angular building block that combines an HTML template, styles and a TypeScript class that holds the logic and state. Components are standalone by default in modern Angular and import the dependencies they use directly in their imports array.",
+      "examples": [
+        "A standalone component",
+        "import { Component, inject } from '@angular/core';\nimport { UserCard } from './user-card';\n\n@Component({\n  selector: 'app-user-list',\n  imports: [UserCard],\n  template: `@for (u of users(); track u.id) { <app-user-card [user]=\"u\" /> }`,\n})\nexport class UserList {\n  private readonly store = inject(UserStore);\n  readonly users = computed(() => this.store.active());\n}",
+        "Template, styles and class in one place; everything it needs is listed in imports."
+      ]
     },
     {
       "id": "angular-2",
+      "category": "angular",
       "importance": "medium",
       "forLater": false,
       "question": "What is data binding in Angular?",
-      "answer": "Data binding connects the component class to the template. Interpolation {{ }} and property binding [property] flow from class to view, event binding (event) flows from view to class, and two-way binding [(ngModel)] or model() flows both ways."
+      "answer": "Data binding connects the component class to the template. Interpolation {{ }} and property binding [property] flow from class to view, event binding (event) flows from view to class, and two-way binding [(ngModel)] or model() flows both ways.",
+      "examples": [
+        "Two-way binding",
+        "<input [ngModel]=\"name()\" (ngModelChange)=\"name.set($event)\" />",
+        "Expands to a property binding plus an event binding; with signals you usually write both sides explicitly."
+      ]
     },
     {
       "id": "angular-3",
+      "category": "angular",
       "importance": "medium",
       "forLater": false,
       "question": "What is an Angular directive?",
-      "answer": "A directive is a class that extends HTML behaviour — structure or presentation — without an associated template. Attribute directives change an element's appearance or behaviour, while structural directives (like @if and @for) add, remove or repeat elements in the DOM."
+      "answer": "A directive is a class that extends HTML behaviour — structure or presentation — without an associated template. Attribute directives change an element's appearance or behaviour, while structural directives (like @if and @for) add, remove or repeat elements in the DOM.",
+      "examples": [
+        "Attribute directive",
+        "<button matButton appAutofocus>Go</button>",
+        "Attribute directives change behaviour or appearance of the host element without adding markup."
+      ]
     },
     {
       "id": "angular-4",
+      "category": "angular",
       "importance": "medium",
       "forLater": false,
       "question": "What is dependency injection?",
-      "answer": "Dependency injection is how Angular provides the services a component or class needs. A class declares its dependencies in its constructor or with inject(), and Angular's injector resolves them. Services marked providedIn: 'root' are app-wide singletons."
+      "answer": "Dependency injection is how Angular provides the services a component or class needs. A class declares its dependencies in its constructor or with inject(), and Angular's injector resolves them. Services marked providedIn: 'root' are app-wide singletons.",
+      "examples": [
+        "Component-provided service",
+        "@Component({\n  providers: [DraftForm],\n})\nexport class Editor {}",
+        "A new instance per component, which is how you keep state from leaking between component instances."
+      ]
     },
     {
       "id": "angular-5",
+      "category": "angular",
       "importance": "medium",
       "forLater": false,
       "question": "What is the difference between @Input and @Output?",
-      "answer": "@Input lets a parent pass data into a child component's property. @Output emits an event from the child that the parent listens to. They are the two halves of component communication: input flows down, output flows up."
+      "answer": "@Input lets a parent pass data into a child component's property. @Output emits an event from the child that the parent listens to. They are the two halves of component communication: input flows down, output flows up.",
+      "examples": [
+        "Output from a child",
+        "removed = output<string>();\n// <app-tag (removed)=\"onRemoved($event)\" />",
+        "Child emits upward so the parent can react - the other half of component communication."
+      ]
+    },
+    {
+      "id": "angular-6",
+      "category": "angular",
+      "importance": "medium",
+      "forLater": false,
+      "question": "A user types in a search box and the whole page feels janky. How do you isolate the cause and fix it?",
+      "answer": "Profile first: use Angular DevTools to spot components running many change-detection cycles and the Chrome performance tab to confirm what is slow. Common fixes: debounceTime(300) + switchMap on the search stream so every keystroke does not hit the API, move heavy computations out of templates into pipes or a computed, add trackBy, use ChangeDetectionStrategy.OnPush on the growing list, and wrap high-frequency handlers like scroll in runOutsideAngular(ngZone). Fix the root cause rather than sprinkling optimizations.",
+      "examples": [
+        "Debounce + cancel + isolate",
+        "// template\n<input #box (input)=\"search(box.value)\" />\n\nsearch(term: string) {\n  this.results = toSignal(\n    this.term$.pipe(\n      debounceTime(300),\n      distinctUntilChanged(),\n      switchMap(t => this.api.search(t)),   // cancels the previous request\n    ),\n    { initialValue: [] },\n  );\n}\n\n@Component({ changeDetection: ChangeDetectionStrategy.OnPush })",
+        "Fix the cause: one request per settled term, stale responses dropped, and the list re-renders on its own dependency only."
+      ]
+    },
+    {
+      "id": "angular-7",
+      "category": "angular",
+      "importance": "medium",
+      "forLater": false,
+      "question": "Customers complain the app takes around 8 seconds to load. Walk me through your diagnosis and fix.",
+      "answer": "Measure the phases with Lighthouse/WebPageTest: is it bundle size, blocking JS, API latency or render? Shrink the bundle with lazy loading of routes and @defer blocks for non-critical widgets, enable build-time optimizations, compress images (NgOptimizedImage), and consider SSR with hydration or prerendering for the first paint. Verify each change against Core Web Vitals instead of guessing.",
+      "examples": [
+        "Defer the heavy widget",
+        "<app-dashboard>\n  @defer (on viewport) { <app-revenue-chart /> } @placeholder { <app-skeleton /> }\n</app-dashboard>",
+        "@defer splits a component out of the initial bundle and loads it when it becomes visible or on interaction."
+      ]
+    },
+    {
+      "id": "angular-8",
+      "category": "angular",
+      "importance": "medium",
+      "forLater": false,
+      "question": "A sidebar filter and a dashboard list are unrelated components but must stay in sync. How do you implement this?",
+      "answer": "Put the shared state in a service: a signal() (or BehaviorSubject if you need an async stream) with read/computed selectors. Keep components dumb - the list reads the signal and re-renders. For parent-to-child data use @Input/@Output; for unrelated components a shared service is the standard answer, and signals today remove the subscription boilerplate the BehaviorSubject approach needed.",
+      "examples": [
+        "Shared service with signals",
+        "@Injectable({ providedIn: 'root' })\nexport class FilterStore {\n  private readonly role = signal<UserRole | 'all'>('all');\n  readonly users = computed(() => {\n    const r = this.role();\n    return r === 'all' ? this.all() : this.all().filter(u => u.role === r);\n  });\n  setRole(r: UserRole | 'all') { this.role.set(r); }\n}",
+        "The sidebar writes, the list reads - no parent, no Input/Output plumbing, and derived data stays consistent."
+      ]
+    },
+    {
+      "id": "angular-9",
+      "category": "angular",
+      "importance": "medium",
+      "forLater": false,
+      "question": "The user clicks 'Save' rapidly while a POST is in flight. How do you prevent duplicate requests?",
+      "answer": "Use exhaustMap on the click stream: it ignores new emissions while an inner request is running and only accepts the next click after completion. That matches the intent - ignore extra clicks until the request settles. switchMap would cancel the in-flight request, which is wrong for a save; debounceTime would just delay the first click.",
+      "examples": [
+        "Ignore clicks while saving",
+        "save$ = new Subject<void>();\n\nsave() {\n  this.save$.pipe(\n    exhaustMap(() => this.api.save(this.form.value).pipe(\n      finalize(() => this.saving.set(false)),\n    )),\n  ).subscribe();\n}",
+        "exhaustMap drops emissions while the inner request is in flight, so one click means one request."
+      ]
+    },
+    {
+      "id": "angular-10",
+      "category": "angular",
+      "importance": "medium",
+      "forLater": false,
+      "question": "A dashboard must show data from three APIs, but only when all three have arrived, and it must update if any of them changes later. What operator do you use and why?",
+      "answer": "combineLatest: it emits only once all sources have emitted at least once and keeps emitting whenever any source changes afterwards - exactly 'render once all three exist, update on any change'. forkJoin would be wrong because it emits once and completes, so later changes never re-render. If you only needed the first combined value, forkJoin would be fine.",
+      "examples": [
+        "combineLatest vs forkJoin",
+        "// live: re-emit when any source changes after all have arrived\ncombineLatest([profile$, prefs$, permissions$]).subscribe(render);\n\n// one-shot: last value of each, only after all complete\nforkJoin([a$, b$]).subscribe(renderOnce);",
+        "combineLatest fits 'render when everything is present and keep updating'; forkJoin fits 'wait for a batch of requests'."
+      ]
+    },
+    {
+      "id": "angular-11",
+      "category": "angular",
+      "importance": "medium",
+      "forLater": false,
+      "question": "There is a memory leak in production - memory grows steadily as users navigate. How do you track it down?",
+      "answer": "Reproduce in dev with the browser heap snapshot: take two snapshots around a navigation cycle and diff them to find detached DOM nodes or lingering references. Suspect manual subscribe() calls that were never unsubscribed, timers, and addEventListener. Fix by using the async pipe or takeUntilDestroyed(), and centralizing subscriptions so cleanup is a convention, not a discipline.",
+      "examples": [
+        "Finding and fixing the leak",
+        "// leaking\nngOnInit() { this.timer$.subscribe(() => this.tick()); }\n\n// fixed - cleanup tied to the destroy ref\nprivate readonly destroyRef = inject(DestroyRef);\n\nngOnInit() {\n  this.timer$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.tick());\n}",
+        "In the heap snapshot, detached DOM retained by a live subscription is the giveaway; takeUntilDestroyed (or the async pipe) makes cleanup automatic."
+      ]
+    },
+    {
+      "id": "angular-12",
+      "category": "angular",
+      "importance": "medium",
+      "forLater": false,
+      "question": "You need a reusable form input that works both with ngModel and inside a reactive form. How do you build it?",
+      "answer": "Implement ControlValueAccessor on a component: writeValue populates the control, registerOnChange/registerOnTouched wire the UI to the form model, and setDisabledState handles enable/disable. Then it can be used with [(ngModel)] or [formControl]/formControlName exactly like a native input.",
+      "examples": [
+        "Using it",
+        "<app-rating [(ngModel)]=\"score\" />\n\n<form [formGroup]=\"form\">\n  <app-rating formControlName=\"score\" />\n</form>",
+        "One component, both form APIs, because it speaks the CVA contract."
+      ]
+    },
+    {
+      "id": "angular-13",
+      "category": "angular",
+      "importance": "medium",
+      "forLater": false,
+      "question": "A stepper form is spread across multiple components but must behave as one form. How do you keep it consistent?",
+      "answer": "Own a single FormGroup instance in a parent component and pass it down (@Input) or expose it from a shared service provided at the parent scope. Each step component binds its controls to the same instance via formControlName/formGroup, and the stepper reads validity from one place. A service scoped to the feature route (rather than root) avoids leaking state across navigation.",
+      "examples": [
+        "Scoped service alternative",
+        "@Component({ providers: [CheckoutForm] })   // one instance per checkout flow",
+        "Providing the form on the parent (or a route-scoped service) avoids stale state surviving navigation."
+      ]
+    },
+    {
+      "id": "angular-14",
+      "category": "angular",
+      "importance": "medium",
+      "forLater": false,
+      "question": "How do you implement role-based access control - restricting routes by role and hiding UI elements?",
+      "answer": "Two layers: a route guard canActivateFn checks whether the logged-in role may enter a route (and redirects otherwise), while a structural directive (like *appHasRole) conditionally renders UI for a role. Keep the user's roles in a shared service/signal read by both. Never rely on hiding UI alone - guards must also enforce the route, and the server must enforce authorization anyway.",
+      "examples": [
+        "Route guard + structural directive",
+        "// guard\ncanMatch: [() => {\n  const auth = inject(AuthService);\n  return auth.roles().includes('admin') ? true : inject(Router).createUrlTree(['/login']);\n}]\n\n// directive\n@Directive({ selector: '[appHasRole]' })\nexport class HasRole {\n  roles = input.required<string[]>();\n  private readonly tpl = inject(TemplateRef<unknown>);\n  private readonly vcr = inject(ViewContainerRef);\n  // render the embedded view only when the current user has the role\n}",
+        "The guard protects the route and (with canMatch) the download; the directive only shapes the UI. The backend must still authorise."
+      ]
+    },
+    {
+      "id": "angular-15",
+      "category": "angular",
+      "importance": "medium",
+      "forLater": false,
+      "question": "Two routes must be lazy-loaded, but only admin users may reach the Reports route. How do you set that up?",
+      "answer": "Use a guard that checks the user's role from the auth store before entry. Prefer canMatch (which runs before the module is loaded) over canActivate only, so the lazy Reports bundle is never downloaded for unauthorized users. Pair it with loadComponent routing so admin access and code-splitting both hold.",
+      "examples": [
+        "canMatch keeps the bundle private",
+        "{ path: 'reports',\n  canMatch: [adminGuard],   // runs BEFORE the chunk is fetched\n  loadComponent: () => import('./reports/reports').then(c => c.Reports) }",
+        "canActivate checks after the route is matched (chunk already requested); canMatch blocks earlier, so unauthorised users never download the code."
+      ]
+    },
+    {
+      "id": "angular-16",
+      "category": "angular",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is the difference between the constructor and ngOnInit?",
+      "answer": "The constructor runs when the component instance is created, before inputs are resolved - Angular best practice is to use it only for dependency injection and minimal setup. ngOnInit runs after the first ngOnChanges, once the component's inputs are set, so it is the right place to read input values and kick off initialization logic or long-lived subscriptions.",
+      "examples": [
+        {
+          "title": "Constructor vs ngOnInit",
+          "code": "constructor(private svc: UserService) {}\n\nngOnInit(): void {\n  // inputs are resolved here\n  this.users = this.svc.list(this.id);\n}",
+          "explanation": "DI only in constructor; initialization that reads inputs in ngOnInit."
+        }
+      ]
+    },
+    {
+      "id": "angular-17",
+      "category": "angular",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is the async pipe and how does it prevent memory leaks?",
+      "answer": "The async pipe subscribes to an Observable in the template ({{ users$ | async }}) and unsubscribes automatically when the component is destroyed. That removes the need for a manual subscription and the classic leak where a component subscribes in ngOnInit but never unsubscribes in ngOnDestroy. It pairs naturally with OnPush change detection.",
+      "examples": [
+        {
+          "title": "async pipe leak prevention",
+          "code": "<ul>\n  @for (u of users$ | async; track u.id) { <li>{{ u.name }}</li> }\n</ul>",
+          "explanation": "async pipe auto-unsubscribes when component is destroyed."
+        }
+      ]
+    },
+    {
+      "id": "angular-18",
+      "category": "angular",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What are route guards and which ones do you know?",
+      "answer": "Route guards decide whether navigation proceeds. canActivate/canActivateFn checks a route's entry once matched, canMatch blocks the route from even being considered (running before module load - best for lazy security), and canDeactivate asks before leaving a dirty form. They are functions or services returning boolean, an observable/promise, or a redirect URL tree.",
+      "examples": [
+        {
+          "title": "Route guards",
+          "code": "export const adminGuard: CanActivateFn = () => {\n  const auth = inject(AuthService);\n  return auth.role() === 'admin' ? true : inject(Router).createUrlTree(['/']);\n};",
+          "explanation": "canActivateFn/canMatch gate navigation/loads."
+        }
+      ]
+    },
+    {
+      "id": "angular-19",
+      "category": "angular",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is an HTTP interceptor and what are typical use cases?",
+      "answer": "An interceptor sits in the request/response pipeline and lets you transform a request or observe a response centrally, instead of repeating logic per call. Common uses: attaching an auth token header, global error handling and retries, logging, and loading indicators. In modern Angular it is implemented as a function returning next.handle(req) in the chain.",
+      "examples": [
+        {
+          "title": "HTTP interceptor (function form)",
+          "code": "import { HttpInterceptorFn } from '@angular/common/http';\n\nexport const authInterceptor: HttpInterceptorFn = (req, next) => {\n  const authReq = req.clone({ setHeaders: { Authorization: 'Bearer token' } });\n  return next(authReq);\n};",
+          "explanation": "Modern functional interceptor: clone and chain with next."
+        }
+      ]
+    },
+    {
+      "id": "angular-20",
+      "category": "angular",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is a pipe and the difference between pure and impure pipes?",
+      "answer": "A pipe transforms a value in the template ({{ value | date: 'short' }}). A pure pipe's transform runs only when its input reference changes, so Angular skips re-running it on every change detection pass - the default and the fast path. An impure pipe (pure: false) runs on every change detection cycle, needed for stateful transforms, but it costs performance, so make it the exception.",
+      "examples": [
+        {
+          "title": "Pure vs impure pipe",
+          "code": "@Pipe({ name: 'filter', pure: false })\nexport class FilterPipe implements PipeTransform {\n  transform(list: any[], q: string) { /* runs every CD cycle */ return ...; }\n}",
+          "explanation": "pure (default) runs on reference changes only; impure runs every change detection cycle."
+        }
+      ]
+    },
+    {
+      "id": "angular-21",
+      "category": "angular",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is content projection (ng-content)?",
+      "answer": "Content projection lets a parent component pass markup into a child's template via <ng-content>. In a card or modal component the child defines slots with <ng-content select='.header'> and the parent fills them, making the component reusable without prop-drilling markup. Multi-slot projection uses the select attribute; a catch-all ng-content without select grabs everything else.",
+      "examples": [
+        {
+          "title": "Multi-slot content projection",
+          "code": "<app-card>\n  <h2 slot=\"header\">Title</h2>\n  <p>Body content</p>\n  <button slot=\"footer\">OK</button>\n</app-card>\n\n<!-- card.html -->\n<header><ng-content select=\"[slot='header']\"></ng-content></header>\n<section><ng-content></ng-content></section>\n<footer><ng-content select=\"[slot='footer']\"></ng-content></footer>",
+          "explanation": "select targets named slots; unnamed ng-content is the default."
+        }
+      ]
+    },
+    {
+      "id": "angular-22",
+      "category": "angular",
+      "importance": "high",
+      "forLater": false,
+      "question": "A username field must show \"already taken\" while the user types, using a backend check. How do you implement it?",
+      "answer": "Reach for an AsyncValidator, not a manual subscribe. Angular runs async validators through the same FormControl status pipeline as sync validators, so the control gets pending, then valid or invalid, and the form stays disabled while it is checking. Two rules matter: debounce before hitting the network (timer inside the validator), and distinctUntilChanged so re-checking the same value is skipped. Always catchError inside the validator and return null - a network failure is not the user's fault, so it must not mark the field invalid and block submit.",
+      "examples": [
+        {
+          "title": "Async validator factory (debounced + failure-tolerant)",
+          "code": "export function usernameAvailable(api: UserApi): AsyncValidatorFn {\n  return (control) => {\n    const value = (control.value ?? '').trim();\n    if (value.length < 3) return of(null);\n\n    return timer(300).pipe(              // debounce: one request per pause\n      switchMap(() => api.checkUsername(value)),\n      map(taken => (taken ? { usernameTaken: true } : null)),\n      distinctUntilChanged(),\n      catchError(() => of(null)),        // network error != invalid value\n      first(),\n    );\n  };\n}",
+          "explanation": "Factory takes the service as an argument because inject() is not available inside the function the validator returns."
+        },
+        {
+          "title": "Wiring it up and showing the three states",
+          "code": "username = new FormControl('', {\n  validators: [Validators.required],\n  asyncValidators: [usernameAvailable(inject(UserApi))],\n});\n\n// template\n@if (username.pending) { <span>Checking...</span> }\n@if (username.hasError('usernameTaken')) { <span>Already taken</span> }\n\nreadonly form = this.fb.nonNullable.group({ username: this.username });\n// <button [disabled]=\"form.invalid || form.pending\">Save</button>",
+          "explanation": "pending covers the in-flight window, invalid covers a real backend rejection, and submit stays blocked while either is true."
+        }
+      ]
+    },
+    {
+      "id": "angular-23",
+      "category": "angular",
+      "importance": "medium",
+      "forLater": false,
+      "question": "A page with very large forms and dropdown lists feels sluggish. What do you optimise, and in what order?",
+      "answer": "Work top-down on cost per change-detection cycle, because that is what sluggishness usually means. First, make sure components are OnPush - with default change detection every keypress re-evaluates every template on the page. Second, kill hidden costs inside those templates: getters, function calls and pipes re-run on every check, so precompute into fields or signals (or make a pipe pure). Third, do not ship data you do not need: a 10k-row dropdown should be a remote search-ahead or virtualized list, not 10k options in the initial payload. Fourth, images go through NgOptimizedImage. Finally, if the remaining work is genuinely CPU-bound (sorting/filtering 100k rows), move it off the main thread instead of micro-optimising templates.",
+      "examples": [
+        {
+          "title": "OnPush + stable identity in the list",
+          "code": "@Component({ changeDetection: ChangeDetectionStrategy.OnPush, /* ... */ })\nexport class OrderForm {\n  orders = input.required<Order[]>();\n\n  get total() {                 // BAD: recomputed on every CD cycle\n    return this.orders().reduce((s, o) => s + o.amount, 0);\n  }\n\n  readonly total = computed(() => // GOOD: recomputed only when orders change\n    this.orders().reduce((s, o) => s + o.amount, 0));\n}",
+          "explanation": "Getters in templates are a classic hidden cost; a computed caches by dependency."
+        },
+        {
+          "title": "Dropdown: search-ahead instead of shipping 10k options",
+          "code": "// type-ahead queries the server, keeps the list tiny\nsearch = new FormControl('');\n\nreadonly options = toSignal(\n  this.search.valueChanges.pipe(\n    debounceTime(250),\n    distinctUntilChanged(),\n    switchMap(q => this.api.findCustomers(q)),\n  ),\n  { initialValue: [] as Customer[] },\n);",
+          "explanation": "Only the visible matches exist in the DOM, so the form has a small working set."
+        },
+        {
+          "title": "Images through NgOptimizedImage",
+          "code": "<img ngSrc=\"/hero.avif\" width=\"1200\" height=\"600\" priority\n     sizes=\"(max-width: 640px) 100vw, 50vw\"\n     fill\n     placeholder=\"blur\" />",
+          "explanation": "Generates srcset, defers loading, warns at build time on missing sizes, and requires width/height or fill to prevent layout shift."
+        }
+      ]
+    },
+    {
+      "id": "angular-24",
+      "category": "angular",
+      "importance": "high",
+      "forLater": false,
+      "question": "A component loads its data in ngOnInit from a service. How do you test that the data actually renders?",
+      "answer": "Configure the test with a fake for the dependency, not the real HTTP stack. Provide a spy object with TestBed, assert the component called it, then trigger change detection and assert on the rendered DOM. Use signals plus whenStable rather than relying on a timer, so the test is deterministic. Signal inputs must be set through componentRef.setInput, because assigning to the input field directly bypasses the signal. Also test the failure path - the empty and error states are where component bugs hide.",
+      "examples": [
+        {
+          "title": "Test with a spy for the service",
+          "code": "const api = jasmine.createSpyObj<UserApi>('UserApi', ['getUsers']);\n\nTestBed.configureTestingModule({\n  imports: [UserList],\n  providers: [{ provide: UserApi, useValue: api }],\n});\n\napi.getUsers.and.returnValue(of([{ id: 1, name: 'Ada' }]));\n\nconst fixture = TestBed.createComponent(UserList);\nawait fixture.whenStable();\nfixture.detectChanges();\n\nexpect(api.getUsers).toHaveBeenCalled();\nexpect(fixture.nativeElement.textContent).toContain('Ada');",
+          "explanation": "No HTTP, no async pipe waiting games - the fake returns a synchronous observable."
+        },
+        {
+          "title": "Signal inputs and the error path",
+          "code": "api.getUsers.and.returnValue(throwError(() => new HttpErrorResponse({ status: 500 })));\n\nconst fixture = TestBed.createComponent(UserList);\nawait fixture.whenStable();\nfixture.detectChanges();\n\nexpect(fixture.nativeElement.textContent).toContain('Could not load users');\n\n// signal inputs must go through setInput\nfixture.componentRef.setInput('role', 'admin');",
+          "explanation": "Asserting the empty/error state catches the bugs that only appear in production."
+        }
+      ]
+    },
+    {
+      "id": "angular-25",
+      "category": "angular",
+      "importance": "medium",
+      "forLater": false,
+      "question": "Forms must be generated at runtime from a JSON schema sent by the backend. How do you build them?",
+      "answer": "Build the FormGroup imperatively from the schema and drive the template from the same schema, so adding a field needs no component change. Walk the schema, addControl per field, attach validators from declarative hints (required, minLength, email), and use nonNullable controls for inputs so you get strings and numbers instead of null unions. For nested objects recurse into child FormGroups; for anything with conditional visibility or cross-field rules, hand off to a library such as Formly or Angular's signal forms instead of reinventing the DSL. Always cache the generated group when the schema is static, otherwise you recreate controls on every detection cycle.",
+      "examples": [
+        {
+          "title": "Schema to FormGroup",
+          "code": "interface FieldSchema {\n  name: string; label: string;\n  type: 'text' | 'number' | 'email';\n  required?: boolean;\n  minLength?: number;\n  children?: FieldSchema[];\n}\n\nfunction toControls(schema: FieldSchema[]): Record<string, AbstractControl> {\n  return Object.fromEntries(schema.map(f => {\n    const validators = f.required ? [Validators.required] : [];\n    if (f.minLength) validators.push(Validators.minLength(f.minLength));\n\n    const control: AbstractControl = f.children\n      ? new FormGroup(toControls(f.children))\n      : new FormControl(null, { validators, nonNullable: f.type !== 'text' ? false : true });\n\n    return [f.name, control];\n  }));\n}\n\nform = new FormGroup(toControls(schema));",
+          "explanation": "Validators come from data, so the schema is the single source of truth for validation."
+        },
+        {
+          "title": "Rendering from the same schema",
+          "code": "<form [formGroup]=\"form\">\n  @for (f of schema; track f.name) {\n    <label [for]=\"f.name\">{{ f.label }}</label>\n    <input [id]=\"f.name\" [formControlName]=\"f.name\" />\n    @if (form.controls[f.name].hasError('required')) {\n      <small>{{ f.label }} is required</small>\n    }\n  }\n  <button [disabled]=\"form.invalid\">Save</button>\n</form>",
+          "explanation": "The template never names a specific field, so backend schema changes ship without code."
+        }
+      ]
+    },
+    {
+      "id": "angular-26",
+      "category": "angular",
+      "importance": "medium",
+      "forLater": false,
+      "question": "How would you structure a multi-role enterprise Angular app so it stays maintainable as features keep being added?",
+      "answer": "Use three layers with a strict dependency direction: core holds singletons and app-wide wiring (interceptors, guards, app config, root services), shared holds reusable presentation (UI components, pipes, directives) that depend only on core, and features holds the domain code - one folder per role or bounded context, each with its own components, routes and models. Lazy-load each feature and gate it with a role guard. The rule that keeps it from rotting is that features must not import from other features; when two features need the same thing it moves to shared or into a small publishable library. Prefer explicit imports over barrel files, because barrels pull unrelated code into every chunk and blur the dependency graph.",
+      "examples": [
+        {
+          "title": "Folder structure",
+          "code": "src/app/\n  core/            # providedIn:'root' services, interceptors, guards, app.config\n    auth/\n    http/\n  shared/          # reusable UI - imports core only\n    ui/            # button, dialog, data-table\n    pipes/\n  features/        # domain code - never imported across\n    admin/         # routes.ts + components + models\n    manager/\n    reports/\n  app.routes.ts    # top-level lazy routes only\n\nlibs/\n  ui-kit/          # publishable lib when shared grows",
+          "explanation": "core and shared stay small and stable; features absorb all the churn."
+        },
+        {
+          "title": "Top-level lazy routes per role",
+          "code": "export const routes: Routes = [\n  { path: 'admin', canMatch: [roleGuard('admin')],\n    loadChildren: () => import('./features/admin/routes').then(m => m.ADMIN_ROUTES) },\n  { path: 'manager', canMatch: [roleGuard('manager')],\n    loadChildren: () => import('./features/manager/routes').then(m => m.MANAGER_ROUTES) },\n  { path: 'reports', canMatch: [roleGuard('admin')],\n    loadComponent: () => import('./features/reports/report-list').then(c => c.ReportList) },\n];",
+          "explanation": "canMatch keeps the chunk from even being fetched by users who cannot use it."
+        }
+      ]
+    },
+    {
+      "id": "angular-27",
+      "category": "angular",
+      "importance": "high",
+      "forLater": false,
+      "question": "A third-party chat widget needs its <script> injected and global config loaded. How do you integrate it without breaking SSR or encapsulation?",
+      "answer": "Wrap it in a service plus a thin component or directive rather than scattering script tags. Create the service with Renderer2 so the script node is added and later removed through Angular, and only in the browser - guard with isPlatformBrowser or run the work in afterNextRender, which never executes on the server. Load the configuration with provideAppInitializer so the app blocks until the config exists, instead of racing it during bootstrap. If the vendor injects its own styles into document.head, isolate it in a wrapper component with ViewEncapsulation.None; if it needs a framework, add it as an external script in angular.json rather than injecting at runtime. Always keep the cleanup handle - chat widgets keep global listeners.",
+      "examples": [
+        {
+          "title": "SSR-safe loader with Renderer2",
+          "code": "@Injectable({ providedIn: 'root' })\nexport class ChatWidget {\n  private readonly renderer = inject(Renderer2);\n  private readonly doc = inject(DOCUMENT);\n  private readonly platformId = inject(PLATFORM_ID);\n  private script?: HTMLScriptElement;\n\n  load(src: string) {\n    if (!isPlatformBrowser(this.platformId) || this.script) return;\n    this.script = this.renderer.createElement('script') as HTMLScriptElement;\n    this.script.src = src;\n    this.script.async = true;\n    this.renderer.appendChild(this.doc.body, this.script);\n  }\n\n  destroy() {                       // widgets hold global listeners\n    if (this.script) this.renderer.removeChild(this.doc.body, this.script);\n    this.script = undefined;\n  }\n}",
+          "explanation": "On the server this is a no-op, and the DOM node is created and removed through Angular."
+        },
+        {
+          "title": "Blocking bootstrap on config",
+          "code": "provideAppInitializer(() => {\n  // returns a Promise -> the app does not bootstrap until it resolves\n  return firstValueFrom(http.get<ChatConfig>('/assets/chat-config.json'))\n    .then(cfg => inject(ChatWidget).configure(cfg));\n}),\n\n@Component({\n  selector: 'app-chat',\n  encapsulation: ViewEncapsulation.None,  // vendor writes to document.head\n  template: '<div id=\"chat-root\"></div>',\n})\nexport class Chat {}",
+          "explanation": "provideAppInitializer replaces the deprecated APP_INITIALIZER token; Encapsulation.None keeps the vendor's global styles working."
+        }
+      ]
+    },
+    {
+      "id": "angular-28",
+      "category": "angular",
+      "importance": "high",
+      "forLater": false,
+      "question": "A Material table with 500+ rows plus filtering and sorting is slow. How do you diagnose and fix it?",
+      "answer": "Measure first: open DevTools Performance while interacting, and look at how much time is script versus rendering, and how many DOM nodes exist. The usual causes are too many rows in the DOM, a filter or sort running on every change-detection cycle, and identity churn destroying and rebuilding rows. The fixes map one to one: render only visible rows with CdkVirtualScrollViewport and cdkVirtualFor, keep components OnPush, treat filter and sort as a debounced stream with switchMap so rapid typing collapses into one operation, give rows a stable trackBy so unchanged nodes are reused, and cache the comparator instead of allocating one per cycle. Past roughly 10k rows, filter and sort on the server and virtualize the results.",
+      "examples": [
+        {
+          "title": "Virtual scroll - only the visible rows exist",
+          "code": "<cdk-virtual-scroll-viewport itemSize=\"48\" class=\"h-96\">\n  <div *cdkVirtualFor=\"let row of rows(); trackBy: trackId\"\n       class=\"row\">\n    {{ row.name }} — {{ row.amount }}\n  </div>\n</cdk-virtual-scroll-viewport>\n\ntrackId = (_: number, r: Row) => r.id;   // stable identity",
+          "explanation": "500 rows become ~10 DOM nodes; trackBy lets Angular reuse nodes across sort and filter."
+        },
+        {
+          "title": "Filter and sort as a debounced stream",
+          "code": "readonly query = new FormControl('');\nreadonly sort = signal<Sort>('name');\n\nreadonly rows = toSignal(\n  combineLatest([\n    this.query.valueChanges.pipe(startWith(''), debounceTime(200), distinctUntilChanged()),\n    this.sort.asObservable(),\n  ]).pipe(switchMap(([q, s]) => this.api.search({ q, sort: s }))),\n  { initialValue: [] as Row[] },\n);\n\nreadonly compare = computed(() => this.comparators[this.sort()]);  // cached, not re-created",
+          "explanation": "One request per settled query instead of one per keystroke; the comparator is computed once per sort change."
+        }
+      ]
+    },
+    {
+      "id": "angular-29",
+      "category": "angular",
+      "importance": "medium",
+      "forLater": false,
+      "question": "You need to move an application from an older Angular major to a current one. How do you plan the upgrade?",
+      "answer": "Upgrade one major at a time with ng update, and never jump two majors in one branch - the migrations assume the previous layout. Before running anything, read the update guide for that version: it lists breaking changes, the required Node and TypeScript and RxJS versions, and flags removed APIs. Then move in this order: Angular packages, then third-party libraries whose majors are coupled to it (Angular Material must match), then tooling and CI images. Let ng update rewrite angular.json, tsconfig and the entry files for you instead of editing them by hand. Afterwards check the bundle budgets, remove obsolete polyfills, rebuild, and fix whatever the compiler flags - deprecations usually surface as compile errors once the old name is removed. Verify on a branch with tests and manual smoke checks before merging.",
+      "examples": [
+        {
+          "title": "One major per step",
+          "code": "# pre-flight: node -v, then branch + tests green\nng update @angular/cli@17 @angular/core@17 @angular/material@17\nnpm run build            # read every warning before continuing\n\nng update @angular/cli@18 @angular/core@18 @angular/material@18\nnpm run build\n\nng update @angular/cli@19 @angular/core@19 @angular/material@19\nnpm run build && npm test",
+          "explanation": "Material and other libs must move in lockstep, or you get injection-token and template type errors that are hard to read."
+        },
+        {
+          "title": "Post-upgrade checks",
+          "code": "{\n  \"budgets\": [\n    { \"type\": \"initial\", \"maximumWarning\": \"500kb\" },\n    { \"type\": \"anyComponentStyle\", \"maximumWarning\": \"4kb\" }\n  ]\n}\n\n// polyfills.ts - drop entries the new baseline no longer needs\n// tsconfig.json - \"target\" follows the browserslist you actually support",
+          "explanation": "Budgets turn a silent bundle regression into a build failure, and stale polyfills are dead weight."
+        }
+      ]
+    },
+    {
+      "id": "angular-30",
+      "category": "angular",
+      "importance": "medium",
+      "forLater": false,
+      "question": "Two separately deployed Angular apps must share one login. How do you implement shared authentication?",
+      "answer": "Give ownership of the session to one place and treat the other app as a client of it. Preferred design: a shell or BFF owns an HttpOnly, Secure, SameSite cookie, and each app verifies the session with a cheap GET /me during provideAppInitializer before it bootstraps - so a user with an expired session lands on login instead of rendering a broken shell. Put that logic in a shared library so both apps run identical code. Never store access tokens in localStorage if you can avoid it: anything in localStorage is readable by injected script, so use the cookie plus CSRF protection, and keep any token in memory only. To keep the two apps in sync, broadcast login and logout over BroadcastChannel when they share an origin (cookies ignore the port, so :4300 sees the cookie set by :4200); across origins you need a real shared backend session or an iframe/postMessage broker.",
+      "examples": [
+        {
+          "title": "Shell owns the cookie, apps verify",
+          "code": "// shared auth library, used by both apps\nprovideAppInitializer(() => {\n  const http = inject(HttpClient);\n  const auth = inject(AuthService);\n  return firstValueFrom(http.get<User>('/api/me'))\n    .then(u => auth.signIn(u))\n    .catch(() => auth.signOut());\n});\n\n// HttpOnly; Secure; SameSite=Lax; Path=/  - never visible to JS",
+          "explanation": "Session verification before bootstrap means both apps agree on auth state from the first render."
+        },
+        {
+          "title": "Sync logout between apps on the same origin",
+          "code": "// app A\nconst channel = new BroadcastChannel('auth');\nchannel.onmessage = (e) => e.data.type === 'logout' && this.auth.signOut();\n\nlogout() {\n  this.http.post('/api/logout', {}).subscribe(() => {\n    this.auth.signOut();\n    channel.postMessage({ type: 'logout' });\n  });\n}",
+          "explanation": "Cookies are shared across ports on one domain, so the logout must hit the server - clearing client state alone leaves the cookie valid."
+        },
+        {
+          "title": "Memory-only token in an interceptor",
+          "code": "const token = signal<string | null>(null);   // never localStorage\n\nexport const authInterceptor: HttpInterceptorFn = (req, next) =>\n  next(req.clone({\n    headers: req.headers.set('Authorization', `Bearer ${token() ?? ''}`),\n  }));",
+          "explanation": "An XSS bug cannot read the token out of storage; it can only use it while the page lives."
+        }
+      ]
+    },
+    {
+      "id": "angular-31",
+      "category": "angular",
+      "importance": "high",
+      "forLater": false,
+      "question": "Production errors are vague and hard to trace. What do you set up for monitoring?",
+      "answer": "Put three layers in place. First, an error tracker (Sentry or similar) with its official Angular integration, which reports uncaught errors and rejections, attaches release and environment tags, and - critically - uploads source maps so the production stack traces are readable. Second, a global ErrorHandler that forwards anything Angular catches to the tracker with user context and scrubs tokens and PII before sending. Third, an HTTP interceptor that normalises every failure into one shape, attaches a correlation id that also goes into your backend logs, and rethrows so callers still handle their own errors. Add breadcrumbs for the user actions leading up to the failure, then alert on thresholds rather than on every error, or the channel gets ignored.",
+      "examples": [
+        {
+          "title": "Global ErrorHandler that scrubs",
+          "code": "@Injectable()\nexport class TrackedErrorHandler implements ErrorHandler {\n  private readonly tracker = inject(ErrorTracker);\n\n  handleError(error: unknown): void {\n    this.tracker.capture(error, {\n      tags: { release: environment.version, env: 'prod' },\n      extra: { route: this.router.url, userId: this.auth.user()?.id },\n      beforeSend: (e) => scrub(e),   // strip tokens, emails, card data\n    });\n    console.error(error);            // still log locally\n  }\n}\n\n{ provide: ErrorHandler, useClass: TrackedErrorHandler }",
+          "explanation": "One place decides what leaves the browser, so no component accidentally leaks PII."
+        },
+        {
+          "title": "Normalising HTTP errors with a correlation id",
+          "code": "export const apiErrorInterceptor: HttpInterceptorFn = (req, next) => {\n  const trace = inject(TraceService).newId();\n  req = req.clone({ setHeaders: { 'X-Trace-Id': trace } });\n\n  return next(req).pipe(\n    catchError((res: HttpErrorResponse) =>\n      throwError(() => new ApiError({\n        trace,\n        status: res.status,\n        message: res.error?.message ?? 'Something went wrong',  // safe for users\n        cause: res,                    // full detail for the tracker\n      }))),\n  );\n};",
+          "explanation": "One error type for the whole app, plus an id that ties the browser report to the server log."
+        },
+        {
+          "title": "Readable production stacks",
+          "code": "// angular.json\n\"configurations\": {\n  \"production\": {\n    \"sourceMap\": { \"scripts\": true, \"styles\": false, \"hidden\": false },\n    \"namedChunks\": false\n  }\n}\n\n// upload the maps at build time, never serve them publicly\nnpx sentry-cli sourcemaps upload --release $VERSION dist/browser",
+          "explanation": "Hidden source maps are uploaded to the tracker and excluded from the bundle you deploy."
+        }
+      ]
     }
   ],
-  "misc": []
+  "misc": [
+    {
+      "id": "misc-1",
+      "category": "misc",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is tree shaking?",
+      "answer": "Tree shaking is a build-time optimization where the bundler removes dead or unused code that is never referenced, resulting in a smaller bundle. It only works on modules that are side-effect-free, which is why Angular marks its libraries with sideEffects: false — so util imports that aren't used can be eliminated.",
+      "examples": [
+        "Tree shaking needs side-effect-free metadata",
+        "// package.json of an Angular library\n{\n  \"name\": \"my-lib\",\n  \"sideEffects\": false\n}\n\n// effectful import survives the bundler even if unused\nimport './polyfills';",
+        "With sideEffects: false the bundler can drop unused exports entirely; modules with side effects must be marked or kept."
+      ]
+    },
+    {
+      "id": "misc-2",
+      "category": "misc",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is AOT vs JIT compilation?",
+      "answer": "JIT compiles Angular templates and decorators at runtime in the browser, while AOT compiles them ahead-of-time during the build. AOT is the default today: it catches template errors at build time, runs faster in the browser, and ships less runtime compiler code.",
+      "examples": [
+        "AOT vs JIT at runtime",
+        "// JIT - compiles in the browser (needs the compiler shipped to the client)\nimport '@angular/compiler';\n\n// AOT - compiled during ng build; template errors fail the BUILD",
+        "AOT shifts compilation to the build step: smaller runtime bundle, faster startup, template errors caught in CI."
+      ]
+    },
+    {
+      "id": "misc-3",
+      "category": "misc",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is hydration and why does it matter?",
+      "answer": "Hydration is the process that attaches the JavaScript runtime behaviour (event listeners, signals, data binding) to server-rendered HTML after load. The browser first paints the server HTML instantly, then Angular 'adopts' it instead of re-creating the whole DOM, which makes the page feel fast.",
+      "examples": [
+        "Skipping hydration for a subtree",
+        "<app-heavy-chart hydrate=\"never\"></app-heavy-chart>",
+        "hydrate=\"never\" leaves that subtree as static HTML until it must become interactive, cutting JS work on first load."
+      ]
+    },
+    {
+      "id": "misc-4",
+      "category": "misc",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What are Angular signals and how do they relate to RxJS?",
+      "answer": "Signals are synchronous, granular reactive primitives — a value that notifies its dependents when it changes. They cover a lot of 'one value over time' cases more simply than RxJS Observables, but they are not a replacement: RxJS remains the tool for event streams, streaming values and side-effect pipelines. The two integrate via toObservable and toSignal.",
+      "examples": [
+        "Observable feeding a signal",
+        "readonly user = toSignal(this.userService.user$, { initialValue: null });",
+        "toObservable/toSignal keep async streams usable while the view stays signal-based."
+      ]
+    },
+    {
+      "id": "misc-5",
+      "category": "misc",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is change detection and how does zoneless mode change it?",
+      "answer": "Change detection is how Angular decides what to update in the DOM when state changes. In classic apps it runs on every event via Zone.js, scanning the component tree. Zoneless apps drop Zone.js: state changes are only triggered by explicitly scheduled signals (notify/effect), so change detection runs exactly when data actually changes - fewer unnecessary runs, less overhead.",
+      "examples": [
+        "Explicit notification for non-signal writes",
+        "this.renderer.setAttribute(el, 'aria-busy', 'true'); this.notify();",
+        "Anything that mutates state outside signals needs notify() so the app knows to check again."
+      ]
+    },
+    {
+      "id": "misc-6",
+      "category": "misc",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is a standalone component?",
+      "answer": "A standalone component is one that does not belong to an NgModule: it declares its own imports, services, pipes and directives directly in its imports array. Since Angular 19 standalone is the default for new apps and makes lazy-loading routes with loadComponent straightforward.",
+      "examples": [
+        "Standalone is just an imports array",
+        "@Component({\n  selector: 'app-card',\n  standalone: true,          // default since v19\n  imports: [MatButton, DatePipe],\n  template: `<button matButton>{{ date | date }}</button>`,\n})\nexport class Card {}",
+        "No NgModule to register: dependencies are declared on the component itself, which is what makes loadComponent lazy routes trivial."
+      ]
+    }
+  ],
+  "signals": [
+    {
+      "id": "signals-1",
+      "category": "signals",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is a Signal and how is it different from an RxJS Observable?",
+      "answer": "A Signal is a synchronous, granular reactive primitive: a value you read by calling it (count()) and update with set/update, that automatically notifies consumers that depend on it. An Observable is an asynchronous, lazy stream you must subscribe to, with operators for retry, debounce and merging. Signals are ideal for component-local and synchronous UI state; Observables stay the tool for async event streams, HTTP and WebSockets. You bridge the two with toObservable() and toSignal().",
+      "examples": [
+        {
+          "title": "signal() basic read/write",
+          "code": "import { signal, computed } from '@angular/core';\n\nconst count = signal(0);\nconsole.log(count());        // read\ncount.set(5);                // write\ncount.update(c => c + 1);    // update\n\nconst doubled = computed(() => count() * 2);\nconsole.log(doubled());",
+          "explanation": "Read with () and update via set/update; computed derives reactively."
+        }
+      ]
+    },
+    {
+      "id": "signals-2",
+      "category": "signals",
+      "importance": "medium",
+      "forLater": false,
+      "question": "When would you use signals instead of observables, and can signals replace RxJS completely?",
+      "answer": "Use signals when the state is synchronous UI state - selection, toggles, count, a view model - where you want direct value access without the async pipe or subscriptions. Do not try to replace RxJS for genuinely async work like HTTP retries, websockets, or streams that need cancellation and composition. In an interview, the framing is: streams feed signals, signals feed the template - the correct architecture composes both rather than picking one.",
+      "examples": [
+        {
+          "title": "When to use signals",
+          "code": "const isOpen = signal(false); // UI toggle\nconst total = computed(() => price() * qty()); // derived\n// Keep async streams in RxJS: search$ = input$.pipe(debounceTime(300), switchMap(...))",
+          "explanation": "Synchronous UI state → signals; async/event streams → RxJS."
+        }
+      ]
+    },
+    {
+      "id": "signals-3",
+      "category": "signals",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What are computed signals and effects, and when do you use each?",
+      "answer": "computed() creates a read-only derived signal that lazily recalculates only when its dependencies change - use it for anything you can derive (total = price() * qty()). effect() runs a side effect whenever the signals it reads change - use it only when you have no reactive alternative: syncing with a non-reactive library, analytics, DOM APIs. Effect should never be your first choice because it runs eagerly and on every change.",
+      "examples": [
+        {
+          "title": "computed vs effect",
+          "code": "const items = signal([1,2,3]);\nconst count = computed(() => items().length); // derived, no side effect\n\neffect(() => {\n  document.title = `Count: ${count()}`; // side effect only when necessary\n});",
+          "explanation": "computed is read-only derived; effect is for external side effects."
+        }
+      ]
+    },
+    {
+      "id": "signals-4",
+      "category": "signals",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is the diamond problem in Observables, and why doesn't it occur with signals?",
+      "answer": "When two or more derived streams share a common source and are combined, RxJS can glitch - combineLatest emitting multiple times for what is logically one update. Signals are synchronous and batched: if you update two source signals, a computed or effect depending on both recalculates once per batch, not per dependency. That single recalc per write cycle is why signal graphs avoid the duplicate-emission problem.",
+      "examples": [
+        {
+          "title": "Batching intuition",
+          "code": "const a = signal(0), b = signal(0);\nconst sum = computed(() => a() + b());\n\neffect(() => console.log(sum())); // runs once if a.set(1); b.set(2) batched",
+          "explanation": "Synchronous updates batch → computed/effect run once per batch."
+        }
+      ]
+    },
+    {
+      "id": "signals-5",
+      "category": "signals",
+      "importance": "medium",
+      "forLater": false,
+      "question": "When do you need untracked() inside an effect?",
+      "answer": "untracked() removes dependency tracking inside an effect. You need it when an effect reads signals it should not subscribe to - for example reading a value to send to a server or to focus an element, where you do not want the effect to re-run when that value changes. A common failure is an effect that reads several signals and also writes to one, so writes would retrigger it forever; wrapping the write in untracked() breaks the loop.",
+      "examples": [
+        {
+          "title": "untracked() to avoid loops",
+          "code": "import { effect, signal, untracked } from '@angular/core';\n\nconst enabled = signal(false);\nconst log = signal('');\n\neffect(() => {\n  const e = enabled();\n  untracked(() => {\n    // do not track 'log' here\n    log.set(e ? 'on' : 'off');\n  });\n});",
+          "explanation": "Prevents the effect from re-running when log changes."
+        }
+      ]
+    },
+    {
+      "id": "signals-6",
+      "category": "signals",
+      "importance": "medium",
+      "forLater": false,
+      "question": "How would you plan a migration from an Angular 12 app that uses RxJS to Signals?",
+      "answer": "Plan incrementally instead of a big-bang rewrite. Start with component-local UI state and convert @Input/@Output to signal inputs (input()) so computed() can replace ngOnChanges. Then convert simple BehaviorSubject state in services to signal()/state, leaving HTTP and async pipelines on RxJS. Use the dev tools, keep the graph acyclic (never effect + set()), and rely on the signal-input-migration schematic for automation before touching complex features.",
+      "examples": [
+        {
+          "title": "ngOnChanges -> computed (the mechanical swap)",
+          "code": "// BEFORE: derive in a lifecycle hook\n@Input() price!: number;\n@Input() qty!: number;\ntotal = 0;\n\nngOnChanges() {\n  if (this.price !== undefined && this.qty !== undefined) {\n    this.total = this.price * this.qty; // manual recompute, runs on every input set\n  }\n}\n\n// AFTER: derive, don't recompute\nprice = input(0);\nqty = input(0);\ntotal = computed(() => this.price() * this.qty());",
+          "explanation": "computed replaces ngOnChanges entirely: no manual flag, no stale branch when only one input is set."
+        },
+        {
+          "title": "BehaviourSubject -> signal in a service",
+          "code": "// BEFORE\n@Injectable({ providedIn: 'root' })\nexport class UserStore {\n  private readonly user$ = new BehaviorSubject<User | null>(null);\n  readonly user$ = this.user$.asObservable();\n}\n\n// AFTER\n@Injectable({ providedIn: 'root' })\nexport class UserStore {\n  private readonly _user = signal<User | null>(null);\n  readonly user = this._user.asReadonly();\n  readonly isAdmin = computed(() => this.user()?.role === 'admin');\n}",
+          "explanation": "Derived flags become computeds; consumers read store.user() directly instead of the async pipe."
+        },
+        {
+          "title": "Keep RxJS for async, feed it into signals",
+          "code": "private readonly http = inject(HttpClient);\n\nreadonly user = toSignal(\n  this.http.get<User>('/api/me').pipe(catchError(() => of(null))),\n  { initialValue: null },\n);",
+          "explanation": "The request stays an observable; only the view-facing state becomes a signal."
+        }
+      ]
+    },
+    {
+      "id": "signals-7",
+      "category": "signals",
+      "importance": "medium",
+      "forLater": false,
+      "question": "Are NgOnInit and ngOnChanges still needed in a fully signal-based application?",
+      "answer": "Largely no. ngOnChanges is replaced by signal inputs (input()) combined with computed() - derived values recalculate reactively instead of in a hook. NgOnInit mostly becomes unnecessary since you can read signals and start effects inline; data fetching moves into resource()/rxResource(). The lifecycle hooks still exist and remain useful for view concerns like afterNextRender, but the signal-based APIs remove most of the boilerplate they forced.",
+      "examples": [
+        {
+          "title": "Lifecycle shift",
+          "code": "constructor() {\n  effect(() => {\n    // runs after initial render/context ready\n    console.log(this.items());\n  });\n}",
+          "explanation": "Many init cases move to inline reads/effects instead of NgOnInit."
+        }
+      ]
+    },
+    {
+      "id": "signals-8",
+      "category": "signals",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is linkedSignal, and why is calling set() inside an effect() considered an anti-pattern?",
+      "answer": "linkedSignal creates a writable signal that is linked to a source signal and resets to the source value when the source changes - ideal for a filter dropdown whose selection must reset when the underlying list changes. Writing signal.set() inside an effect() to do the same thing is an anti-pattern because it writes a signal being read by the effect, creating a feedback loop; Angular warns about it in dev mode. Use linkedSignal when the derived value must be writable, and computed() when it must not.",
+      "examples": [
+        {
+          "title": "Overload 1 - source only (resets to the derived value)",
+          "code": "import { signal, linkedSignal } from '@angular/core';\n\nconst options = signal(['html', 'css', 'angular']);\n\n// picks options()[0] now, and re-picks it whenever options changes\nconst selected = linkedSignal(() => options()[0]);\n\nselected.set('css'); // user picks css\noptions.set(['misc', 'signals']);\nselected();        // 'misc' - reset because the source changed",
+          "explanation": "With no computation, the linked value resets to the source's current derived value."
+        },
+        {
+          "title": "Overload 2 - source + computation (recompute on source change, keep local edits)",
+          "code": "const options = signal(['html', 'css', 'angular']);\n\n// recompute from the source, but only when the source itself changes -\n// unrelated re-renders keep the user's own selection\nconst selected = linkedSignal({\n  source: options,\n  computation: (opts, previous) => previous?.value ?? opts[0],\n});\n\nselected.set('css'); // local edit sticks\nselected();           // 'css' (previous wins)\noptions.set(['misc']);\nselected();           // 'misc' (source changed -> recompute)",
+          "explanation": "With a computation you control the reset rule - here 'keep previous unless the source really changed'."
+        },
+        {
+          "title": "The anti-pattern this replaces",
+          "code": "// DON'T - writing a signal inside an effect that reads it\ngeneral.set('html');\neffect(() => {\n  const list = options();\n  general.set(list[0]); // reads+writes -> loop risk, Angular warns in dev\n});",
+          "explanation": "linkedSignal expresses 'derived but writable' declaratively, with no feedback loop."
+        }
+      ]
+    }
+  ],
+  "rxjs": [
+    {
+      "id": "rxjs-1",
+      "category": "rxjs",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is an Observable in RxJS and how is it different from a Promise?",
+      "answer": "An Observable is lazy, cold by default, and can emit multiple values over time; it supports cancellation via unsubscribe() and is composable with operators. A Promise is eager, emits at most one value, is not cancellable, and is not pipeable. For example: new Observable(sub => { interval(1000).subscribe(n => sub.next(n)); return () => clear(); }) emits many values and can be torn down, while fetch() returns a single-value Promise.",
+      "examples": [
+        {
+          "title": "Observable vs Promise",
+          "code": "// Observable (multiple values, cancellable)\nimport { Observable, interval } from 'rxjs';\nconst obs = new Observable(sub => {\n  const id = setInterval(() => sub.next(Date.now()), 1000);\n  return () => clearInterval(id);\n});\nconst sub = obs.subscribe(v => console.log('tick', v));\nsetTimeout(() => sub.unsubscribe(), 2500);\n\n// Promise (single value)\nfetch('/api').then(r => r.json()).then(console.log);",
+          "explanation": "Observable emits over time and teardown is explicit; Promise settles once."
+        }
+      ]
+    },
+    {
+      "id": "rxjs-2",
+      "category": "rxjs",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is the difference between cold and hot Observables?",
+      "answer": "A cold Observable produces its values inside the subscription (each subscriber gets its own producer/sequence) — e.g., HTTP calls via HttpClient are cold. A hot Observable shares a single producer among subscribers (late subscribers may miss values) — e.g., a DOM event or a Subject/ConnectableObservable. You can convert cold to hot using share(), shareReplay(), publish()/connect(), or multicast().",
+      "examples": [
+        {
+          "title": "Cold vs hot",
+          "code": "// Cold: each subscriber triggers HTTP\nhttp.get('/api').subscribe(...);\n\n// Hot: shared via shareReplay\nconst shared$ = http.get('/api').pipe(shareReplay({bufferSize: 1}));\nshared$.subscribe(...); shared$.subscribe(...);",
+          "explanation": "Cold = per-subscriber producer; hot = shared producer."
+        }
+      ]
+    },
+    {
+      "id": "rxjs-3",
+      "category": "rxjs",
+      "importance": "medium",
+      "forLater": false,
+      "question": "Explain Subjects, BehaviorSubject, ReplaySubject, and AsyncSubject with a common use case.",
+      "answer": "Subject: multicast, no initial value, subscribers only get values emitted after subscribing (useful for event buses). BehaviorSubject: requires an initial value, emits the current value to new subscribers (useful for shared auth/user state). ReplaySubject(bufferSize): replays a fixed number of past values to new subscribers (useful for caching chat history). AsyncSubject: emits only the last value and only on completion (useful for one-shot async results).",
+      "examples": [
+        {
+          "title": "BehaviorSubject",
+          "code": "import { BehaviorSubject } from 'rxjs';\nconst user$ = new BehaviorSubject<User|null>(null);\nuser$.next(u); console.log(user$.value); // current value",
+          "explanation": "BehaviorSubject emits current value to new subscribers."
+        }
+      ]
+    },
+    {
+      "id": "rxjs-4",
+      "category": "rxjs",
+      "importance": "medium",
+      "forLater": false,
+      "question": "When should you use combineLatest, forkJoin, withLatestFrom, and merge?",
+      "answer": "combineLatest: emits when any source emits, after all have emitted at least once — combine related live values (filters + list). forkJoin: emits once, only after all complete with their last value — parallel one-shot requests that all must finish. withLatestFrom: emits only when the source emits, combining the latest values from others (primary stream drives). merge: concurrently emits values from multiple observables as they arrive (union of event streams).",
+      "examples": [
+        {
+          "title": "combineLatest vs forkJoin",
+          "code": "import { combineLatest, forkJoin, interval, of } from 'rxjs';\nimport { take } from 'rxjs/operators';\n\ncombineLatest([interval(10).pipe(take(2)), of('x')]).subscribe(v => console.log('combineLatest', v));\n// emits after both have emitted at least once\n\nforkJoin([of(1), of(2)]).subscribe(v => console.log('forkJoin', v));\n// emits last values when both complete",
+          "explanation": "combineLatest stays live; forkJoin is one-shot on completion."
+        }
+      ]
+    },
+    {
+      "id": "rxjs-5",
+      "category": "rxjs",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is switchMap, mergeMap, concatMap, and exhaustMap? Give an example for each.",
+      "answer": "switchMap: cancels the previous inner observable on a new outer emission — typeahead/search (cancel stale requests). mergeMap (flatMap): subscribes to all inner observables in parallel, emits results as they come — independent parallel calls. concatMap: subscribes sequentially, waits for current inner to complete before next — queued operations (saving drafts in order). exhaustMap: ignores new outer emissions while the current inner is active — login/save button mash prevention.",
+      "examples": [
+        {
+          "title": "switchMap vs exhaustMap (search vs save)",
+          "code": "import { fromEvent, of } from 'rxjs';\nimport { debounceTime, distinctUntilChanged, switchMap, exhaustMap } from 'rxjs/operators';\n\n// Search: switchMap cancels stale\nfromEvent(input, 'input').pipe(\n  debounceTime(300), distinctUntilChanged(),\n  switchMap(q => searchApi(q))\n).subscribe(r => results = r);\n\n// Save: exhaustMap ignores extra clicks\nfromEvent(saveBtn, 'click').pipe(\n  exhaustMap(() => saveApi())\n).subscribe(res => showToast(res));",
+          "explanation": "switchMap cancels previous inner on new outer; exhaustMap drops outer while inner is active."
+        }
+      ]
+    },
+    {
+      "id": "rxjs-6",
+      "category": "rxjs",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is the purpose of share(), shareReplay(), and refCount()?",
+      "answer": "share() turns a cold observable hot and replays the source among subscribers; refCount() keeps it alive only while there is >=1 subscriber (unsubscribes upstream when zero). shareReplay({ bufferSize: 1, refCount: true/false }) caches recent values for late subscribers and controls whether it stays alive when no subscribers exist — often used to cache HTTP responses. Use refCount carefully to avoid re-triggering a cold source unexpectedly.",
+      "examples": [
+        {
+          "title": "shareReplay",
+          "code": "data$ = this.http.get<Data>('/api').pipe(\n  shareReplay({ bufferSize: 1, refCount: true })\n);",
+          "explanation": "Caches last emission for late subscribers; refCount controls lifecycle."
+        }
+      ]
+    },
+    {
+      "id": "rxjs-7",
+      "category": "rxjs",
+      "importance": "medium",
+      "forLater": false,
+      "question": "How do you prevent memory leaks when subscribing to Observables?",
+      "answer": "Prefer the async pipe in templates (auto-unsubscribes on destroy). For imperative code, unsubscribe() in ngOnDestroy, or use takeUntil() with a destroy Subject, takeUntilDestroyed() (Angular 16+), first(), take(1), or finalize(). Also avoid long-lived global subscriptions without cleanup. For toSignal(), subscriptions are tied to the injection context (DestroyRef) automatically.",
+      "examples": [
+        {
+          "title": "takeUntilDestroyed",
+          "code": "import { takeUntilDestroyed } from '@angular/core/rxjs-interop';\nfromEvent(window, 'resize').pipe(takeUntilDestroyed()).subscribe(...);",
+          "explanation": "Auto-cleans up when injection context is destroyed."
+        }
+      ]
+    },
+    {
+      "id": "rxjs-8",
+      "category": "rxjs",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is the difference between map, tap, switchMap and exhaustMap in terms of what they return?",
+      "answer": "map: transforms values, returns the same stream type (value -> value). tap (do): side effect only, returns the same observable unchanged (use for logging). switchMap: maps outer value to an inner observable and flattens it, emitting values from the latest inner (projects to Observable). exhaustMap: maps to an inner observable but ignores outer emissions while inner is active (projects to Observable).",
+      "examples": [
+        {
+          "title": "tap vs map",
+          "code": "source$.pipe(\n  tap(v => console.log('side effect', v)),\n  map(v => v * 2)\n).subscribe(console.log);",
+          "explanation": "tap does not transform values; map projects them."
+        }
+      ]
+    },
+    {
+      "id": "rxjs-9",
+      "category": "rxjs",
+      "importance": "medium",
+      "forLater": false,
+      "question": "Give a small example of debouncing a search input with RxJS.",
+      "answer": "In a component: fromEvent(this.input.nativeElement, 'input').pipe(debounceTime(300), distinctUntilChanged(), switchMap(q => this.service.search(q)), takeUntilDestroyed()).subscribe(results => this.results.set(results)). This waits 300ms after typing stops, skips duplicates, cancels stale requests on new input, and cleans up on destroy.",
+      "examples": [
+        {
+          "title": "Search debounce",
+          "code": "fromEvent(inputEl, 'input').pipe(\n  debounceTime(300),\n  distinctUntilChanged(),\n  switchMap((e: any) => search((e.target as HTMLInputElement).value))\n).subscribe(results => this.results = results);",
+          "explanation": "Debounce, ignore duplicates, cancel stale requests."
+        }
+      ]
+    },
+    {
+      "id": "rxjs-10",
+      "category": "rxjs",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is error handling in RxJS and when would you use catchError, retry, and retryWhen?",
+      "answer": "catchError: catches errors in the stream and returns a replacement Observable (fallback value or EMPTY) to keep the stream alive. retry(n): re-subscribes up to n times immediately on error (useful for transient network blips). retryWhen(notifier): custom retry logic with delay/backoff (e.g., retryWhen(errors => errors.pipe(delay(1000), take(3)))) — better for rate limiting/exponential backoff. Handle errors close to where they can be meaningfully recovered.",
+      "examples": [
+        {
+          "title": "retryWhen with backoff",
+          "code": "source$.pipe(\n  retryWhen(errors => errors.pipe(\n    delay(1000),\n    take(3),\n    concatMap(err => throwError(() => err))\n  )))\n.subscribe(...);",
+          "explanation": "Custom retry with delay/backoff before failing."
+        }
+      ]
+    }
+  ],
+  "javascript": [
+    {
+      "id": "js-1",
+      "category": "javascript",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is hoisting in JavaScript, and how does it differ for var, let and const?",
+      "answer": "Hoisting is the default behaviour where declarations are processed before any code runs, so the engine \"knows\" about them at the top of the scope. var declarations (and function declarations) are hoisted and initialised to undefined, so reading them before the line throws nothing - you get undefined. let and const are hoisted too but stay in the temporal dead zone until the declaration executes, so accessing them earlier throws a ReferenceError. Hoisting applies to the declaration, not the assignment.",
+      "examples": [
+        {
+          "title": "var vs let before declaration",
+          "code": "console.log(a); // undefined\nvar a = 1;\n\nconsole.log(b); // ReferenceError: Cannot access 'b' before initialization\nlet b = 2;\n\nconsole.log(c); // ReferenceError\nconst c = 3;",
+          "explanation": "var is initialised to undefined at scope start; let/const live in the temporal dead zone until their declaration runs."
+        }
+      ]
+    },
+    {
+      "id": "js-2",
+      "category": "javascript",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is the difference between var, let and const?",
+      "answer": "var is function-scoped, hoisted, and can be redeclared - the source of most closure bugs in loops. let is block-scoped, hoisted but not initialised, and cannot be redeclared in the same block, so it is the default choice. const is also block-scoped and cannot be reassigned after initialisation, but note it does not make the value immutable - a const object can still have its properties changed.",
+      "examples": [
+        {
+          "title": "Loop scoping bug",
+          "code": "for (var i = 0; i < 3; i++) setTimeout(() => console.log(i)); // 3, 3, 3\nfor (let i = 0; i < 3; i++) setTimeout(() => console.log(i)); // 0, 1, 2",
+          "explanation": "var shares one binding across the whole function; let creates a new binding per iteration."
+        },
+        {
+          "title": "const is not deeply immutable",
+          "code": "const user = { name: 'Ada' };\nuser.name = 'Grace'; // fine\nuser = { name: 'Lin' }; // TypeError: Assignment to constant variable",
+          "explanation": "const freezes the binding, not the value inside it."
+        }
+      ]
+    },
+    {
+      "id": "js-3",
+      "category": "javascript",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is a closure?",
+      "answer": "A closure is the combination of a function with its lexical environment: an inner function keeps access to the variables of the scope where it was created, even after that outer function has returned. That is how private state, memoisation caches and event handlers that remember their context work.",
+      "examples": [
+        {
+          "title": "Counter with private state",
+          "code": "function createCounter() {\n  let count = 0;\n  return {\n    inc: () => ++count,\n    get: () => count,\n  };\n}\nconst c = createCounter();\nc.inc(); c.inc();\nconsole.log(c.get()); // 2  (count is unreachable from outside)",
+          "explanation": "count survives after createCounter returned because the returned functions captured its scope."
+        }
+      ]
+    },
+    {
+      "id": "js-4",
+      "category": "javascript",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is the difference between null and undefined?",
+      "answer": "undefined means a value has never been assigned - missing arguments, absent properties, uninitialised lets, and the return value of a function with no return. null is an explicit signal from the developer that there is intentionally no value. In practice: use undefined for absence by default, null to say \"deliberately empty\", and prefer ?? over || so 0 and empty string are not swallowed.",
+      "examples": [
+        {
+          "title": "?? vs ||",
+          "code": "0 || 'fallback';   // 'fallback'  (0 is falsy)\n0 ?? 'fallback';   // 0          (only null/undefined fall through)",
+          "explanation": "|| treats every falsy value as missing; ?? only treats null and undefined as missing."
+        }
+      ]
+    },
+    {
+      "id": "js-5",
+      "category": "javascript",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What are arrow functions and how do they differ from function declarations?",
+      "answer": "An arrow function is a compact anonymous function expression. Two differences matter: it has no own this (this is inherited lexically from where it was defined, so it cannot be used as a method or constructor) and no own arguments or new.target. It also cannot be hoisted as a declaration, and it has no prototype. Use arrows for callbacks; use function expressions when you need dynamic this or arguments.",
+      "examples": [
+        {
+          "title": "this in arrows vs methods",
+          "code": "const obj = {\n  name: 'app',\n  regular: function () { return typeof this; }, // 'object' (this = obj)\n  arrow: () => typeof this,                    // whatever this was where obj was created\n};\n\nconst detached = obj.regular; // this = undefined in strict mode",
+          "explanation": "Arrows capture this lexically, so detaching them changes nothing."
+        }
+      ]
+    },
+    {
+      "id": "js-6",
+      "category": "javascript",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is the difference between a function and a method?",
+      "answer": "A function is a standalone callable, usually declared at module scope and invoked by name. A method is a function that lives on an object and is invoked as obj.method(), so it receives the object as this. The same function object can be used either way - what changes is how it is called and therefore what this is. A standalone function that does not use this at all is better described as a plain function, not a method.",
+      "examples": [
+        {
+          "title": "Same function, two call styles",
+          "code": "function greet() { return 'Hi ' + this.name; }\nconst user = { name: 'Ada', greet };\nuser.greet();      // 'Hi Ada'  (method - this = user)\nconst g = user.greet;\ng();              // TypeError in strict mode (this = undefined)",
+          "explanation": "A function becomes a method through its call site, which supplies this."
+        }
+      ]
+    },
+    {
+      "id": "js-7",
+      "category": "javascript",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is event propagation, and what are the capture and bubble phases?",
+      "answer": "DOM events travel through the tree in three phases. Capture goes from the root down to the target, letting ancestors inspect the event before it arrives. The target phase fires listeners registered on the target itself. Bubble goes back up from the target to the root, which is where most listeners run. addEventListener accepts a third argument - true registers in the capture phase, false (default) or omit registers in the bubble phase.",
+      "examples": [
+        {
+          "title": "Listening in each phase",
+          "code": "document.addEventListener('click', log, true);  // capture: root first\nbutton.addEventListener('click', log);      // target\npanel.addEventListener('click', log);       // bubble: nearest ancestor first\n\nfunction log(e) { console.log(e.eventPhase, e.currentTarget); }",
+          "explanation": "The same handler can observe the event at three different points in its path."
+        }
+      ]
+    },
+    {
+      "id": "js-8",
+      "category": "javascript",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is the difference between event.preventDefault() and event.stopPropagation()?",
+      "answer": "preventDefault() cancels the default browser action for that event - following a link, submitting a form, checking a checkbox - but the event still travels to other listeners. stopPropagation() stops the event from reaching any further nodes, so ancestor and descendant handlers never run; the default action still happens unless you also call preventDefault(). stopImmediatePropagation() additionally prevents the remaining listeners on the same element.",
+      "examples": [
+        {
+          "title": "One is not the other",
+          "code": "form.addEventListener('submit', (e) => {\n  e.preventDefault();      // page does not reload\n  save();\n  // e.stopPropagation() would only stop the event going further up the DOM\n});",
+          "explanation": "preventDefault changes what the browser does; stopPropagation changes who else hears about it."
+        }
+      ]
+    },
+    {
+      "id": "js-9",
+      "category": "javascript",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What are the common array methods - map, filter, reduce, forEach - and when do you use each?",
+      "answer": "forEach runs a side effect per element and returns undefined - never use it to build a new array. map returns a new array of the same length with each element transformed. filter returns a new array of only the elements that pass a test. reduce folds the array into one value (sum, group, object) and always returns an accumulator you must initialise. Prefer these over raw for loops when you only need a transformation; use .at(), .find(), .some(), .every() and .sort() for the other common cases.",
+      "examples": [
+        {
+          "title": "The four shapes",
+          "code": "const nums = [1, 2, 3, 4];\n\nnums.forEach(n => log(n));                  // side effect only\nconst doubled = nums.map(n => n * 2);      // [2, 4, 6, 8]\nconst evens = nums.filter(n => n % 2 === 0);// [2, 4]\nconst total = nums.reduce((acc, n) => acc + n, 0); // 10",
+          "explanation": "Each operator has a distinct job; mixing them up usually means you wanted a different one."
+        },
+        {
+          "title": "Grouping with reduce",
+          "code": "const words = ['apple', 'avocado', 'banana'];\nconst byLetter = words.reduce((acc, w) => {\n  (acc[w[0]] ||= []).push(w);\n  return acc;\n}, {});",
+          "explanation": "reduce is the general-purpose fold - handy for grouping, counting and building lookups."
+        }
+      ]
+    },
+    {
+      "id": "js-10",
+      "category": "javascript",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is the spread operator, and how is it different from rest parameters?",
+      "answer": "Spread (...) expands an iterable into individual elements or properties at the call site - used to copy arrays/objects and to pass an array as separate arguments. Rest parameters collect leftover arguments into an array, and rest in destructuring gathers the remaining properties into an object. They use the same three dots but sit in opposite positions: spread produces many values, rest collects many values into one.",
+      "examples": [
+        {
+          "title": "Both directions",
+          "code": "const nums = [1, 2, 3];\nconst copy = [...nums, 4];                 // spread (produce)\n\nfunction sum(...args) { return args.reduce((a, b) => a + b, 0); }\nsum(...nums);                              // spread args + rest params\n\nconst { id, ...rest } = user;             // rest in destructuring (collect)",
+          "explanation": "Spread spreads out, rest gathers in."
+        }
+      ]
+    },
+    {
+      "id": "js-11",
+      "category": "javascript",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What are Map, Set and WeakMap, and how do they differ from plain objects and arrays?",
+      "answer": "Set holds unique values with fast has/add and preserves insertion order. Map holds key-value pairs with a typed API and reliable iteration, and unlike an object it accepts any value as a key and exposes size, keys(), values() and entries(). WeakMap is the non-enumerable, garbage-collectable variant of Map: keys must be objects and entries vanish when the key is unreachable, which is why it is used for private per-object caches. Use a Set for membership tests instead of indexOf on an array.",
+      "examples": [
+        {
+          "title": "Membership and lookup",
+          "code": "const allowed = new Set(['html', 'css']);\nallowed.has('css');            // true  (O(1) - array indexOf would be O(n))\n\nconst byId = new Map([[1, 'Ada'], [2, 'Lin']]);\nbyId.get(2);                     // 'Lin'  (keys need not be strings)\nObject.keys(byId).length;       // 0 - Map data is not on the prototype",
+          "explanation": "Collections give O(1) lookups and safe handling of keys that objects cannot express."
+        },
+        {
+          "title": "WeakMap for private per-object state",
+          "code": "const meta = new WeakMap();\nfunction tag(node) { meta.set(node, { visits: 0 }); }\nfunction visits(node) { return meta.get(node)?.visits ?? 0; }",
+          "explanation": "Because the keys are objects, entries are collected once the nodes become unreachable."
+        }
+      ]
+    },
+    {
+      "id": "js-12",
+      "category": "javascript",
+      "importance": "medium",
+      "forLater": false,
+      "question": "Why is JavaScript single-threaded, and how can it still handle concurrent work?",
+      "answer": "One thread plus one synchronous call stack means code cannot interleave mid-statement, so you never get data races on shared memory - which is why it is safe by default. Concurrency comes from the event loop: the stack runs to completion, then the microtask queue (promise callbacks) is drained, then one macrotask (timers, I/O callbacks) is processed. I/O is delegated to the browser or Node, so while a request is in flight the main thread is free. That is also why a long synchronous loop freezes the UI - and why heavy work goes to a Web Worker.",
+      "examples": [
+        {
+          "title": "Order of execution",
+          "code": "console.log('1 sync');\nsetTimeout(() => console.log('4 macrotask'), 0);\nPromise.resolve().then(() => console.log('3 microtask'));\nconsole.log('2 sync');\n// 1 sync, 2 sync, 3 microtask, 4 macrotask",
+          "explanation": "All synchronous code runs first, then microtasks, then the next macrotask."
+        }
+      ]
+    },
+    {
+      "id": "js-13",
+      "category": "javascript",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is the prototype chain?",
+      "answer": "Every JavaScript object has an internal [[Prototype]] link, and property lookup walks that chain until it hits null. Functions inherit from Function.prototype, arrays from Array.prototype, and any object can be linked to your own object so instances share behaviour - that is how \"inheritance\" works in JavaScript, through delegation rather than copying. Object.create(proto) sets the link directly, and class syntax is sugar over the same mechanism.",
+      "examples": [
+        {
+          "title": "Manual delegation",
+          "code": "const animal = { speaks() { return 'generic sound'; } };\nconst dog = Object.create(animal);\ndog.name = 'Rex';\n\ndog.speaks();                 // 'generic sound' (found on the prototype)\nObject.hasOwn(dog, 'speaks');// false\n'speaks' in dog;              // true  (walks the chain)",
+          "explanation": "Properties are looked up along the chain, so shared behaviour lives on one shared object."
+        }
+      ]
+    },
+    {
+      "id": "js-14",
+      "category": "javascript",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What do call, apply and bind do?",
+      "answer": "All three change what this refers to when a function is invoked. call invokes the function immediately with the given this and arguments listed individually. apply invokes it immediately with an array-like list of arguments. bind returns a new function with this permanently bound and arguments partially applied - which is how you keep a handler working when you pass it to addEventListener.",
+      "examples": [
+        {
+          "title": "Invocation styles",
+          "code": "function intro(greeting, mark) { return `${greeting} ${this.name}${mark}`; }\nconst user = { name: 'Ada' };\n\nintro.call(user, 'Hi', '!');      // 'Hi Ada!'\nintro.apply(user, ['Hi', '!']);   // 'Hi Ada!'\nconst bound = intro.bind(user, 'Hi');\nbound('?');                        // 'Hi Ada?'",
+          "explanation": "call/apply run now; bind produces a reusable function with this fixed."
+        }
+      ]
+    },
+    {
+      "id": "js-15",
+      "category": "javascript",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What does use strict do?",
+      "answer": "It opts a script or function into strict mode, which removes the sloppy-mode escape hatches: undeclared assignments throw instead of creating a global, this inside a plain function call is undefined rather than the global object, duplicate parameters are rejected, and writes to non-writable properties throw instead of failing silently. Modules and class bodies are always strict, so bundler-based Angular code is strict whether you ask for it or not.",
+      "examples": [
+        {
+          "title": "Errors instead of silent globals",
+          "code": "'use strict';\nundeclared = 1;       // ReferenceError (sloppy mode would create window.undeclared)\n\nfunction f() { return this; }\nf();                    // undefined (sloppy mode: globalThis)",
+          "explanation": "Strict mode converts silent misbehaviour into immediate errors."
+        }
+      ]
+    },
+    {
+      "id": "js-16",
+      "category": "javascript",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What are the ES6+ features worth knowing as an Angular developer?",
+      "answer": "The ones you meet daily: let/const with block scoping, arrow functions, template literals, destructuring with defaults and rest, spread for copying, classes, ES modules with import/export, and the null-handling operators ?. and ??. Map/Set replaced the need for most object-as-dictionary hacks, and Object.entries/values/fromEntries make transformation easy. Later editions add optional catch binding, logical assignment (??=, ||=) and Array.prototype.at for negative indexing.",
+      "examples": [
+        {
+          "title": "Everyday uses",
+          "code": "const state = { user: { name: 'Ada' }, tags: ['a'] };\nconst { user: { name }, ...rest } = state;  // destructuring + rest\nconst label = `Hi ${name ?? 'guest'}`;       // template literal + nullish coalescing\nconst count = state.tags?.length;            // optional chaining",
+          "explanation": "These are the features that remove most defensive coding."
+        }
+      ]
+    },
+    {
+      "id": "js-17",
+      "category": "javascript",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is Object.assign and how does it differ from object spread?",
+      "answer": "Object.assign(target, ...sources) copies own enumerable properties from the sources onto the target and returns that same mutated object. Spreading ({ ...source }) builds a new object instead. Functionally they copy the same properties, but spread is preferable in application code because it cannot accidentally mutate a shared object, and it copies symbol-keyed properties as well. Both are shallow - nested objects are still shared references.",
+      "examples": [
+        {
+          "title": "Mutate vs copy",
+          "code": "const defaults = { retries: 3 };\nconst a = Object.assign({}, defaults, { retries: 5 });  // new object\nconst b = Object.assign(defaults, { retries: 5 });       // mutates defaults!\n\nconst c = { ...defaults, retries: 5 };                   // new object",
+          "explanation": "Prefer spread - Object.assign on a shared defaults object edits it for everyone."
+        }
+      ]
+    },
+    {
+      "id": "js-18",
+      "category": "javascript",
+      "importance": "medium",
+      "forLater": false,
+      "question": "How do you prevent an object from being modified?",
+      "answer": "Object.freeze seals an object shallowly: existing properties cannot be reassigned or deleted, and new ones cannot be added. Nested objects are not affected, so for deep protection you freeze recursively. Object.seal allows modification but blocks adding and deleting. In strict mode any attempt to write throws a TypeError; in sloppy mode it fails silently. Note that freeze only stops property writes - it does not stop internal methods such as array push from succeeding.",
+      "examples": [
+        {
+          "title": "Shallow vs deep freeze",
+          "code": "const config = Object.freeze({ url: '/api', nested: { retries: 3 } });\nconfig.url = '/x';        // TypeError in strict mode, ignored otherwise\nconfig.nested.retries = 9;// allowed - freeze is only one level deep\n\nconst deep = Object.freeze({ nested: Object.freeze({ retries: 3 }) });",
+          "explanation": "Freeze walks one level; nested objects must be frozen explicitly."
+        }
+      ]
+    },
+    {
+      "id": "js-19",
+      "category": "javascript",
+      "importance": "medium",
+      "forLater": false,
+      "question": "What is type coercion in JavaScript?",
+      "answer": "JavaScript implicitly converts values between types when an operator or context demands it, which is why \"4\" - 2 is 2 but \"4\" + 2 is \"42\" - addition concatenates when either side is a string. Comparisons use abstract equality loosely: == coerces types, while === compares type and value. Coercion produces the infamous NaN whenever a string cannot be parsed as a number. Prefer explicit conversion - Number(), String(), Boolean() - and always === over ==.",
+      "examples": [
+        {
+          "title": "Coercion surprises",
+          "code": "'4' - 2;        // 2      (numeric)\n'4' + 2;        // '42'    (string concat)\n'4' == 4;       // true    (loose)\n'4' === 4;      // false   (strict)\n3 + undefined; // NaN",
+          "explanation": "Arithmetic coerces to numbers, + with a string concatenates, and == coerces while === does not."
+        }
+      ]
+    },
+    {
+      "id": "js-20",
+      "category": "javascript",
+      "importance": "medium",
+      "forLater": false,
+      "question": "How do you find the minimum and maximum value in an array?",
+      "answer": "Spread the array into Math.min or Math.max. Beware the argument limit: Math.min(...arr) throws a RangeError for arrays with roughly a hundred thousand elements or more, and it also fails on an empty array (Infinity for min, -Infinity for max). For large arrays reduce the values instead, and decide what an empty list should mean for your domain.",
+      "examples": [
+        {
+          "title": "Spread, reduce and the empty case",
+          "code": "const nums = [1, -9, -7, 6];\nMath.min(...nums);                    // -9\n\n// safe for huge arrays\nconst min = nums.reduce((m, n) => (n < m ? n : m), Infinity); // -9\n\nMath.min(...[]);                    // Infinity (often not what you want)",
+          "explanation": "Spread is clearest for normal data; reduce avoids the argument-count limit."
+        }
+      ]
+    }
+  ]
 }
