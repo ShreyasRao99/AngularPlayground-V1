@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Redirecting…</title>
+    <script>
+      (function () {
+        var base = '/AngularPlayground-V1/';
+        var l = window.location;
+        var route = l.pathname.indexOf(base) === 0 ? l.pathname.slice(base.length) : '';
+        var target = base + '?redirect=' + encodeURIComponent(route + l.search + l.hash);
+        l.replace(target);
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>
