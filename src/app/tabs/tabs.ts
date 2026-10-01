@@ -24,31 +24,31 @@ export class Tabs {
       route: '/css',
     },
     {
-      label: 'ANGULAR',
+      label: 'Angular',
       route: '/angular',
     },
     {
-      label: 'JAVASCRIPT',
+      label: 'JavaScript',
       route: '/javascript',
     },
     {
-      label: 'PERFORMANCE',
+      label: 'Performance',
       route: '/performance',
     },
     {
-      label: 'RXJS',
+      label: 'RxJS',
       route: '/rxjs',
     },
     {
-      label: 'SIGNALS',
+      label: 'Signals',
       route: '/signals',
     },
     {
-      label: 'MISC',
+      label: 'Misc',
       route: '/misc',
     },
     {
-      label: 'BEHAVIOURAL',
+      label: 'Behavioural',
       route: '/behavioural',
     },
   ];
