@@ -98,7 +98,7 @@ function createPokemonFetcher() {
       },
       {
         title: 'Find the min and max without sorting',
-        task: 'Find the lightest and heaviest Pokémon in one pass with reduce instead of sorting the whole array, and give the running-extremes version as a second implementation. Then explain why Math.min(...arr) breaks for a 151-item array but works for a 10-item one.',
+        task: 'Find the lightest and heaviest Pokémon in one pass with reduce instead of sorting the whole array, and give the running-extremes version as a second implementation. Then explain where Math.min(...arr) stops working: spreading an array passes one argument per element, so it is safe at 151 items but throws "too many arguments" somewhere around 100,000 - which is why a reduce-based max is the version that holds up.',
         learn: 'How do you find the minimum and maximum value in an array',
       },
       {

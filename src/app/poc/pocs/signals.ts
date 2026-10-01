@@ -33,12 +33,12 @@ export const SIGNALS_POCS: Poc[] = [
     ],
     starter: `// signals version
 readonly name = signal('pikachu');
-readonly pokemon = computed(() => this.service.getPokemon(this.name())); // but need async
+readonly pokemon = computed(() => this.service.getPokemon(this.name())); // BUG: getPokemon returns an Observable, not a value
 
 // observable version
 readonly pokemon$ = this.name$.pipe(switchMap((name) => this.api.getPokemon(name)));
 
-// with signals + http: one option is resource(), another is toSignal with an effect, or an async computed?`,
+// now fix the computed three ways - resource(), toSignal(), and an async computed - then compare them`,
     covers: ['signals-1', 'signals-4'],
   },
   {
