@@ -20,4 +20,19 @@ describe('Tabs', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should link to every question category', () => {
+    const routes = component['links'].map((link) => link.route);
+    expect(routes).toEqual([
+      '/html',
+      '/css',
+      '/angular',
+      '/javascript',
+      '/performance',
+      '/rxjs',
+      '/signals',
+      '/misc',
+      '/behavioural',
+    ]);
+  });
 });
