@@ -9,6 +9,12 @@ type QuestionStoreState = {
 
 const seed: Question[] = Object.values(questionsData).flat() as Question[];
 
+const idMigrations: Record<string, string> = {
+  'angular-7': 'performance-21',
+  'angular-23': 'performance-22',
+  'angular-28': 'performance-23',
+};
+
 const initialState: QuestionStoreState = {
   questionData: [],
 };
@@ -22,7 +28,10 @@ export const QuestionStore = signalStore(
       if (saved) {
         const persisted = JSON.parse(saved) as Pick<Question, 'id' | 'importance' | 'forLater'>[];
         const flags = Object.fromEntries(
-          persisted.map(({ id, importance, forLater }) => [id, { importance, forLater }]),
+          persisted.map(({ id, importance, forLater }) => [
+            idMigrations[id] ?? id,
+            { importance, forLater },
+          ]),
         );
         patchState(store, {
           questionData: seed.map((q) => ({ ...q, ...flags[q.id] })),

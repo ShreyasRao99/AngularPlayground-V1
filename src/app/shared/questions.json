@@ -278,12 +278,12 @@
       "importance": "medium",
       "forLater": false,
       "question": "What are specificity and the cascade, and where does !important fit in?",
-      "answer": "The cascade decides which rule wins when selectors conflict; specificity ranks them by id (highest), class/attribute/pseudo-class, and type selectors, with inline styles winning over all of them. !important overrides the cascade entirely - which is why it is a code smell: it is hard to beat without another !important and makes the source of a style unpredictable. Prefer increasing specificity or the origin of the stylesheet instead.",
+      "answer": "The cascade decides which rule wins when selectors conflict; specificity ranks them by id (highest), then class/attribute/pseudo-class, then type selectors, and a style attribute beats all of those normal author rules. !important lifts an author declaration above every normal author rule, including the style attribute, which is why it is a code smell: the only thing that reliably beats it is another !important, so the source of a style becomes unpredictable. Prefer increasing specificity or changing the order and origin of the stylesheet instead.",
       "examples": [
         {
           "title": "Specificity example",
-          "code": "/* specificity: 0,0,1 */ p {}\n/* 0,1,0 */ .note {}\n/* 1,0,0 */ #main {}\n/* wins over all except another !important */ .foo { color: red !important; }",
-          "explanation": "Cascade + specificity decide; !important breaks the normal order."
+          "code": "/* specificity: 0,0,1 */ p {}\n/* 0,1,0 */ .note {}\n/* 1,0,0 */ #main {}\n/* an author !important also beats the style attribute, and can only be beaten by another !important */\n.foo { color: red !important; }",
+          "explanation": "Cascade + specificity decide; !important breaks the normal order, and the only escape from it is another !important."
         }
       ]
     },
@@ -625,7 +625,7 @@
       "importance": "medium",
       "forLater": false,
       "question": "What is Object.assign and how does it differ from object spread?",
-      "answer": "Object.assign(target, ...sources) copies own enumerable properties from the sources onto the target and returns that same mutated object. Spreading ({ ...source }) builds a new object instead. Functionally they copy the same properties, but spread is preferable in application code because it cannot accidentally mutate a shared object, and it copies symbol-keyed properties as well. Both are shallow - nested objects are still shared references.",
+      "answer": "Object.assign(target, ...sources) copies own enumerable properties from the sources onto the target and returns that same mutated object. Spreading ({ ...source }) builds a new object instead. They copy the same properties - including symbol-keyed ones - so the only real difference is the target: spread cannot mutate a shared object by accident. Prefer spread in application code. Both are shallow - nested objects are still shared references.",
       "examples": [
         {
           "title": "Mutate vs copy",
@@ -640,7 +640,7 @@
       "importance": "medium",
       "forLater": false,
       "question": "How do you prevent an object from being modified?",
-      "answer": "Object.freeze seals an object shallowly: existing properties cannot be reassigned or deleted, and new ones cannot be added. Nested objects are not affected, so for deep protection you freeze recursively. Object.seal allows modification but blocks adding and deleting. In strict mode any attempt to write throws a TypeError; in sloppy mode it fails silently. Note that freeze only stops property writes - it does not stop internal methods such as array push from succeeding.",
+      "answer": "Object.freeze seals an object shallowly: existing properties cannot be reassigned or deleted, and new ones cannot be added. Nested objects are not affected, so for deep protection you freeze recursively. Object.seal allows modification but blocks adding and deleting. Reassigning an existing non-writable property throws a TypeError in strict mode and fails silently in sloppy mode. Freeze also reaches internal slots: a frozen array cannot be pushed to or sorted, because every one of those operations has to write a property on an object that is no longer extensible - that throws in both modes. What freeze never reaches is anything the object references, which is why the recursion above is the part people forget.",
       "examples": [
         {
           "title": "Shallow vs deep freeze",
@@ -732,7 +732,7 @@
       "importance": "medium",
       "forLater": false,
       "question": "What is an Angular directive?",
-      "answer": "A directive is a class that extends HTML behaviour — structure or presentation — without an associated template. Attribute directives change an element's appearance or behaviour, while structural directives (like @if and @for) add, remove or repeat elements in the DOM.",
+      "answer": "A directive is a class that extends HTML behaviour — structure or presentation — without an associated template. Attribute directives change an element's appearance or behaviour, while structural directives add, remove or repeat elements in the DOM - *ngIf and *ngFor are the classic ones, replaced in modern templates by the built-in @if / @for control-flow blocks.",
       "examples": [
         {
           "title": "Component directive",
@@ -776,8 +776,8 @@
       "category": "angular",
       "importance": "medium",
       "forLater": false,
-      "question": "What is the difference between @Input and @Output?",
-      "answer": "@Input lets a parent pass data into a child component's property. @Output emits an event from the child that the parent listens to. They are the two halves of component communication: input flows down, output flows up.",
+      "question": "What is the difference between @Input and @Output, and how do the signal APIs change it?",
+      "answer": "@Input lets a parent pass data down into a child, and @Output lets the child emit an event upward - together they are the two halves of component communication. In modern Angular you use the signal APIs rather than the decorators: input() / input.required() on the way in, output() on the way out, and model() when the value both flows down and can be written back up by the child. The behavioural difference is that signal inputs and outputs are reactive - a computed() can derive from them and change detection is notified when they change - whereas decorator inputs are plain properties that you read imperatively.",
       "examples": [
         {
           "title": "Input into a child",
@@ -801,7 +801,7 @@
       "examples": [
         {
           "title": "Debounce + cancel + isolate",
-          "code": "// template\n<input #box (input)=\"search(box.value)\" />\n\nsearch(term: string) {\n  this.results = toSignal(\n    this.term$.pipe(\n      debounceTime(300),\n      distinctUntilChanged(),\n      switchMap(t => this.api.search(t)),   // cancels the previous request\n    ),\n    { initialValue: [] },\n  );\n}\n\n@Component({ changeDetection: ChangeDetectionStrategy.OnPush })",
+          "code": "// template\n<input (input)=\"onInput($event)\" />\n@for (r of results(); track r.id) { <p>{{ r.name }}</p> }\n\n@Component({ changeDetection: ChangeDetectionStrategy.OnPush })\nexport class Search {\n  private readonly api = inject(CustomerApi);\n  private readonly term$ = new Subject<string>();\n\n  // toSignal needs an injection context, so it belongs in a field\n  // initializer - not inside the event handler.\n  readonly results = toSignal(\n    this.term$.pipe(\n      debounceTime(300),\n      distinctUntilChanged(),\n      switchMap(t => this.api.search(t)),   // cancels the previous request\n    ),\n    { initialValue: [] as Customer[] },\n  );\n\n  onInput(e: Event): void {\n    this.term$.next((e.target as HTMLInputElement).value);\n  }\n}",
           "explanation": "Fix the cause: one request per settled term, stale responses dropped, and the list re-renders on its own dependency only."
         }
       ]
@@ -831,8 +831,8 @@
       "examples": [
         {
           "title": "Ignore clicks while saving",
-          "code": "save$ = new Subject<void>();\n\nsave() {\n  this.save$.pipe(\n    exhaustMap(() => this.api.save(this.form.value).pipe(\n      finalize(() => this.saving.set(false)),\n    )),\n  ).subscribe();\n}",
-          "explanation": "exhaustMap drops emissions while the inner request is in flight, so one click means one request."
+          "code": "private readonly save$ = new Subject<void>();\nreadonly saving = signal(false);\n\nconstructor() {\n  // one subscription for the lifetime of the component. Piping inside save()\n  // would build a new subscription per click and defeat exhaustMap entirely.\n  this.save$.pipe(\n    exhaustMap(() => {\n      this.saving.set(true);\n      return this.api.save(this.form.value).pipe(\n        finalize(() => this.saving.set(false)),\n      );\n    }),\n  ).subscribe();\n}\n\nsave(): void { this.save$.next(); }",
+          "explanation": "exhaustMap drops emissions while the inner request is in flight, so one click means one request - but only because the subscription is created once."
         }
       ]
     },
@@ -876,8 +876,8 @@
       "examples": [
         {
           "title": "ControlValueAccessor",
-          "code": "@Component({ selector: 'app-rating', providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => Rating), multi: true }] })\nexport class Rating implements ControlValueAccessor {\n  private onChange: (v: number) => void = () => {};\n  writeValue(v: number): void { this.value = v; }\n  registerOnChange(fn: (v: number) => void): void { this.onChange = fn; }\n  registerOnTouched(fn: () => void): void { this.onTouched = fn; }\n  setDisabledState(d: boolean): void { this.disabled = d; }\n}",
-          "explanation": "Implementing the four methods makes the component bindable by both ngModel and formControlName."
+          "code": "@Component({\n  selector: 'app-rating',\n  providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => Rating), multi: true }],\n})\nexport class Rating implements ControlValueAccessor {\n  value: number | null = null;\n  disabled = false;\n  private onChange: (v: number | null) => void = () => {};\n  private onTouched: () => void = () => {};\n\n  writeValue(value: number | null): void { this.value = value; }\n  registerOnChange(fn: (v: number | null) => void): void { this.onChange = fn; }\n  registerOnTouched(fn: () => void): void { this.onTouched = fn; }\n  setDisabledState(isDisabled: boolean): void { this.disabled = isDisabled; }\n}",
+          "explanation": "Implementing the four methods makes the component bindable by both ngModel and formControlName. The signatures accept null because the forms API calls them with null, for example on reset."
         },
         {
           "title": "Using it",
@@ -896,7 +896,7 @@
       "examples": [
         {
           "title": "One FormGroup, several steps",
-          "code": "// stepper (parent) owns the group\nform = inject(FormBuilder).group({\n  address: this.fb.group({ city: ['', Validators.required] }),\n  payment: this.fb.group({ card: ['', Validators.required] }),\n});\n\n// each step child\n@Component({ selector: 'app-address-step' })\nexport class AddressStep {\n  form = input.required<FormGroup>();   // passed, not duplicated\n}",
+          "code": "// stepper (parent) owns the group\nprivate readonly fb = inject(FormBuilder);\n\nreadonly form = this.fb.group({\n  address: this.fb.group({ city: ['', Validators.required] }),\n  payment: this.fb.group({ card: ['', Validators.required] }),\n});\n\n// each step child\n@Component({ selector: 'app-address-step' })\nexport class AddressStep {\n  form = input.required<FormGroup>();   // passed, not duplicated\n}",
           "explanation": "The step components never own form state - they render and validate parts of the parent's instance."
         },
         {
@@ -1017,7 +1017,7 @@
       "importance": "medium",
       "forLater": false,
       "question": "What is content projection (ng-content)?",
-      "answer": "Content projection lets a parent component pass markup into a child's template via <ng-content>. In a card or modal component the child defines slots with <ng-content select='.header'> and the parent fills them, making the component reusable without prop-drilling markup. Multi-slot projection uses the select attribute; a catch-all ng-content without select grabs everything else.",
+      "answer": "Content projection lets a parent component pass markup into a child's template via <ng-content>. In a card or modal component the child defines named slots with <ng-content select=\"[slot='header']\"> and the parent fills them by putting slot=\"header\" on its content, which makes the component reusable without prop-drilling markup. Multi-slot projection uses the select attribute; a catch-all ng-content without select grabs everything else.",
       "examples": [
         {
           "title": "Multi-slot content projection",
@@ -1032,17 +1032,17 @@
       "importance": "high",
       "forLater": false,
       "question": "A username field must show \"already taken\" while the user types, using a backend check. How do you implement it?",
-      "answer": "Reach for an AsyncValidator, not a manual subscribe. Angular runs async validators through the same FormControl status pipeline as sync validators, so the control gets pending, then valid or invalid, and the form stays disabled while it is checking. Two rules matter: debounce before hitting the network (timer inside the validator), and distinctUntilChanged so re-checking the same value is skipped. Always catchError inside the validator and return null - a network failure is not the user's fault, so it must not mark the field invalid and block submit.",
+      "answer": "Reach for an AsyncValidator, not a manual subscribe. Angular runs async validators through the same FormControl status pipeline as sync validators, so the control goes PENDING while the check is in flight and then VALID or INVALID - and you wire the disabled state yourself from form.pending, Angular will not do that for you. Two rules matter. Debounce before hitting the network, with a timer inside the validator. And skip re-checking an unchanged value - but note that distinctUntilChanged() belongs on the valueChanges stream that drives the check, not inside the validator, because Angular re-runs the validator as a fresh subscription on every value change and there is no previous emission for it to compare against. Always catchError inside the validator and return null - a network failure is not the user's fault, so it must not mark the field invalid and block submit.",
       "examples": [
         {
           "title": "Async validator factory (debounced + failure-tolerant)",
-          "code": "export function usernameAvailable(api: UserApi): AsyncValidatorFn {\n  return (control) => {\n    const value = (control.value ?? '').trim();\n    if (value.length < 3) return of(null);\n\n    return timer(300).pipe(              // debounce: one request per pause\n      switchMap(() => api.checkUsername(value)),\n      map(taken => (taken ? { usernameTaken: true } : null)),\n      distinctUntilChanged(),\n      catchError(() => of(null)),        // network error != invalid value\n      first(),\n    );\n  };\n}",
-          "explanation": "Factory takes the service as an argument because inject() is not available inside the function the validator returns."
+          "code": "export function usernameAvailable(api: UserApi): AsyncValidatorFn {\n  return (control) => {\n    const value = (control.value ?? '').trim();\n    if (value.length < 3) return of(null);\n\n    return timer(300).pipe(              // debounce: one request per pause\n      switchMap(() => api.checkUsername(value)),\n      map(taken => (taken ? { usernameTaken: true } : null)),\n      catchError(() => of(null)),        // network error != invalid value\n      first(),\n    );\n  };\n}",
+          "explanation": "The factory takes the service as an argument because inject() is not available inside the function the validator returns. Dedupe the value upstream on valueChanges with distinctUntilChanged() - each validator run is a fresh subscription, so it has nothing to compare against."
         },
         {
           "title": "Wiring it up and showing the three states",
-          "code": "username = new FormControl('', {\n  validators: [Validators.required],\n  asyncValidators: [usernameAvailable(inject(UserApi))],\n});\n\n// template\n@if (username.pending) { <span>Checking...</span> }\n@if (username.hasError('usernameTaken')) { <span>Already taken</span> }\n\nreadonly form = this.fb.nonNullable.group({ username: this.username });\n// <button [disabled]=\"form.invalid || form.pending\">Save</button>",
-          "explanation": "pending covers the in-flight window, invalid covers a real backend rejection, and submit stays blocked while either is true."
+          "code": "username = new FormControl('', {\n  nonNullable: true,\n  validators: [Validators.required],\n  asyncValidators: [usernameAvailable(inject(UserApi))],\n});\n\n// template\n@if (username.pending) { <span>Checking...</span> }\n@if (username.hasError('usernameTaken')) { <span>Already taken</span> }\n\n// <button [disabled]=\"username.invalid || username.pending\">Save</button>",
+          "explanation": "pending covers the in-flight window, invalid covers a real backend rejection, and the submit button stays disabled while either is true - that last part is your binding, not Angular's behaviour."
         }
       ]
     },
@@ -1076,7 +1076,7 @@
       "examples": [
         {
           "title": "Schema to FormGroup",
-          "code": "interface FieldSchema {\n  name: string; label: string;\n  type: 'text' | 'number' | 'email';\n  required?: boolean;\n  minLength?: number;\n  children?: FieldSchema[];\n}\n\nfunction toControls(schema: FieldSchema[]): Record<string, AbstractControl> {\n  return Object.fromEntries(schema.map(f => {\n    const validators = f.required ? [Validators.required] : [];\n    if (f.minLength) validators.push(Validators.minLength(f.minLength));\n\n    const control: AbstractControl = f.children\n      ? new FormGroup(toControls(f.children))\n      : new FormControl(null, { validators, nonNullable: f.type !== 'text' ? false : true });\n\n    return [f.name, control];\n  }));\n}\n\nform = new FormGroup(toControls(schema));",
+          "code": "interface FieldSchema {\n  name: string; label: string;\n  type: 'text' | 'number' | 'email';\n  required?: boolean;\n  minLength?: number;\n  children?: FieldSchema[];\n}\n\nfunction toControls(schema: FieldSchema[]): Record<string, AbstractControl> {\n  return Object.fromEntries(schema.map(f => {\n    const validators = f.required ? [Validators.required] : [];\n    if (f.minLength) validators.push(Validators.minLength(f.minLength));\n\n    const control: AbstractControl = f.children\n      ? new FormGroup(toControls(f.children))\n      : new FormControl(f.type === 'number' ? 0 : '', { validators, nonNullable: true });\n\n    return [f.name, control];\n  }));\n}\n\nform = new FormGroup(toControls(schema));",
           "explanation": "Validators come from data, so the schema is the single source of truth for validation."
         },
         {
@@ -1191,7 +1191,7 @@
         },
         {
           "title": "Readable production stacks",
-          "code": "// angular.json\n\"configurations\": {\n  \"production\": {\n    \"sourceMap\": { \"scripts\": true, \"styles\": false, \"hidden\": false },\n    \"namedChunks\": false\n  }\n}\n\n// upload the maps at build time, never serve them publicly\nnpx sentry-cli sourcemaps upload --release $VERSION dist/browser",
+          "code": "// angular.json\n\"configurations\": {\n  \"production\": {\n    \"sourceMap\": { \"scripts\": true, \"styles\": false, \"hidden\": true },\n    \"namedChunks\": false\n  }\n}\n\n// upload the maps at build time, never serve them publicly\nnpx sentry-cli sourcemaps upload --release $VERSION dist/browser",
           "explanation": "Hidden source maps are uploaded to the tracker and excluded from the bundle you deploy."
         }
       ]
@@ -1218,7 +1218,7 @@
       "category": "performance",
       "importance": "high",
       "forLater": false,
-      "question": "Walk me through how an Angular app boots, step by step. Does it go to app.ts\nfirst?",
+      "question": "Walk me through how an Angular app boots, step by step. Does it go to app.ts first?",
       "answer": "No - and correcting that misconception inside the answer is valuable, because it\ntests whether you know the order rather than the file names. The order is: the\nbrowser receives index.html, discovers the module script, downloads and executes\nmain.ts, main.ts calls bootstrapApplication with a root component, Angular creates\nthat component, its template renders, and only then does anything user-visible\nappear. The root component class is inert until bootstrapApplication instantiates\nit. Within that you should be able to name where the router fits: the root template\ncontains router-outlet, the router reads the current URL, matches it against the\nroute config, and for a lazy route triggers a dynamic import before the routed\ncomponent is created. Mention that in Angular 21+ this app is zoneless by default,\nso change detection is scheduled by notification rather than by zone.js.",
       "examples": [
         {
@@ -1233,7 +1233,7 @@
       "category": "performance",
       "importance": "medium",
       "forLater": false,
-      "question": "How does the browser decide what to fetch from your index.html, and in what\norder?",
+      "question": "How does the browser decide what to fetch from your index.html, and in what order?",
       "answer": "Tests whether you know there is a real parser and a separate preload scanner. The\nbrowser parses HTML incrementally, and the preload scanner runs ahead of the DOM\nparser looking for things it can fetch early - stylesheets, scripts, images, fonts.\nThat is why a script far down the body can already be downloading. Then the priority\nrules kick in: CSS in head is render-blocking, module scripts are deferred so they do\nnot block parsing but do gate DOMContentLoaded, and async scripts have no ordering\nguarantee. Fonts are lazy by default, so they only start once something needs them.\nPractical consequences: preloading a file the preload scanner would have found anyway\nwastes bandwidth, and script tags placed in body get discovered later unless they are\nmodule or defer.",
       "examples": [
         {
@@ -1248,7 +1248,7 @@
       "category": "performance",
       "importance": "high",
       "forLater": false,
-      "question": "What is code splitting in an Angular app, and how does a lazy route actually\nload?",
+      "question": "What is code splitting in an Angular app, and how does a lazy route actually load?",
       "answer": "The mechanism to be precise about: the build tool reads the dynamic import in the\nroute configuration, puts that component and its unique dependencies in a separate\nchunk, and leaves it out of the initial bundle. At runtime the router triggers the\nimport, which is just a promise-returning network fetch, and only after it\nresolves is the component created. The important performance consequence is that\nlazy loading moves bytes off the critical path rather than making them smaller,\nand it costs you a round trip on first navigation - so prefetching is the usual\nfollow-up. Be able to explain why a barrel file can defeat splitting, because\nimporting one symbol from a barrel can drag the whole barrel into the chunk\ngraph.",
       "examples": [
         {
@@ -1263,7 +1263,7 @@
       "category": "performance",
       "importance": "high",
       "forLater": false,
-      "question": "What are render-blocking resources, how do you find them, and how do you fix\nthem?",
+      "question": "What are render-blocking resources, how do you find them, and how do you fix them?",
       "answer": "Render-blocking means the browser cannot paint until the resource is parsed, so it\ndirectly caps First Contentful Paint. In Angular you should know that the CLI already\ndoes the main optimisation for you: the application builder inlines critical CSS by\ndefault, so the classic manual critical-CSS dance is usually not something you write\nyourself. What is left for you is knowing what it cannot do - it cannot help with\nthird-party tags, it does not apply to inline styles in templates, and you may need\nto disable or tune it. Also know the trade-off: inlining removes a round trip but\ngrows the HTML and cannot be cached across pages, and a single render-blocking\nstylesheet blocks everything no matter how small it is.",
       "examples": [
         {
@@ -1298,8 +1298,8 @@
       "examples": [
         {
           "title": "Long task, and the yield that fixes it",
-          "code": "Symptom\n  User clicks, nothing happens for 300ms, then everything snaps at once.\n\nCause\n  One task occupying the main thread for 300ms. Input events queue behind it.\n\nFind it\n  DevTools -> Performance -> record interaction -> look for the red triangle and\n  long yellow scripting blocks. Long tasks are also marked in the Interaction to\n  Next Paint panel.\n\nBad fix - slicing badly\n  for (let i = 0; i < 10000; i++) {\n    rows.push(expensive(i));\n    if (i % 500 === 0) {\n      element.offsetHeight;   // forces layout, still synchronous\n    }\n  }\n\nGood fix - yield to the browser\n  import { scheduler } from '@angular/core';\n\n  for (let i = 0; i < 10000; i++) {\n    rows.push(expensive(i));\n    if (i % 500 === 0) {\n      scheduler.yield();     // lets input and rendering run\n    }\n  }\n\nGood fix - do less\n  Virtualise the list so there is no 10000-row loop in the first place. 10k rows of\n  real DOM is the underlying problem; yielding only makes the wrong work less\n  painful.\n\nWhy not setTimeout\n  setTimeout(fn, 0) is a macrotask, so it does yield, but it has worse latency\n  than scheduler.yield() and it does not preserve frame timing. Use it only where\n  you genuinely want to defer past the current frame.",
-          "explanation": "The 50ms threshold, the same root cause behind input lag and INP, and knowing that\nscheduler.yield only fixes interruptible work - not a 10k-row DOM problem."
+          "code": "Symptom\n  User clicks, nothing happens for 300ms, then everything snaps at once.\n\nCause\n  One task occupying the main thread for 300ms. Input events queue behind it.\n\nFind it\n  DevTools -> Performance -> record interaction -> look for the red triangle and\n  long yellow scripting blocks. Long tasks are also marked in the Interaction to\n  Next Paint panel.\n\nBad fix - reading layout inside the loop\n  for (let i = 0; i < 10000; i++) {\n    rows.push(expensive(i));\n    if (i % 500 === 0) {\n      element.offsetHeight;   // forces layout, still synchronous\n    }\n  }\n\nGood fix - end the task so the browser can breathe\n  // Angular has no public yield() scheduler API, so yield with a platform\n  // primitive between chunks of work:\n  const yieldToBrowser = () => new Promise<void>(r => setTimeout(r, 0));\n\n  for (let i = 0; i < 10000; i++) {\n    rows.push(expensive(i));\n    if (i % 500 === 0) await yieldToBrowser();   // input and rendering get a turn\n  }\n\n  For reactive code the framework-aware version is the experimental onIdle()\n  primitive from @angular/core (v22), which recomputes a derived value on an idle\n  callback instead of on every read.\n\nGood fix - do less\n  Virtualise the list so there is no 10000-row loop in the first place. 10k rows of\n  real DOM is the underlying problem; yielding only makes the wrong work less\n  painful.\n\nWhy the yield has to be a macrotask\n  A microtask (Promise.resolve().then) does not help - the browser will not paint or\n  dispatch input until the microtask queue drains. Yielding means ending the current\n  task, so setTimeout or a MessageChannel postMessage are the tools that work.",
+          "explanation": "The 50ms threshold, the same root cause behind input lag and INP, and knowing that yielding only fixes interruptible work - not a 10k-row DOM problem. Angular ships no scheduler.yield(), so use setTimeout or a MessageChannel, not a microtask."
         }
       ]
     },
@@ -1323,12 +1323,12 @@
       "category": "performance",
       "importance": "medium",
       "forLater": false,
-      "question": "How does change detection affect Angular performance, and what are the ways to\nreduce its cost?",
+      "question": "How does change detection affect Angular performance, and what are the ways to reduce its cost?",
       "answer": "Be precise about the mechanism, because this is where vague answers fall apart.\nChange detection walks a tree of components and evaluates bindings. In a zoneless\napp it does not run on a timer or on every event; it is scheduled when Angular\nnotices something that needs rendering - a signal written that a template reads, an\ninput set, a host or template listener firing, markForCheck, or a view being\nattached. That is notification-based, so the wins come from not doing unnecessary\nwork rather than from the scheduler being faster. Know that this is the default in\nAngular 21+, and that zone.js apps still exist and still tick on async events, which\nis why the two behave differently. The levers are OnPush, pure pipes, stable keys,\nand running genuinely framework-free code outside Angular when it does not need to\ntouch the DOM.",
       "examples": [
         {
           "title": "Zoneless scheduling, and the levers",
-          "code": "How scheduling works without zone.js\n  With zone.js, any patched event, timer, or promise resolution triggered a full\n  tick. Without it, Angular schedules change detection when it observes one of:\n    - a signal that is read in a template is written\n    - ComponentRef.setInput\n    - a bound host or template listener fires\n    - ChangeDetectorRef.markForCheck\n    - a view marked dirty is attached, or removed\n\n  This is the default in Angular 21+. In v20 you opted in with\n  provideZonelessChangeDetection(). Your own app has no zone.js dependency at all,\n  so it is already in this mode.\n\nLever 1 - OnPush\n  @Component({ changeDetection: ChangeDetectionStrategy.OnPush })\n  export class OrderListComponent {}\n  With zoneless, OnPush still matters: it stops a parent invalidation from cascading\n  into children that read nothing you changed. Caveat: a new array or object identity\n  defeats it.\n\nLever 2 - pure pipes\n  {{ total | currency }}                              // recalculated every cycle\n  {{ total | currency: 'GBP' : 'symbol' : '1.2-2' }}   // memoised on arguments\n\nLever 3 - stable keys\n  @for (row of rows(); track row.id) { ... }      // stable\n  @for (row of rows(); track $index) { ... }      // defeats the diff\n  Without a stable key Angular recreates the DOM and loses focus, scroll and state.\n\nLever 4 - do less\n  The real win is not doing the work. 3000 rows of Material table is the problem;\n  virtualisation beats any scheduler tweak.\n\nLever 5 - stay out of the framework entirely\n  If your code only touches the DOM and never changes component state, do not run\n  it through Angular at all:\n    private readonly zone = inject(NgZone);\n\n    ngAfterViewInit(): void {\n      this.zone.runOutsideAngular(() => {\n        element.addEventListener('scroll', onScroll);  // no CD triggered\n      });\n    }",
+          "code": "How scheduling works without zone.js\n  With zone.js, any patched event, timer, or promise resolution triggered a full\n  tick. Without it, Angular schedules change detection when it observes one of:\n    - a signal that is read in a template is written\n    - ComponentRef.setInput\n    - a bound host or template listener fires\n    - ChangeDetectorRef.markForCheck\n    - a view marked dirty is attached, or removed\n\n  This is the default in Angular 21+. In v20 you opted in with\n  provideZonelessChangeDetection(). Your own app has no zone.js dependency at all,\n  so it is already in this mode.\n\nLever 1 - OnPush\n  @Component({ changeDetection: ChangeDetectionStrategy.OnPush })\n  export class OrderListComponent {}\n  With zoneless, OnPush still matters: it stops a parent invalidation from cascading\n  into children that read nothing you changed. Caveat: a new array or object identity\n  defeats it.\n\nLever 2 - pure pipes (already the default)\n  {{ total | currency }}                              // memoised on total\n  {{ total | currency: 'GBP' : 'symbol' : '1.2-2' }}   // memoised on total + args\n  transform() runs only when an argument changes by ===, so the thing to avoid is an\n  impure pipe (pure: false), which re-runs on every change detection pass\n\nLever 3 - stable keys\n  @for (row of rows(); track row.id) { ... }      // stable\n  @for (row of rows(); track $index) { ... }      // defeats the diff\n  Without a stable key Angular recreates the DOM and loses focus, scroll and state.\n\nLever 4 - do less\n  The real win is not doing the work. 3000 rows of Material table is the problem;\n  virtualisation beats any scheduler tweak.\n\nLever 5 - stay out of the framework entirely\n  If your code only touches the DOM and never changes component state, do not run\n  it through Angular at all:\n    private readonly zone = inject(NgZone);\n\n    ngAfterViewInit(): void {\n      this.zone.runOutsideAngular(() => {\n        element.addEventListener('scroll', onScroll);  // no CD triggered\n      });\n    }",
           "explanation": "Knowing the zoneless scheduling triggers as a specific list, understanding it is\nthe v21+ default, and using NgZone.runOutsideAngular for pure DOM work rather than\nclaiming a bare function \"runs outside Angular\"."
         }
       ]
@@ -1338,7 +1338,7 @@
       "category": "performance",
       "importance": "medium",
       "forLater": false,
-      "question": "What is tree shaking, and how do you verify that it is actually working rather\nthan assuming it?",
+      "question": "What is tree shaking, and how do you verify that it is actually working rather than assuming it?",
       "answer": "This is the verify-it follow-up to the basic definition. Tree shaking removes\nexports nothing imports, and it is easy to claim and hard to confirm. The\nmechanisms are sideEffects metadata so the bundler knows a file has no\nimport-time side effects, static versus dynamic imports, and module format -\nCommonJS modules cannot be statically analysed, so one require-style dependency can\ndefeat the whole thing. Verification is the graded part: look at the actual chunk\ncontents in the build output or the DevTools network panel rather than trusting the\nbuild summary, and know that barrel files, CommonJS interop and accidental\nside-effect imports are the usual leaks.",
       "examples": [
         {
@@ -1353,7 +1353,7 @@
       "category": "performance",
       "importance": "medium",
       "forLater": false,
-      "question": "What are the usual causes of a slow Angular app, and how do you prioritise which\none to fix?",
+      "question": "What are the usual causes of a slow Angular app, and how do you prioritise which one to fix?",
       "answer": "Good answers are a prioritisation framework rather than a list, because the list is\neasy to recite. The useful ordering is by cost of fix against cost of delay: fix\nnetwork-bound work first, because it is usually both the biggest and the easiest -\na 900ms API call dwarfs any template optimisation. Then main-thread blocking,\nbecause it affects every interaction. Then rendering volume, because it is\nproportional and grows with the product. Then bundle size, which matters most on\nfirst load on bad networks and barely at all once cached. The thing that\ndistinguishes a senior answer is naming what you deliberately did not fix and\nwhy, and saying how you decided where to stop.",
       "examples": [
         {
@@ -1368,7 +1368,7 @@
       "category": "performance",
       "importance": "medium",
       "forLater": false,
-      "question": "An Angular app's memory grows steadily in production as users navigate between\nroutes. How do you track down what is retaining the memory?",
+      "question": "An Angular app's memory grows steadily in production as users navigate between routes. How do you track down what is retaining the memory?",
       "answer": "This is the diagnostic question, as opposed to the leak question - the graded part\nis distinguishing a real leak from a cache that is behaving correctly, which is\nwhere most investigations go wrong. The method that works is comparison rather\nthan inspection: take a heap snapshot, repeat the suspect interaction several\ntimes, force GC, take another, and diff. A real leak grows monotonically with each\nrepetition, whereas lazy route chunks and caches plateau. Learn to read the\ndominators tree, because the retaining object is usually held by a closure you\ncannot see at the call site. In Angular the causes are almost always one of three:\nan unsubscribed subscription, a listener or timer registered outside Angular, or a\nreference to a detached DOM node.",
       "examples": [
         {
@@ -1383,7 +1383,7 @@
       "category": "performance",
       "importance": "medium",
       "forLater": false,
-      "question": "What is the difference between initial load, a reload, and a route transition?\nHow should each be measured?",
+      "question": "What is the difference between initial load, a reload, and a route transition? How should each be measured?",
       "answer": "They have completely different bottlenecks, and optimising the wrong one is a\nclassic mistake. The initial load has nothing cached, so it is dominated by network\nround trips and parse cost - this is where bundle size, render-blocking resources\nand the number of requests matter. A reload has the browser HTTP cache partly\nwarm but not necessarily the runtime state, so it is dominated by parse and\nexecute time - code cache and bundle size matter more than request count. A route\ntransition happens inside a running app with the framework already loaded, so it\nis dominated by data fetching and rendering work, and bundle size is almost\nirrelevant. Being able to separate them is the whole point of the question.",
       "examples": [
         {
@@ -1443,7 +1443,7 @@
       "category": "performance",
       "importance": "low",
       "forLater": false,
-      "question": "What is the difference between a dev build and a production build in Angular,\nand why does only one of them tell you about performance?",
+      "question": "What is the difference between a dev build and a production build in Angular, and why does only one of them tell you about performance?",
       "answer": "Several switches are on in production, and being able to name what each changes is\nthe grade. Correct one common misconception first: AOT has been the default since\nAngular 9, so both ng serve and ng build compile ahead of time, and JIT is\neffectively only something you encounter in TestBed. What production actually\nchanges is minification and mangling, tree shaking, budget enforcement, font and\ncritical-CSS inlining, and output hashing. The practical point that matters: dev\nbuilds enable extra runtime error checking that production strips, so a dev build is\nboth slower and a different program - which is why performance measured on ng serve\nis meaningless.",
       "examples": [
         {
@@ -1488,7 +1488,7 @@
       "category": "performance",
       "importance": "low",
       "forLater": false,
-      "question": "What does a Performance API measurement look like in practice, and how would you\ntrust it?",
+      "question": "What does a Performance API measurement look like in practice, and how would you trust it?",
       "answer": "Trust is the graded word. In-app marks are useful for route transitions and slow\ninteractions, but they only measure your application - not the network, not the\nbrowser parse, and nothing that happens before your code runs, which is where\nfirst-load problems live. So pair them: browser-native measurement for what the user\nexperiences, application marks for attribution within it. Use performance.mark and\nperformance.measure from the browser Performance API, not perf_hooks, which is a Node\nmodule and will not resolve in a browser bundle. Also be honest about measurement\noverhead and about the difference between a synthetic run and a real user.",
       "examples": [
         {
@@ -1499,7 +1499,7 @@
       ]
     },
     {
-      "id": "angular-7",
+      "id": "performance-21",
       "category": "performance",
       "importance": "medium",
       "forLater": false,
@@ -1519,7 +1519,7 @@
       ]
     },
     {
-      "id": "angular-23",
+      "id": "performance-22",
       "category": "performance",
       "importance": "medium",
       "forLater": false,
@@ -1528,7 +1528,7 @@
       "examples": [
         {
           "title": "OnPush + stable identity in the list",
-          "code": "@Component({ changeDetection: ChangeDetectionStrategy.OnPush, /* ... */ })\nexport class OrderForm {\n  orders = input.required<Order[]>();\n\n  get total() {                 // BAD: recomputed on every CD cycle\n    return this.orders().reduce((s, o) => s + o.amount, 0);\n  }\n\n  readonly total = computed(() => // GOOD: recomputed only when orders change\n    this.orders().reduce((s, o) => s + o.amount, 0));\n}",
+          "code": "@Component({ changeDetection: ChangeDetectionStrategy.OnPush, /* ... */ })\nexport class OrderForm {\n  orders = input.required<Order[]>();\n\n  // GOOD - derived, memoised until orders() changes\n  readonly total = computed(() =>\n    this.orders().reduce((s, o) => s + o.amount, 0));\n}\n\n// BAD - the same thing as a getter, which the template re-evaluates every\n// change detection pass instead of caching by dependency\nget total() {\n  return this.orders().reduce((s, o) => s + o.amount, 0);\n}",
           "explanation": "Getters in templates are a classic hidden cost; a computed caches by dependency."
         },
         {
@@ -1544,7 +1544,7 @@
       ]
     },
     {
-      "id": "angular-28",
+      "id": "performance-23",
       "category": "performance",
       "importance": "high",
       "forLater": false,
@@ -1705,13 +1705,13 @@
       "category": "rxjs",
       "importance": "medium",
       "forLater": false,
-      "question": "What is error handling in RxJS and when would you use catchError, retry, and retryWhen?",
-      "answer": "catchError: catches errors in the stream and returns a replacement Observable (fallback value or EMPTY) to keep the stream alive. retry(n): re-subscribes up to n times immediately on error (useful for transient network blips). retryWhen(notifier): custom retry logic with delay/backoff (e.g., retryWhen(errors => errors.pipe(delay(1000), take(3)))) — better for rate limiting/exponential backoff. Handle errors close to where they can be meaningfully recovered.",
+      "question": "What is error handling in RxJS and when would you use catchError, retry, and retry with a delay?",
+      "answer": "catchError: catches an error in the stream and returns a replacement Observable (a fallback value, EMPTY, or a retry attempt) so the stream can carry on. retry(n): re-subscribes immediately up to n times - fine for a single transient blip. retry({ delay }): the modern form, where delay can be a number, a function of the error and retry index (that is how you do exponential backoff), or an observable such as timer(1000). Note that retryWhen() is deprecated in RxJS 7 - reach for retry({ delay }) instead. Handle errors close to where they can be meaningfully recovered, and remember that catchError replaces the stream, so anything downstream of it will not see the failure unless you re-throw.",
       "examples": [
         {
-          "title": "retryWhen with backoff",
-          "code": "source$.pipe(\n  retryWhen(errors => errors.pipe(\n    delay(1000),\n    take(3),\n    concatMap(err => throwError(() => err))\n  )))\n.subscribe(...);",
-          "explanation": "Custom retry with delay/backoff before failing."
+          "title": "retry with backoff",
+          "code": "source$.pipe(\n  retry({\n    count: 3,\n    delay: (error, retryCount) =>\n      timer(2 ** retryCount * 1000),        // 2s, 4s, 8s\n  }),\n)\n.subscribe(...);",
+          "explanation": "Custom retry with exponential backoff before failing. retryWhen(errors => errors.pipe(delay(...))) is the deprecated equivalent."
         }
       ]
     }
@@ -1753,7 +1753,7 @@
       "importance": "medium",
       "forLater": false,
       "question": "What are computed signals and effects, and when do you use each?",
-      "answer": "computed() creates a read-only derived signal that lazily recalculates only when its dependencies change - use it for anything you can derive (total = price() * qty()). effect() runs a side effect whenever the signals it reads change - use it only when you have no reactive alternative: syncing with a non-reactive library, analytics, DOM APIs. Effect should never be your first choice because it runs eagerly and on every change.",
+      "answer": "computed() creates a read-only derived signal that lazily recalculates only when its dependencies change - use it for anything you can derive (total = price() * qty()). effect() runs a side effect whenever the signals it reads change - use it only when you have no reactive alternative: syncing with a non-reactive library, analytics, DOM APIs. It should never be your first choice because it runs as a scheduled pass after change detection rather than at the point of the write, it runs at least once on creation, and it re-runs on every change.",
       "examples": [
         {
           "title": "computed vs effect",
@@ -1827,7 +1827,7 @@
       "examples": [
         {
           "title": "Lifecycle shift",
-          "code": "constructor() {\n  effect(() => {\n    // runs after initial render/context ready\n    console.log(this.items());\n  });\n}",
+          "code": "constructor() {\n  effect(() => {\n    // scheduled after change detection, not synchronously here\n    console.log(this.items());\n  });\n}",
           "explanation": "Many init cases move to inline reads/effects instead of NgOnInit."
         }
       ]
@@ -1860,21 +1860,6 @@
   ],
   "misc": [
     {
-      "id": "misc-1",
-      "category": "misc",
-      "importance": "medium",
-      "forLater": false,
-      "question": "What is tree shaking?",
-      "answer": "Tree shaking is a build-time optimisation where the bundler removes exports that\nnothing imports, producing a smaller bundle. It relies on static analysis, so it only\nworks on modules the toolchain can prove are free of import-time side effects - which\nis why Angular marks its own packages with sideEffects: false. If a file does have\nside effects (polyfills, CSS imports, registering something globally) that fact has to\nbe declared, or the bundler has to keep it and the removal cannot happen. Tree\nshaking is the concept; verifying it actually worked is a separate question.",
-      "examples": [
-        {
-          "title": "How it is enabled, and what defeats it",
-          "code": "\"sideEffects\" tells the bundler what it may safely drop:\n  // package.json\n  {\n    \"sideEffects\": false\n  }\n\nIf any file has import-time side effects, list them:\n  {\n    \"sideEffects\": [\"*.css\", \"./src/polyfills.ts\"]\n  }\n\nWhat defeats it:\n  - CommonJS. A CJS dependency cannot be statically analysed, so the whole module is\n    kept: import moment from 'moment' pulls all of Moment.\n  - barrel files. import { x } from './utils' may pull './utils/index' and everything\n    it re-exports.\n  - accidental side-effect imports: import './polyfills'\n\nWhether it worked is a separate question - see the performance tab question on\nverifying bundle size.",
-          "explanation": "sideEffects is a contract you must not lie about, and CommonJS is the usual reason\ntree shaking silently does nothing."
-        }
-      ]
-    },
-    {
       "id": "misc-2",
       "category": "misc",
       "importance": "medium",
@@ -1886,56 +1871,6 @@
           "title": "AOT vs JIT at runtime",
           "code": "// JIT - compiles in the browser (needs the compiler shipped to the client)\nimport '@angular/compiler';\n\n// AOT - compiled during ng build; template errors fail the BUILD",
           "explanation": "AOT shifts compilation to the build step: smaller runtime bundle, faster startup, template errors caught in CI."
-        }
-      ]
-    },
-    {
-      "id": "misc-3",
-      "category": "misc",
-      "importance": "medium",
-      "forLater": false,
-      "question": "What is hydration and why does it matter?",
-      "answer": "Hydration is the process that attaches JavaScript runtime behaviour - event listeners,\nbindings, reactive updates - to server-rendered HTML rather than re-creating that DOM\nfrom scratch. The browser paints the server HTML immediately, so content is visible\nbefore any of your JavaScript has run, and then Angular adopts the existing nodes and\nattaches behaviour to them. It matters because the alternative is client-side\nrendering, where the user stares at an empty page until the bundle has downloaded,\nparsed and executed - which is what hydration removes from the critical path. The\ntrade-off is strictness: the server HTML and the client tree have to agree, and when\nthey do not Angular reports a hydration mismatch rather than quietly repairing it.\nHydration only makes sense alongside server-side rendering; without SSR there is no\nHTML to hydrate.",
-      "examples": [
-        {
-          "title": "The two-step picture",
-          "code": "// server: render to a string, send it in the response\nconst html = await renderApplication(app, { document: '<app-root></app-root>' });\n\n// browser paints this immediately - no JavaScript required to see content\n\n// then the client bundle boots and adopts the existing DOM nodes rather than\n// throwing them away and rebuilding them\n\nWhere it stops being free:\n  - the two trees must match, or you get a hydration mismatch error\n  - you need a Node runtime in production to do the rendering\n  - third-party code that touches window or document at module scope needs a\n    platform check",
-          "explanation": "Hydration only follows SSR, saves re-creating the DOM rather than saving the\nrender itself, and depends on server and client trees agreeing."
-        }
-      ]
-    },
-    {
-      "id": "misc-4",
-      "category": "misc",
-      "importance": "medium",
-      "forLater": false,
-      "question": "What are Angular signals and how do they relate to RxJS?",
-      "answer": "Signals are synchronous, granular reactive primitives — a value that notifies its dependents when it changes. They cover a lot of 'one value over time' cases more simply than RxJS Observables, but they are not a replacement: RxJS remains the tool for event streams, streaming values and side-effect pipelines. The two integrate via toObservable and toSignal.",
-      "examples": [
-        {
-          "title": "Signals feeding a template",
-          "code": "readonly total = signal(0);\nreadonly doubled = computed(() => this.total() * 2);",
-          "explanation": "signals() reads synchronously in the template - {{ doubled() }} - no async pipe, no manual subscription."
-        },
-        {
-          "title": "Observable feeding a signal",
-          "code": "readonly user = toSignal(this.userService.user$, { initialValue: null });",
-          "explanation": "toObservable/toSignal keep async streams usable while the view stays signal-based."
-        }
-      ]
-    },
-    {
-      "id": "misc-5",
-      "category": "misc",
-      "importance": "medium",
-      "forLater": false,
-      "question": "What is change detection and how does zoneless mode change it?",
-      "answer": "Change detection is how Angular decides what to update in the DOM when state\nchanges. The mechanism differs by mode, and that difference is the whole point. A\nzone-based app uses Zone.js to patch browser APIs, so any event, timer or resolved\npromise inside a zone triggers a tick that checks the component tree. A zoneless app\nhas no such patching: Angular schedules change detection when it observes something\nthat needs rendering - a signal written that a template reads, an input set via\nsetInput, a bound listener firing, markForCheck, or a view being attached or removed.\nZoneless is the default in Angular 21+. Note that signals notify readers\nautomatically; there is no need to call notify() explicitly, which is a common\nmisconception.",
-      "examples": [
-        {
-          "title": "The same tick, two ways",
-          "code": "// Zone-based (pre-21 default, still supported)\nimport { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';\n\nexport const appConfig: ApplicationConfig = {\n  providers: [provideZoneChangeDetection()],\n};\n\n// Zone.js patches addEventListener, setTimeout, promises.\n// Any of them completing inside a zone -> one tick over the tree.\n\n---\n\n// Zoneless (default from v21) - nothing to configure\nimport { ApplicationConfig } from '@angular/core';\n\nexport const appConfig: ApplicationConfig = {\n  providers: [],\n};\n\n// No patching. Angular renders when it observes:\n//   - a signal read in a template is written\n//   - ComponentRef.setInput\n//   - a bound host or template listener fires\n//   - ChangeDetectorRef.markForCheck\n//   - a marked-dirty view is attached, or removed\n\n// Nothing calls notify() - signals notify their readers automatically.\ncount = signal(0);",
-          "explanation": "Zone.js schedules change detection by patching browser APIs, so async completions\ncause ticks. Zoneless schedules it from observed Angular-level events instead. Both\nstill need OnPush-style discipline to avoid wasted work - the scheduling change is\nnot a substitute for not doing unnecessary rendering."
         }
       ]
     },
@@ -2085,9 +2020,9 @@
       "answer": "Not a training story and not a workshop. This is about noticing the current\nstandard was not good enough, deciding so, and changing something systemic about\nhow work got done. The distinction is between improving your own output and\nchanging the default for everyone. A strong answer names what the new standard\nwas, how you made it easy to meet, and what happened to people who did not -\nincluding whether anyone pushed back and what you changed as a result.",
       "examples": [
         {
-          "title": "Changing the default, and lowering the cost of compliance",
-          "code": "Our review culture was: approve if the tests passed. Review time was about 4\nminutes and defects found in review were rare because reviewers were not\nlooking.\n\nNew standard: every change states how it was verified, and review checks the diff\nagainst the ticket acceptance criteria, not just the tests.\n\nMaking it easy: I wrote the template with the fields pre-filled from the ticket,\nso following it was less work than not following it. I also did the first ten\nreviews to model it.\n\nWhat happened: review time went to about 25 minutes and we caught three real\ndefects per month that previously shipped. Two people pushed back - they said it\nslowed them down. I heard it, so the verification field became the only required\none.\n\nNote what this is not: it is not a story about me reviewing well, it is a story\nabout changing what everyone else does.",
-          "explanation": "Lowering the cost of the standard while raising it, and adjusting after pushback,\nis what makes this systemic rather than heroic."
+          "title": "The decision, the cost, the objection",
+          "code": "The decision: we would stop supporting the two oldest browsers we support and\nship only modern-targeted JavaScript.\n\nWhy it was unpopular: support had two enterprise customers still on them, and\nQA had signed off a manual test matrix that assumed them. Nobody was wrong -\nthey were counting a cost I was proposing to delete.\n\nWhat I brought instead of arguing: the numbers. Those two browsers were 0.8%\nof sessions, 0% of revenue across four quarters, and 11% of CI time, because of\na transpile-and-polyfill matrix nobody had touched in two years.\n\nHow I made it cheap to comply: kept a legacy bundle behind one flag for two\nquarters, so anyone with a real customer on those browsers could ship without\narguing with me again.\n\nWhat happened: QA's matrix went from 34 cases to 6, which is what actually\nturned them around - they had been defending a cost, not a principle.\n\nWhat I got wrong: I led with \"0.8% of sessions\" before establishing that we\neven had session analytics, and spent ten minutes on trust instead of on data.",
+          "explanation": "A decision that was genuinely contested, the number that reframed it, and an escape hatch that removed the reason people were objecting."
         }
       ]
     },
@@ -2216,7 +2151,7 @@
       "category": "behavioural",
       "importance": "medium",
       "forLater": false,
-      "question": "Tell me about a time you took responsibility for something that went wrong on\nsomeone else's behalf.",
+      "question": "Tell me about a time you took responsibility for something that went wrong on someone else's behalf.",
       "answer": "The graded skill is taking the blame in a direction that costs you, without taking\nresponsibility for the competence of someone who did not have it. The failure to\navoid is defending yourself - I was following the spec - because it reads as\nsomeone who will do that when it is inconvenient. Distinguish clearly between\nowning the system (including what you shipped) and attributing the specific\nerror (which was someone else's). Also worth noting whether you did anything\nabout the other person's ability, because a senior version of this answer\nincludes helping them get better rather than absorbing their mistake quietly.",
       "examples": [
         {
@@ -2382,7 +2317,7 @@
       "importance": "medium",
       "forLater": false,
       "question": "Tell me about a time you raised the bar for your team.",
-      "answer": "Not a training story and not a workshop. This is about noticing the current\nstandard was not good enough, deciding so, and changing something systemic\nabout how work got done. The distinction is between improving your own output\nand changing the default for everyone. A strong answer names what the new\nstandard was, how you made it easy to meet, and what happened to people who\ndid not - including whether anyone pushed back.",
+      "answer": "Not a training story and not a workshop. This is about noticing that the team's output standard was below what the work deserved, and then making the higher bar reachable rather than aspirational. The graded elements: what the new bar was in observable terms, what you removed or automated so that meeting it was not extra effort, what happened to the people who did not meet it, and whether the bar survived contact with a deadline. A weak version quotes a rule you introduced. A strong one shows what it cost the team to meet, what you yourself had to cut, and whether you held yourself to the same standard.",
       "examples": [
         {
           "title": "Changing the default",
@@ -2666,7 +2601,7 @@
       "category": "behavioural",
       "importance": "medium",
       "forLater": false,
-      "question": "Tell me about a time you worked with someone whose style was very different from\nyours.",
+      "question": "Tell me about a time you worked with someone whose style was very different from yours.",
       "answer": "Graded on whether you genuinely adapted rather than merely tolerated, and on\nwhether you learned something specific about the other approach - ideally\nsomething you adopted. Tolerance is not the competency. A strong answer names the\nspecific difference (planning-first versus exploratory, verbose versus terse,\ncomfortable with ambiguity versus needing closure), describes the specific\nfriction it caused, and describes the concrete change you made to your own\nbehaviour. The follow-up trap is what you learned about yourself - if you only\nlearned about them, the answer is thin.",
       "examples": [
         {
@@ -2681,7 +2616,7 @@
       "category": "behavioural",
       "importance": "high",
       "forLater": false,
-      "question": "Tell me about a technical decision where reasonable engineers would disagree.\nWhat did you decide?",
+      "question": "Tell me about a technical decision where reasonable engineers would disagree. What did you decide?",
       "answer": "This is the highest-value question for a senior candidate and the one most often\nwasted on a project description instead of a decision. Anchor the whole story on\nthe central trade-off - consistency versus availability, build versus buy,\nmonolith versus services. What is being probed is whether you can name the\nalternative a competent peer would have chosen, articulate why you rejected it,\nand state the condition under which you would change your mind. An answer with no\ncredible alternative is not a decision, it is an implementation.",
       "examples": [
         {
