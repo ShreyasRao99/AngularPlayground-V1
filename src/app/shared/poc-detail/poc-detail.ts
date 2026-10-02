@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input } from '@angular/core';
+import { ViewportScroller } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  afterRenderEffect,
+  computed,
+  effect,
+  inject,
+  input,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Title } from '@angular/platform-browser';
@@ -7,6 +16,8 @@ import { Category, Question } from '../../../types/questions-type';
 import { Poc } from '../../../types/poc-type';
 import { POCS } from '../../poc/pocs';
 import { categoryLabel } from '../categories';
+import { NavTarget, QuestionNav } from '../question-nav/question-nav';
+import { PocDuration } from '../poc-duration/poc-duration';
 import { PocStore } from '../poc-store';
 import { QuestionStore } from '../question-store';
 
@@ -16,7 +27,7 @@ import { QuestionStore } from '../question-store';
  * unreadable on a phone, and the index row is now a link straight here.
  */
 @Component({
-  imports: [MatButtonModule, MatIconModule, RouterLink],
+  imports: [MatButtonModule, MatIconModule, RouterLink, PocDuration, QuestionNav],
   selector: 'app-poc-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './poc-detail.html',
@@ -25,6 +36,7 @@ export class PocDetail {
   private readonly pocStore = inject(PocStore);
   private readonly questionStore = inject(QuestionStore);
   private readonly title = inject(Title);
+  private readonly scroller = inject(ViewportScroller);
 
   // Bound from the route by withComponentInputBinding().
   readonly pocId = input.required<string>();
@@ -56,10 +68,21 @@ export class PocDetail {
   protected readonly previous = computed(() => this.neighbour(-1));
   protected readonly next = computed(() => this.neighbour(1));
 
+  protected readonly previousLink = computed(() => this.toTarget(this.previous()));
+  protected readonly nextLink = computed(() => this.toTarget(this.next()));
+
   constructor() {
     effect(() => {
       const poc = this.poc();
       this.title.setTitle(poc ? `${poc.title} · Proof of Concept` : 'Proof of concept not found');
+    });
+
+    // Same reason as the question page: prev/next reuses this instance, so the
+    // router does not scroll and the next poc would open at the last scroll
+    // offset. See the note in question-detail.ts.
+    afterRenderEffect(() => {
+      this.pocId();
+      this.scroller.scrollToPosition([0, 0]);
     });
   }
 
@@ -79,5 +102,9 @@ export class PocDetail {
     const target = this.position() + offset;
 
     return this.position() >= 0 && target >= 0 && target < POCS.length ? POCS[target] : undefined;
+  }
+
+  private toTarget(poc: Poc | undefined): NavTarget | undefined {
+    return poc ? { link: ['/poc', poc.id], label: poc.title } : undefined;
   }
 }

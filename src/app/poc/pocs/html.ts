@@ -6,6 +6,7 @@ export const HTML_POCS: Poc[] = [
     category: 'html',
     title: 'Build a semantic Pokédex entry page',
     summary: 'One page for a single Pokémon, built only from meaningful tags.',
+    durationMinutes: 45,
     prompt:
       'Take one Pokémon and build its Pokédex entry page using semantic elements instead of a stack of divs. The data comes from the PokéAPI, so every heading, list and figure you render is real.',
     endpoints: [
@@ -78,6 +79,7 @@ export const HTML_POCS: Poc[] = [
     category: 'html',
     title: 'Filter form that works without a single line of JavaScript',
     summary: 'Accessible label association plus native constraint validation.',
+    durationMinutes: 45,
     prompt:
       'Build the "find a Pokémon" form on the dex without writing validation yourself: let the browser block the submit and report the first invalid field. Data still comes from the PokéAPI for the results, never for the validation.',
     endpoints: [
@@ -147,6 +149,7 @@ console.log(field.validity.rangeUnderflow, field.validationMessage);`,
     category: 'html',
     title: 'Serve sprites that look right on every screen',
     summary: 'srcset, sizes, alt text and the viewport meta tag working together.',
+    durationMinutes: 30,
     prompt:
       'One sprite URL does not fit a 320px phone and a 1440px desktop. Use the sprite URLs the PokéAPI returns to build an image that the browser picks the right source for.',
     endpoints: [
@@ -203,6 +206,7 @@ console.log(field.validity.rangeUnderflow, field.validationMessage);`,
     category: 'html',
     title: 'Load a second script without blocking the first paint',
     summary: 'See async and defer differ by watching the execution order.',
+    durationMinutes: 30,
     prompt:
       'Your dex needs a small script after the first paint. Build the same three script tags (plain, defer, async) and measure exactly when each one executes relative to parsing, DOMContentLoaded and first paint.',
     endpoints: [{ path: '/pokemon?limit=1', note: 'Used as the data the late script fetches' }],

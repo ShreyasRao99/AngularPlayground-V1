@@ -6,6 +6,7 @@ export const MISC_POCS: Poc[] = [
     category: 'misc',
     title: 'AOT vs JIT: why the build output is different',
     summary: 'See what JIT compiles at runtime and what AOT compiles ahead of time.',
+    durationMinutes: 90,
     prompt:
       'Compare the same tiny dex component built in JIT and in AOT, and explain what is compiled when and why it affects startup time.',
     endpoints: [
@@ -50,6 +51,7 @@ export const MISC_POCS: Poc[] = [
     category: 'misc',
     title: 'Standalone components: what they are and why they matter',
     summary: 'No NgModule needed, lazy routes are trivial, and the imports array is explicit.',
+    durationMinutes: 75,
     prompt:
       'Convert a small feature from the implicit patterns to explicit standalone, and prove that lazy routes with loadComponent only work this cleanly because of it.',
     endpoints: [{ path: '/pokemon/{name}', note: 'The data the component renders' }],

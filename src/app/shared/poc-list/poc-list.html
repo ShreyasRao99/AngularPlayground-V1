@@ -64,14 +64,20 @@
       >
         <span
           class="w-6 shrink-0 pt-0.5 text-sm tabular-nums sm:pt-0"
-          [class]="!entry.isCompleted ? 'text-(--mat-sys-primary)' : 'text-(--mat-sys-on-surface-variant)'"
+          [class]="
+            !entry.isCompleted ? 'text-(--mat-sys-primary)' : 'text-(--mat-sys-on-surface-variant)'
+          "
           >{{ $index + 1 }}.</span
         >
 
         <!-- Whole row is the tap target; the toggle is a sibling, not a child. -->
         <a
           class="min-w-0 flex-1 text-[0.95rem] leading-snug font-medium no-underline after:absolute after:inset-0 after:content-[''] hover:text-(--mat-sys-primary)"
-          [class]="entry.isCompleted ? 'text-(--mat-sys-on-surface-variant)' : 'text-(--mat-sys-on-surface)'"
+          [class]="
+            entry.isCompleted
+              ? 'text-(--mat-sys-on-surface-variant)'
+              : 'text-(--mat-sys-on-surface)'
+          "
           [routerLink]="['/poc', entry.poc.id]"
           >{{ entry.poc.title }}</a
         >
@@ -83,6 +89,8 @@
             class="rounded-full bg-(--mat-sys-primary-container) px-2 py-0.5 text-xs font-medium whitespace-nowrap text-(--mat-sys-on-primary-container)"
             >{{ label(entry.poc.category) }}</span
           >
+
+          <app-poc-duration [minutes]="entry.poc.durationMinutes" />
 
           <button
             mat-icon-button

@@ -1,5 +1,10 @@
 @if (question(); as faq) {
-  <section class="mx-auto flex max-w-3xl flex-col gap-4 p-4 sm:p-6">
+  <!--
+    max-w-4xl rather than max-w-3xl: most of an answer is code, and at 768px the
+    samples were either truncated or scrolling sideways on a desktop. Still a
+    capped column, so a line of prose stays readable on a wide monitor.
+  -->
+  <section class="mx-auto flex max-w-4xl flex-col gap-4 p-4 sm:p-6">
     <!--
       Sticky so "which question am I on, is it read, and how do I get back" stays
       on screen while the answer scrolls. The negative margins let the backdrop
@@ -50,6 +55,19 @@
       <h1 class="m-0 line-clamp-2 text-xl leading-snug font-semibold sm:text-2xl">
         {{ faq.question }}
       </h1>
+
+      <!--
+        Repeated at the foot of the page on purpose. Halfway down a long answer
+        the pair at the bottom is off screen, and a reader who has what they
+        needed should not have to scroll past the rest of it to get to the next
+        question. Being inside the sticky header is what makes it reachable from
+        there.
+      -->
+      <app-question-nav
+        label="Previous and next question"
+        [previous]="previousLink()"
+        [next]="nextLink()"
+      />
     </header>
 
     <p
@@ -71,43 +89,15 @@
       </section>
     }
 
-    <nav
-      class="mt-2 flex items-center gap-3 border-t border-(--mat-sys-outline-variant) pt-4"
-      aria-label="Question navigation"
-    >
-      @if (previous(); as prev) {
-        <!--
-          A plain link, not mat-button: Material wraps button content in its own
-          label element that will not shrink, so the two links overflow their box
-          and collide instead of ellipsising. Each takes an equal half of the row,
-          so the gap between them is the same whatever the questions are called.
-        -->
-        <a
-          class="flex min-w-0 flex-1 items-center gap-1 overflow-hidden text-sm font-medium text-(--mat-sys-primary) no-underline hover:underline"
-          [routerLink]="['/', prev.category, prev.id]"
-          [title]="prev.question"
-        >
-          <mat-icon class="shrink-0">arrow_back</mat-icon>
-          <span class="min-w-0 truncate">{{ prev.question }}</span>
-        </a>
-      } @else {
-        <span class="min-w-0 flex-1"></span>
-      }
-
-      @if (next(); as nextQuestion) {
-        <a
-          class="flex min-w-0 flex-1 items-center justify-end gap-1 overflow-hidden text-sm font-medium text-(--mat-sys-primary) no-underline hover:underline"
-          [routerLink]="['/', nextQuestion.category, nextQuestion.id]"
-          [title]="nextQuestion.question"
-        >
-          <span class="min-w-0 truncate">{{ nextQuestion.question }}</span>
-          <mat-icon class="shrink-0">arrow_forward</mat-icon>
-        </a>
-      }
-    </nav>
+    <app-question-nav
+      class="mt-2 border-t border-(--mat-sys-outline-variant) pt-4"
+      label="Previous and next question, at the end of the answer"
+      [previous]="previousLink()"
+      [next]="nextLink()"
+    />
   </section>
 } @else {
-  <section class="mx-auto flex max-w-3xl flex-col items-start gap-4 p-4 sm:p-6">
+  <section class="mx-auto flex max-w-4xl flex-col items-start gap-4 p-4 sm:p-6">
     <h1 class="m-0 text-xl font-semibold">Question not found</h1>
     <p class="m-0 text-(--mat-sys-on-surface-variant)">
       Nothing in {{ categoryName() }} matches &ldquo;{{ questionId() }}&rdquo;.
