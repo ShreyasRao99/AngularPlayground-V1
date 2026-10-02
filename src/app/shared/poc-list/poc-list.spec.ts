@@ -3,6 +3,7 @@ import { MatChipListboxChange } from '@angular/material/chips';
 import { provideRouter } from '@angular/router';
 import { POCS } from '../../poc/pocs';
 import { PocList } from './poc-list';
+import { QuestionStore } from '../question-store';
 
 async function createList() {
   await TestBed.configureTestingModule({
@@ -16,8 +17,10 @@ async function createList() {
   return fixture;
 }
 
-function panels(fixture: ComponentFixture<PocList>): HTMLElement[] {
-  return Array.from(fixture.nativeElement.querySelectorAll('mat-expansion-panel'));
+/** One row per proof of concept: the index is a list of links, not panels. */
+function rows(fixture: ComponentFixture<PocList>): HTMLAnchorElement[] {
+  const root = fixture.nativeElement as HTMLElement;
+  return Array.from(root.querySelectorAll<HTMLAnchorElement>('li > a'));
 }
 
 function doneButtons(fixture: ComponentFixture<PocList>): HTMLButtonElement[] {
@@ -43,7 +46,7 @@ describe('PocList', () => {
   it('should show every poc by default', async () => {
     const fixture = await createList();
 
-    expect(panels(fixture).length).toBe(POCS.length);
+    expect(rows(fixture).length).toBe(POCS.length);
     expect(fixture.componentInstance['hasActiveFilters']()).toBe(false);
   });
 
@@ -59,7 +62,7 @@ describe('PocList', () => {
 
     selectCategories(fixture, ['rxjs']);
 
-    expect(panels(fixture).length).toBe(expected);
+    expect(rows(fixture).length).toBe(expected);
   });
 
   it('should toggle done state and filter on it', async () => {
@@ -75,11 +78,11 @@ describe('PocList', () => {
 
     fixture.componentInstance['completionFilter'].set('done');
     fixture.detectChanges();
-    expect(panels(fixture).length).toBe(1);
+    expect(rows(fixture).length).toBe(1);
 
     fixture.componentInstance['completionFilter'].set('todo');
     fixture.detectChanges();
-    expect(panels(fixture).length).toBe(POCS.length - 1);
+    expect(rows(fixture).length).toBe(POCS.length - 1);
   });
 
   it('should persist completed poc ids to localStorage', async () => {
@@ -90,27 +93,28 @@ describe('PocList', () => {
     expect(JSON.parse(localStorage.getItem('poc-completed') ?? '[]')).toEqual([POCS[0].id]);
   });
 
-  it('should not expand a panel when the done toggle is clicked', async () => {
+  it('should link every poc to its own page and keep the toggle outside the link', async () => {
     const fixture = await createList();
+    const [first] = rows(fixture);
 
-    doneButtons(fixture)[0].click();
-    fixture.detectChanges();
-
-    expect(panels(fixture)[0].classList).not.toContain('mat-expanded');
+    expect(first.getAttribute('href')).toBe(`/poc/${POCS[0].id}`);
+    // nesting the button inside the anchor would make the toggle navigate too
+    expect(first.contains(doneButtons(fixture)[0])).toBe(false);
   });
 
-  it('should resolve every covered question id from the question bank', async () => {
-    const fixture = await createList();
-    const entries = fixture.componentInstance['pocs']();
-
-    const covered = entries.flatMap((entry) =>
-      entry.coveredQuestions.map((question) => question.id),
+  it('should never point a poc at a question that is missing from the bank', async () => {
+    await createList();
+    const bank = new Set(
+      TestBed.inject(QuestionStore)
+        .questionData()
+        .map((question) => question.id),
     );
-    expect(covered.length).toBeGreaterThan(0);
-    // an unknown id would silently resolve to nothing, so the rendered total has
-    // to match the authored total
-    const authored = entries.reduce((total, entry) => total + entry.poc.covers.length, 0);
-    expect(covered.length).toBe(authored);
+    const covers = POCS.flatMap((poc) => poc.covers);
+
+    expect(covers.length).toBeGreaterThan(0);
+    for (const id of covers) {
+      expect(bank.has(id)).toBe(true);
+    }
   });
 
   it('should show an empty state and clear filters when nothing matches', async () => {
@@ -128,7 +132,7 @@ describe('PocList', () => {
 
     fixture.componentInstance['clearFilters']();
     fixture.detectChanges();
-    expect(panels(fixture).length).toBe(POCS.length);
+    expect(rows(fixture).length).toBe(POCS.length);
   });
 
   it('should point every poc at the pokéapi', async () => {

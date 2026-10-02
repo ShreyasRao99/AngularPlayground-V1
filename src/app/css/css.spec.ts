@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { Css } from './css';
 
 describe('Css', () => {
@@ -8,6 +9,7 @@ describe('Css', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Css],
+      providers: [provideRouter([])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Css);

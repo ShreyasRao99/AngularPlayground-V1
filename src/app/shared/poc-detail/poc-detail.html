@@ -1,0 +1,164 @@
+@if (poc(); as poc) {
+  <section class="mx-auto flex max-w-3xl flex-col gap-4 p-4 sm:p-6">
+    <a
+      class="inline-flex items-center gap-1 self-start text-sm font-medium text-(--mat-sys-primary) no-underline hover:underline"
+      routerLink="/poc"
+      aria-label="Back to all proofs of concept"
+    >
+      <mat-icon class="leading-none">arrow_back</mat-icon>
+      All proofs of concept
+    </a>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <span
+        class="rounded-full bg-(--mat-sys-primary-container) px-2 py-0.5 text-xs font-medium whitespace-nowrap text-(--mat-sys-on-primary-container)"
+        >{{ label(poc.category) }}</span
+      >
+      <span class="text-sm tabular-nums text-(--mat-sys-on-surface-variant)"
+        >Proof of concept {{ position() + 1 }} of {{ total() }}</span
+      >
+
+      <button
+        mat-stroked-button
+        type="button"
+        class="ml-auto"
+        [attr.aria-pressed]="isCompleted()"
+        [attr.aria-label]="(isCompleted() ? 'Mark as not done: ' : 'Mark as done: ') + poc.title"
+        (click)="toggleCompleted()"
+      >
+        <mat-icon>{{ isCompleted() ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+        {{ isCompleted() ? 'Done' : 'Mark as done' }}
+      </button>
+    </div>
+
+    <h1 class="m-0 text-xl leading-snug font-semibold sm:text-2xl">{{ poc.title }}</h1>
+
+    <p class="m-0 text-[0.95rem] leading-relaxed text-(--mat-sys-on-surface-variant)">
+      {{ poc.summary }}
+    </p>
+
+    <div
+      class="rounded-lg border-l-4 border-(--mat-sys-primary) bg-(--mat-sys-surface-container-high) px-3 py-2"
+    >
+      <p class="m-0 text-[0.95rem] leading-relaxed">{{ poc.prompt }}</p>
+    </div>
+
+    <section class="flex flex-col gap-1">
+      <h2 class="m-0 text-sm font-semibold">Data &mdash; use the PokéAPI</h2>
+      <ul class="m-0 flex list-none flex-col gap-1 p-0">
+        @for (endpoint of poc.endpoints; track endpoint.path) {
+          <li class="flex flex-col text-sm">
+            <code class="font-mono text-[0.8rem] text-(--mat-sys-primary)"
+              >GET {{ endpoint.path }}</code
+            >
+            <span class="text-(--mat-sys-on-surface-variant)">{{ endpoint.note }}</span>
+          </li>
+        }
+      </ul>
+      <p class="mt-2 mb-0 text-sm text-(--mat-sys-on-surface-variant)">
+        <a
+          class="font-medium text-(--mat-sys-primary) underline"
+          [href]="pokeApiDocs"
+          target="_blank"
+          rel="noreferrer"
+          >PokéAPI v2 docs</a
+        >
+      </p>
+    </section>
+
+    <section class="flex flex-col gap-3">
+      <h2 class="m-0 text-sm font-semibold">Steps</h2>
+      <ol class="m-0 flex list-decimal flex-col gap-3 pl-5">
+        @for (step of poc.steps; track step.title) {
+          <li>
+            <p class="m-0 font-medium">{{ step.title }}</p>
+            <p
+              class="mt-1 mb-0 text-sm leading-relaxed whitespace-pre-line text-(--mat-sys-on-surface-variant)"
+            >
+              {{ step.task }}
+            </p>
+            <p class="mt-1 mb-0 text-xs text-(--mat-sys-primary)">
+              <mat-icon class="mr-1 align-middle text-sm">school</mat-icon>{{ step.learn }}
+            </p>
+          </li>
+        }
+      </ol>
+    </section>
+
+    @if (poc.stretch.length) {
+      <section class="flex flex-col gap-1">
+        <h2 class="m-0 text-sm font-semibold">Stretch goals</h2>
+        <ul
+          class="m-0 flex list-disc flex-col gap-1 pl-5 text-sm leading-relaxed text-(--mat-sys-on-surface-variant)"
+        >
+          @for (stretch of poc.stretch; track stretch) {
+            <li>{{ stretch }}</li>
+          }
+        </ul>
+      </section>
+    }
+
+    <section class="flex flex-col gap-1">
+      <h2 class="m-0 text-sm font-semibold">Starting point</h2>
+      <pre
+        class="m-0 overflow-x-auto rounded-lg bg-(--mat-sys-surface-container-high) p-3 font-mono text-[0.8rem] leading-relaxed"
+      ><code>{{ poc.starter }}</code></pre>
+    </section>
+
+    @if (coveredQuestions().length) {
+      <section class="flex flex-col gap-2">
+        <h2 class="m-0 text-sm font-semibold">Questions this covers</h2>
+        <div class="flex flex-wrap gap-2">
+          @for (question of coveredQuestions(); track question.id) {
+            <a
+              class="rounded-full bg-(--mat-sys-surface-container-highest) px-2 py-0.5 text-xs font-medium text-(--mat-sys-on-surface-variant) no-underline hover:text-(--mat-sys-primary)"
+              [routerLink]="questionLink(question)"
+              >{{ label(question.category) }} &middot; {{ question.question }}</a
+            >
+          }
+        </div>
+      </section>
+    }
+
+    <nav
+      class="mt-2 flex items-center gap-3 border-t border-(--mat-sys-outline-variant) pt-4"
+      aria-label="Proof of concept navigation"
+    >
+      @if (previous(); as prev) {
+        <!-- Plain link, not mat-button: see the note in question-detail.html. -->
+        <a
+          class="flex min-w-0 flex-1 items-center gap-1 overflow-hidden text-sm font-medium text-(--mat-sys-primary) no-underline hover:underline"
+          [routerLink]="['/poc', prev.id]"
+          [title]="prev.title"
+        >
+          <mat-icon class="shrink-0">arrow_back</mat-icon>
+          <span class="min-w-0 truncate">{{ prev.title }}</span>
+        </a>
+      } @else {
+        <span class="min-w-0 flex-1"></span>
+      }
+
+      @if (next(); as nextPoc) {
+        <a
+          class="flex min-w-0 flex-1 items-center justify-end gap-1 overflow-hidden text-sm font-medium text-(--mat-sys-primary) no-underline hover:underline"
+          [routerLink]="['/poc', nextPoc.id]"
+          [title]="nextPoc.title"
+        >
+          <span class="min-w-0 truncate">{{ nextPoc.title }}</span>
+          <mat-icon class="shrink-0">arrow_forward</mat-icon>
+        </a>
+      }
+    </nav>
+  </section>
+} @else {
+  <section class="mx-auto flex max-w-3xl flex-col items-start gap-4 p-4 sm:p-6">
+    <h1 class="m-0 text-xl font-semibold">Proof of concept not found</h1>
+    <p class="m-0 text-(--mat-sys-on-surface-variant)">
+      Nothing matches &ldquo;{{ pocId() }}&rdquo;.
+    </p>
+    <a mat-stroked-button routerLink="/poc">
+      <mat-icon>arrow_back</mat-icon>
+      All proofs of concept
+    </a>
+  </section>
+}

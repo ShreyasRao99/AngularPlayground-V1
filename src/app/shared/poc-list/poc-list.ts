@@ -2,16 +2,14 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleChange, MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatChipListboxChange, MatChipsModule } from '@angular/material/chips';
-import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
-import { Category, Question } from '../../../types/questions-type';
+import { Category } from '../../../types/questions-type';
 import { POCS } from '../../poc/pocs';
+import { categoryLabel, POC_CATEGORIES, PocCategory } from '../categories';
 import { PocStore } from '../poc-store';
-import { QuestionStore } from '../question-store';
 
-type PocCategory = Exclude<Category, 'behavioural'>;
 type CompletionFilter = 'all' | 'done' | 'todo';
 
 interface CategoryOption {
@@ -19,33 +17,15 @@ interface CategoryOption {
   label: string;
 }
 
-const CATEGORY_LABELS: Record<Category, string> = {
-  html: 'HTML',
-  css: 'CSS',
-  javascript: 'JavaScript',
-  angular: 'Angular',
-  performance: 'Performance',
-  rxjs: 'RxJS',
-  signals: 'Signals',
-  misc: 'Misc',
-  behavioural: 'Behavioural',
-};
-
-// No POC is behavioural - those are conversation, not something you can build.
-const POC_CATEGORIES = Object.keys(CATEGORY_LABELS).filter(
-  (category): category is PocCategory => category !== 'behavioural',
-);
-
 const CATEGORY_OPTIONS: readonly CategoryOption[] = POC_CATEGORIES.map((value) => ({
   value,
-  label: CATEGORY_LABELS[value],
+  label: categoryLabel(value),
 }));
 
 const POKEAPI_DOCS = 'https://pokeapi.co/docs/v2#pokemon';
 
 @Component({
   imports: [
-    MatExpansionModule,
     MatChipsModule,
     MatButtonModule,
     MatButtonToggleModule,
@@ -67,7 +47,6 @@ const POKEAPI_DOCS = 'https://pokeapi.co/docs/v2#pokemon';
 })
 export class PocList {
   private readonly pocStore = inject(PocStore);
-  private readonly questionStore = inject(QuestionStore);
 
   protected readonly categoryOptions = CATEGORY_OPTIONS;
   protected readonly pokeApiDocs = POKEAPI_DOCS;
@@ -87,13 +66,7 @@ export class PocList {
         return true;
       }
       return completion === 'done' ? completed.includes(poc.id) : !completed.includes(poc.id);
-    }).map((poc) => ({
-      poc,
-      isCompleted: completed.includes(poc.id),
-      // Resolved from the question bank so a POC can never drift out of sync
-      // with the question it says it covers.
-      coveredQuestions: this.questionsFor(poc.covers),
-    }));
+    }).map((poc) => ({ poc, isCompleted: completed.includes(poc.id) }));
   });
 
   protected readonly pocTotal = POCS.length;
@@ -109,7 +82,7 @@ export class PocList {
   }
 
   protected label(category: Category): string {
-    return CATEGORY_LABELS[category];
+    return categoryLabel(category);
   }
 
   protected onCategoryChange(event: MatChipListboxChange): void {
@@ -127,15 +100,5 @@ export class PocList {
 
   protected toggleCompleted(id: string): void {
     this.pocStore.toggleCompleted(id);
-  }
-
-  private questionsFor(ids: readonly string[]): Question[] {
-    const bank = this.questionStore.questionData();
-    const byId = new Map(bank.map((question) => [question.id, question]));
-
-    return ids.flatMap((id) => {
-      const question = byId.get(id);
-      return question ? [question] : [];
-    });
   }
 }

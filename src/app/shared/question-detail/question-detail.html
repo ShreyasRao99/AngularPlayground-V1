@@ -1,0 +1,120 @@
+@if (question(); as faq) {
+  <section class="mx-auto flex max-w-3xl flex-col gap-4 p-4 sm:p-6">
+    <!--
+      Sticky so "which question am I on, is it read, and how do I get back" stays
+      on screen while the answer scrolls. The negative margins let the backdrop
+      run to the edge of the column while the text stays on the same line as the
+      body, and line-clamp-2 stops a long question from eating the viewport.
+    -->
+    <header
+      class="sticky top-0 z-10 -mx-4 flex flex-col gap-2 border-b border-(--mat-sys-outline-variant) bg-(--mat-sys-surface)/90 px-4 pt-4 pb-3 backdrop-blur sm:-mx-6 sm:px-6"
+    >
+      <a
+        class="inline-flex items-center gap-1 self-start text-sm font-medium text-(--mat-sys-primary) no-underline hover:underline"
+        [routerLink]="['/', faq.category]"
+        aria-label="Back to all {{ categoryName() }} questions"
+      >
+        <mat-icon class="size-4.5! text-lg! leading-none!">arrow_back</mat-icon>
+        All {{ categoryName() }} questions
+      </a>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-sm tabular-nums text-(--mat-sys-on-surface-variant)"
+          >Question {{ position() + 1 }} of {{ total() }}</span
+        >
+        <app-question-badges [difficulty]="faq.difficulty" [scenarioBased]="faq.scenarioBased" />
+
+        <!--
+          Sized at 80% of Material's default, but the height token is dropped so
+          the padding and the content set it: at a fixed 28px height the icon
+          ended up hard against the border. The label size and the icon gap are
+          Material's own tokens; the padding is a utility because Material only
+          exposes a horizontal padding token, and the `!` goes at the end: v4
+          dropped the `!foo` prefix form, which silently compiles to nothing.
+        -->
+        <button
+          mat-stroked-button
+          type="button"
+          class="ml-auto px-3.75! py-1.25! [--mat-button-outlined-container-height:auto] [--mat-button-outlined-icon-spacing:4px] [--mat-button-outlined-label-text-size:0.75rem]"
+          [attr.aria-pressed]="faq.isRead"
+          [attr.aria-label]="(faq.isRead ? 'Mark as unread: ' : 'Mark as read: ') + faq.question"
+          (click)="toggleRead()"
+        >
+          <mat-icon class="size-4.5! text-lg! leading-none!">{{
+            faq.isRead ? 'check_circle' : 'radio_button_unchecked'
+          }}</mat-icon>
+          {{ faq.isRead ? 'Read' : 'Mark as read' }}
+        </button>
+      </div>
+
+      <h1 class="m-0 line-clamp-2 text-xl leading-snug font-semibold sm:text-2xl">
+        {{ faq.question }}
+      </h1>
+    </header>
+
+    <p
+      class="m-0 text-[0.95rem] leading-relaxed text-(--mat-sys-on-surface-variant)"
+      data-testid="answer"
+    >
+      {{ faq.answer }}
+    </p>
+
+    @for (example of faq.examples; track example.title) {
+      <section class="flex flex-col gap-2">
+        <h2 class="m-0 text-sm font-semibold">{{ example.title }}</h2>
+        <pre
+          class="m-0 overflow-x-auto rounded-lg bg-(--mat-sys-surface-container-high) p-3 font-mono text-[0.8rem] leading-relaxed"
+        ><code>{{ example.code }}</code></pre>
+        <p class="m-0 text-sm leading-relaxed text-(--mat-sys-on-surface-variant)">
+          {{ example.explanation }}
+        </p>
+      </section>
+    }
+
+    <nav
+      class="mt-2 flex items-center gap-3 border-t border-(--mat-sys-outline-variant) pt-4"
+      aria-label="Question navigation"
+    >
+      @if (previous(); as prev) {
+        <!--
+          A plain link, not mat-button: Material wraps button content in its own
+          label element that will not shrink, so the two links overflow their box
+          and collide instead of ellipsising. Each takes an equal half of the row,
+          so the gap between them is the same whatever the questions are called.
+        -->
+        <a
+          class="flex min-w-0 flex-1 items-center gap-1 overflow-hidden text-sm font-medium text-(--mat-sys-primary) no-underline hover:underline"
+          [routerLink]="['/', prev.category, prev.id]"
+          [title]="prev.question"
+        >
+          <mat-icon class="shrink-0">arrow_back</mat-icon>
+          <span class="min-w-0 truncate">{{ prev.question }}</span>
+        </a>
+      } @else {
+        <span class="min-w-0 flex-1"></span>
+      }
+
+      @if (next(); as nextQuestion) {
+        <a
+          class="flex min-w-0 flex-1 items-center justify-end gap-1 overflow-hidden text-sm font-medium text-(--mat-sys-primary) no-underline hover:underline"
+          [routerLink]="['/', nextQuestion.category, nextQuestion.id]"
+          [title]="nextQuestion.question"
+        >
+          <span class="min-w-0 truncate">{{ nextQuestion.question }}</span>
+          <mat-icon class="shrink-0">arrow_forward</mat-icon>
+        </a>
+      }
+    </nav>
+  </section>
+} @else {
+  <section class="mx-auto flex max-w-3xl flex-col items-start gap-4 p-4 sm:p-6">
+    <h1 class="m-0 text-xl font-semibold">Question not found</h1>
+    <p class="m-0 text-(--mat-sys-on-surface-variant)">
+      Nothing in {{ categoryName() }} matches &ldquo;{{ questionId() }}&rdquo;.
+    </p>
+    <a mat-stroked-button [routerLink]="['/', category()]">
+      <mat-icon>arrow_back</mat-icon>
+      All {{ categoryName() }} questions
+    </a>
+  </section>
+}

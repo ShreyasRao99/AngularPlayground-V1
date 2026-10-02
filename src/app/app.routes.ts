@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { CATEGORIES } from './shared/categories';
 
 export const routes: Routes = [
   {
@@ -25,4 +26,23 @@ export const routes: Routes = [
     path: 'behavioural',
     loadComponent: () => import('./behavioural/behavioural').then((c) => c.Behavioural),
   },
+  // One question per screen instead of a header that has to be clicked open:
+  // `/:category` stays an index of links and `/:category/:questionId` is the
+  // answer, which is shareable and gets the platform back gesture for free.
+  // Declared last, after every literal route, so `/html` still resolves to the
+  // index rather than being read as a category segment.
+  {
+    path: 'poc/:pocId',
+    loadComponent: () => import('./shared/poc-detail/poc-detail').then((c) => c.PocDetail),
+  },
+  {
+    path: ':category/:questionId',
+    loadComponent: () =>
+      import('./shared/question-detail/question-detail').then((c) => c.QuestionDetail),
+  },
+  // Last resort for anything unmatched - a typo, or a link to a category that
+  // does not exist. Without this the router throws NG04002 and the app renders
+  // nothing at all. Redirecting to `''` would stop at `/` without chaining on to
+  // the first category, so it goes there directly.
+  { path: '**', redirectTo: CATEGORIES[0] },
 ];
