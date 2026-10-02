@@ -3,10 +3,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleChange, MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipListboxChange, MatChipsModule } from '@angular/material/chips';
-import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterLink } from '@angular/router';
 import { Category, Difficulty } from '../../../types/questions-type';
+import { QuestionBadges } from '../question-badges/question-badges';
 import { QuestionStore } from '../question-store';
 
 type ReadFilter = 'all' | 'unread' | 'read';
@@ -18,13 +19,14 @@ interface DifficultyOption {
 
 @Component({
   imports: [
-    MatExpansionModule,
     MatChipsModule,
     MatCheckboxModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatIconModule,
     MatTooltipModule,
+    RouterLink,
+    QuestionBadges,
   ],
   selector: 'app-question-list',
   changeDetection: ChangeDetectionStrategy.OnPush,

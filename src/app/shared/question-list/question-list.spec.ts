@@ -1,12 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatChipListboxChange } from '@angular/material/chips';
+import { provideRouter } from '@angular/router';
 import { Question } from '../../../types/questions-type';
 import { QuestionList } from './question-list';
 
 type ReadFlag = { id: string; isRead: boolean };
 
 async function createList(category: Question['category'] = 'performance') {
-  await TestBed.configureTestingModule({ imports: [QuestionList] }).compileComponents();
+  await TestBed.configureTestingModule({
+    imports: [QuestionList],
+    providers: [provideRouter([])],
+  }).compileComponents();
 
   const fixture = TestBed.createComponent(QuestionList);
   fixture.componentRef.setInput('category', category);
@@ -15,8 +19,10 @@ async function createList(category: Question['category'] = 'performance') {
   return fixture;
 }
 
-function panels(fixture: ComponentFixture<QuestionList>): HTMLElement[] {
-  return Array.from(fixture.nativeElement.querySelectorAll('mat-expansion-panel'));
+/** One row per question: the index is a list of links, not a set of panels. */
+function rows(fixture: ComponentFixture<QuestionList>): HTMLAnchorElement[] {
+  const root = fixture.nativeElement as HTMLElement;
+  return Array.from(root.querySelectorAll<HTMLAnchorElement>('li > a'));
 }
 
 function readButtons(fixture: ComponentFixture<QuestionList>): HTMLButtonElement[] {
@@ -48,7 +54,7 @@ describe('QuestionList', () => {
 
   it('should show every question in the category by default', async () => {
     const fixture = await createList();
-    expect(panels(fixture).length).toBe(23);
+    expect(rows(fixture).length).toBe(23);
     expect(fixture.componentInstance['hasActiveFilters']()).toBe(false);
   });
 
@@ -56,13 +62,13 @@ describe('QuestionList', () => {
     const fixture = await createList();
 
     selectDifficulties(fixture, ['basic']);
-    expect(panels(fixture).length).toBe(5);
+    expect(rows(fixture).length).toBe(5);
 
     selectDifficulties(fixture, ['medium']);
-    expect(panels(fixture).length).toBe(12);
+    expect(rows(fixture).length).toBe(12);
 
     selectDifficulties(fixture, ['basic', 'advanced']);
-    expect(panels(fixture).length).toBe(11);
+    expect(rows(fixture).length).toBe(11);
   });
 
   it('should filter to scenario based questions only', async () => {
@@ -71,7 +77,7 @@ describe('QuestionList', () => {
     fixture.componentInstance['scenarioFilter'].set(true);
     fixture.detectChanges();
 
-    expect(panels(fixture).length).toBe(4);
+    expect(rows(fixture).length).toBe(4);
   });
 
   it('should toggle read state and filter on it', async () => {
@@ -87,29 +93,76 @@ describe('QuestionList', () => {
 
     fixture.componentInstance['readFilter'].set('unread');
     fixture.detectChanges();
-    expect(panels(fixture).length).toBe(22);
+    expect(rows(fixture).length).toBe(22);
 
     fixture.componentInstance['readFilter'].set('read');
     fixture.detectChanges();
-    expect(panels(fixture).length).toBe(1);
+    expect(rows(fixture).length).toBe(1);
   });
 
-  it('should not expand a panel when the read toggle is clicked', async () => {
+  it('should link every question to its own detail page', async () => {
     const fixture = await createList();
+    const [first] = rows(fixture);
 
-    readButtons(fixture)[0].click();
+    expect(first.getAttribute('href')).toBe('/performance/performance-1');
+  });
+
+  it('should give a row exactly one colour class, whichever read state it is in', async () => {
+    const fixture = await createList();
+    const colourClasses = (element: Element | null) =>
+      Array.from(element?.classList ?? []).filter((name) => name.startsWith('text-('));
+
+    const linkColours = (index: number) => colourClasses(rows(fixture)[index]);
+    const numberColours = (index: number) =>
+      colourClasses((fixture.nativeElement as HTMLElement).querySelectorAll('li > span')[index]);
+
+    // Two of these both set `color`, so whichever Tailwind happens to emit last
+    // wins - the read state has to come from a single class, not a static one
+    // plus a conditional one.
+    expect(linkColours(0)).toEqual(['text-(--mat-sys-on-surface)']);
+    expect(numberColours(0)).toEqual(['text-(--mat-sys-primary)']);
+
+    fixture.componentInstance['toggleRead']('performance-1');
     fixture.detectChanges();
 
-    const panel = panels(fixture)[0];
-    expect(panel.classList).not.toContain('mat-expanded');
+    expect(linkColours(0)).toEqual(['text-(--mat-sys-on-surface-variant)']);
+    expect(numberColours(0)).toEqual(['text-(--mat-sys-on-surface-variant)']);
   });
 
-  it('should show difficulty and scenario badges on each panel', async () => {
+  it('should keep the row layout classes when the read state swaps the colour', async () => {
+    const fixture = await createList();
+    const [link] = rows(fixture);
+
+    const layout = ['min-w-0', 'flex-1', 'no-underline', 'after:absolute'];
+
+    for (const name of layout) {
+      expect(link.classList.contains(name)).toBe(true);
+    }
+
+    fixture.componentInstance['toggleRead']('performance-1');
+    fixture.detectChanges();
+
+    for (const name of layout) {
+      expect(link.classList.contains(name)).toBe(true);
+    }
+  });
+
+  it('should keep the read toggle outside the row link', async () => {
+    const fixture = await createList();
+    const row = rows(fixture)[0];
+
+    // nesting the button inside the anchor would make the toggle navigate as
+    // well as mark, and is invalid markup
+    expect(row.contains(readButtons(fixture)[0])).toBe(false);
+    expect(row.textContent?.trim()).not.toBe('');
+  });
+
+  it('should show difficulty and scenario badges on each row', async () => {
     const fixture = await createList();
 
-    const badges = Array.from(
-      fixture.nativeElement.querySelectorAll('mat-expansion-panel-header span.rounded-full'),
-    ).map((badge) => (badge as HTMLElement).textContent?.trim());
+    const badges = Array.from(fixture.nativeElement.querySelectorAll('li span.rounded-full')).map(
+      (badge) => (badge as HTMLElement).textContent?.trim(),
+    );
 
     expect(badges).toContain('basic');
     expect(badges).toContain('advanced');
@@ -120,16 +173,17 @@ describe('QuestionList', () => {
     const fixture = await createList('html');
 
     selectDifficulties(fixture, ['advanced']);
-    expect(panels(fixture).length).toBe(0);
+    expect(rows(fixture).length).toBe(0);
     expect(fixture.nativeElement.textContent).toContain('No questions match these filters');
 
     fixture.componentInstance['clearFilters']();
     fixture.detectChanges();
-    expect(panels(fixture).length).toBe(12);
+    expect(rows(fixture).length).toBe(12);
   });
 
   it('should persist only read state to localStorage', async () => {
     const fixture = await createList();
+
     readButtons(fixture)[0].click();
     fixture.detectChanges();
 
@@ -157,7 +211,7 @@ describe('QuestionList', () => {
     fixture.detectChanges();
 
     expect(fixture.componentInstance['readFilter']()).toBe('unread');
-    expect(panels(fixture).length).toBe(22);
+    expect(rows(fixture).length).toBe(22);
 
     // the token override is scoped to `.read-filter .mat-button-toggle-checked`,
     // so the checked class has to sit on a descendant of the group
@@ -223,7 +277,7 @@ describe('QuestionList', () => {
     fixture.detectChanges();
 
     expect(fixture.componentInstance['difficultyFilter']()).toEqual(['advanced']);
-    expect(panels(fixture).length).toBe(6);
+    expect(rows(fixture).length).toBe(6);
   });
 
   it('should filter when the scenario checkbox is clicked', async () => {
@@ -236,6 +290,6 @@ describe('QuestionList', () => {
     fixture.detectChanges();
 
     expect(fixture.componentInstance['scenarioFilter']()).toBe(true);
-    expect(panels(fixture).length).toBe(4);
+    expect(rows(fixture).length).toBe(4);
   });
 });

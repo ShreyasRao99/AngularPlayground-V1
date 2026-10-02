@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { POCS } from './pocs';
 import { Poc } from './poc';
 
 describe('Poc', () => {
@@ -29,8 +30,12 @@ describe('Poc', () => {
     expect(list).toBeTruthy();
   });
 
-  it('should render every poc in an accordion panel', () => {
-    const panels = (fixture.nativeElement as HTMLElement).querySelectorAll('mat-expansion-panel');
-    expect(panels.length).toBeGreaterThan(0);
+  it('should render every poc as a row that links to its own page', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const rows = compiled.querySelectorAll('app-poc-list li > a');
+
+    expect(rows.length).toBe(POCS.length);
+    expect((rows[0] as HTMLAnchorElement).getAttribute('href')).toBe(`/poc/${POCS[0].id}`);
+    expect(compiled.querySelector('mat-expansion-panel')).toBeNull();
   });
 });

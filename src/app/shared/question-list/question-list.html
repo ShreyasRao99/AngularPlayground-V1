@@ -37,93 +37,66 @@
     }
   </div>
 
-  <p class="m-0 text-sm text-[color:var(--mat-sys-on-surface-variant)]">
+  <p class="m-0 text-sm text-(--mat-sys-on-surface-variant)">
     Showing {{ faqs().length }} of {{ categoryTotal() }} &middot; {{ readCount() }} read
   </p>
 </div>
 
-<mat-accordion>
-  @for (faq of faqs(); track faq.id) {
-    <mat-expansion-panel>
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          <span
-            class="mr-2 tabular-nums"
-            [class.text-[color:var(--mat-sys-primary)]]="!faq.isRead"
-            [class.text-[color:var(--mat-sys-on-surface-variant)]]="faq.isRead"
-            >{{ $index + 1 }}.</span
-          >
-          <span [class.text-[color:var(--mat-sys-on-surface-variant)]]="faq.isRead">{{
-            faq.question
-          }}</span>
-        </mat-panel-title>
+@if (faqs().length) {
+  <ul
+    class="m-0 list-none border-t border-(--mat-sys-outline-variant) p-0"
+    aria-label="Questions"
+  >
+    @for (faq of faqs(); track faq.id) {
+      <li
+        class="relative flex flex-wrap items-start gap-x-3 gap-y-1 px-4 py-3 hover:bg-(--mat-sys-surface-container) has-focus-visible:outline-2 has-focus-visible:-outline-offset-2 has-focus-visible:outline-(--mat-sys-primary) sm:items-center"
+      >
+        <span
+          class="w-6 shrink-0 pt-0.5 text-sm tabular-nums sm:pt-0"
+          [class]="!faq.isRead ? 'text-(--mat-sys-primary)' : 'text-(--mat-sys-on-surface-variant)'"
+          >{{ $index + 1 }}.</span
+        >
 
-        <div class="flex items-center gap-1 pr-1" (click)="$event.stopPropagation()">
-          <span
-            class="rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap"
-            [class.bg-[color:var(--mat-sys-surface-container-highest)]]="faq.difficulty === 'basic'"
-            [class.text-[color:var(--mat-sys-on-surface-variant)]]="faq.difficulty === 'basic'"
-            [class.bg-[color:var(--mat-sys-primary-container)]]="faq.difficulty === 'medium'"
-            [class.text-[color:var(--mat-sys-on-primary-container)]]="faq.difficulty === 'medium'"
-            [class.bg-[color:var(--mat-sys-tertiary-container)]]="faq.difficulty === 'advanced'"
-            [class.text-[color:var(--mat-sys-on-tertiary-container)]]="
-              faq.difficulty === 'advanced'
-            "
-            >{{ faq.difficulty }}</span
-          >
+        <!--
+          The link stretches over the whole row (`after:inset-0`) so the tap
+          target is the full width on a phone, not just the question text. The
+          read toggle is a sibling rather than a child, so it stays a real
+          button instead of a control nested inside an anchor.
+        -->
+        <a
+          class="min-w-0 flex-1 text-[0.95rem] leading-snug font-medium no-underline after:absolute after:inset-0 after:content-[''] hover:text-(--mat-sys-primary)"
+          [class]="faq.isRead ? 'text-(--mat-sys-on-surface-variant)' : 'text-(--mat-sys-on-surface)'"
+          [routerLink]="['/', faq.category, faq.id]"
+          >{{ faq.question }}</a
+        >
 
-          @if (faq.scenarioBased) {
-            <span
-              class="rounded-full bg-[color:var(--mat-sys-secondary-container)] px-2 py-0.5 text-xs font-medium whitespace-nowrap text-[color:var(--mat-sys-on-secondary-container)]"
-              >scenario</span
-            >
-          }
+        <div
+          class="flex w-full items-center justify-between gap-2 pl-9 sm:w-auto sm:justify-start sm:pl-0"
+        >
+          <app-question-badges [difficulty]="faq.difficulty" [scenarioBased]="faq.scenarioBased" />
 
           <button
             mat-icon-button
             type="button"
+            class="relative z-10 shrink-0"
             [attr.aria-pressed]="faq.isRead"
             [attr.aria-label]="(faq.isRead ? 'Mark as unread: ' : 'Mark as read: ') + faq.question"
             [matTooltip]="faq.isRead ? 'Mark as unread' : 'Mark as read'"
             (click)="toggleRead(faq.id)"
           >
-            <mat-icon [class.text-[color:var(--mat-sys-primary)]]="!faq.isRead">{{
+            <mat-icon [class]="!faq.isRead ? 'text-(--mat-sys-primary)' : ''">{{
               faq.isRead ? 'check_circle' : 'radio_button_unchecked'
             }}</mat-icon>
           </button>
         </div>
-      </mat-expansion-panel-header>
-
-      <p class="mx-4 mb-2 leading-relaxed text-[color:var(--mat-sys-on-surface-variant)]">
-        {{ faq.answer }}
-      </p>
-
-      @if (faq.examples.length) {
-        <section class="mx-4 mb-4 flex flex-col gap-4">
-          @for (example of faq.examples; track example.title) {
-            <div>
-              <h3 class="mb-2 text-sm font-semibold text-[color:var(--mat-sys-on-surface)]">
-                {{ example.title }}
-              </h3>
-              <pre
-                class="m-0 overflow-x-auto rounded-lg bg-[color:var(--mat-sys-surface-container-high)] p-3 font-mono text-[0.85rem] leading-relaxed text-[color:var(--mat-sys-on-surface)]"
-              ><code>{{ example.code }}</code></pre>
-              <p
-                class="mt-2 text-sm leading-relaxed text-[color:var(--mat-sys-on-surface-variant)]"
-              >
-                {{ example.explanation }}
-              </p>
-            </div>
-          }
-        </section>
-      }
-    </mat-expansion-panel>
-  } @empty {
-    <p class="px-4 py-6 text-center text-[color:var(--mat-sys-on-surface-variant)]">
-      No questions match these filters.
-      @if (hasActiveFilters()) {
-        <button mat-button type="button" (click)="clearFilters()">Clear filters</button>
-      }
-    </p>
-  }
-</mat-accordion>
+      </li>
+    }
+  </ul>
+} @else {
+  <p class="px-4 py-6 text-center text-(--mat-sys-on-surface-variant)">
+    No questions match these filters.
+    @if (hasActiveFilters()) {
+      <button mat-button type="button" (click)="clearFilters()">Clear filters</button>
+    }
+  </p>
+}

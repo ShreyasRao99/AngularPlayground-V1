@@ -1,10 +1,10 @@
 <div class="mb-4 px-4">
-  <p class="mt-0 mb-4 text-sm leading-relaxed text-[color:var(--mat-sys-on-surface-variant)]">
+  <p class="mt-0 mb-4 text-sm leading-relaxed text-(--mat-sys-on-surface-variant)">
     Every proof of concept below is a task you implement yourself in your own project. There is no
     answer code here &mdash; each prompt tells you what to build, which endpoints to call, and the
     topic you learn at every step. Use the
     <a
-      class="font-medium text-[color:var(--mat-sys-primary)] underline"
+      class="font-medium text-(--mat-sys-primary) underline"
       [href]="pokeApiDocs"
       target="_blank"
       rel="noreferrer"
@@ -48,36 +48,46 @@
     }
   </div>
 
-  <p class="mt-3 mb-0 text-sm text-[color:var(--mat-sys-on-surface-variant)]">
+  <p class="mt-3 mb-0 text-sm text-(--mat-sys-on-surface-variant)">
     Showing {{ pocs().length }} of {{ pocTotal }} &middot; {{ completedCount() }} done
   </p>
 </div>
 
-<mat-accordion>
-  @for (entry of pocs(); track entry.poc.id) {
-    <mat-expansion-panel>
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          <span
-            class="mr-2 tabular-nums"
-            [class.text-[color:var(--mat-sys-primary)]]="!entry.isCompleted"
-            [class.text-[color:var(--mat-sys-on-surface-variant)]]="entry.isCompleted"
-            >{{ $index + 1 }}.</span
-          >
-          <span [class.text-[color:var(--mat-sys-on-surface-variant)]]="entry.isCompleted">{{
-            entry.poc.title
-          }}</span>
-        </mat-panel-title>
+@if (pocs().length) {
+  <ul
+    class="m-0 list-none border-t border-(--mat-sys-outline-variant) p-0"
+    aria-label="Proofs of concept"
+  >
+    @for (entry of pocs(); track entry.poc.id) {
+      <li
+        class="relative flex flex-wrap items-start gap-x-3 gap-y-1 px-4 py-3 hover:bg-(--mat-sys-surface-container) has-focus-visible:outline-2 has-focus-visible:-outline-offset-2 has-focus-visible:outline-(--mat-sys-primary) sm:items-center"
+      >
+        <span
+          class="w-6 shrink-0 pt-0.5 text-sm tabular-nums sm:pt-0"
+          [class]="!entry.isCompleted ? 'text-(--mat-sys-primary)' : 'text-(--mat-sys-on-surface-variant)'"
+          >{{ $index + 1 }}.</span
+        >
 
-        <div class="flex items-center gap-1 pr-1" (click)="$event.stopPropagation()">
+        <!-- Whole row is the tap target; the toggle is a sibling, not a child. -->
+        <a
+          class="min-w-0 flex-1 text-[0.95rem] leading-snug font-medium no-underline after:absolute after:inset-0 after:content-[''] hover:text-(--mat-sys-primary)"
+          [class]="entry.isCompleted ? 'text-(--mat-sys-on-surface-variant)' : 'text-(--mat-sys-on-surface)'"
+          [routerLink]="['/poc', entry.poc.id]"
+          >{{ entry.poc.title }}</a
+        >
+
+        <div
+          class="flex w-full items-center justify-between gap-2 pl-9 sm:w-auto sm:justify-start sm:pl-0"
+        >
           <span
-            class="rounded-full bg-[color:var(--mat-sys-primary-container)] px-2 py-0.5 text-xs font-medium whitespace-nowrap text-[color:var(--mat-sys-on-primary-container)]"
+            class="rounded-full bg-(--mat-sys-primary-container) px-2 py-0.5 text-xs font-medium whitespace-nowrap text-(--mat-sys-on-primary-container)"
             >{{ label(entry.poc.category) }}</span
           >
 
           <button
             mat-icon-button
             type="button"
+            class="relative z-10 shrink-0"
             [attr.aria-pressed]="entry.isCompleted"
             [attr.aria-label]="
               (entry.isCompleted ? 'Mark as not done: ' : 'Mark as done: ') + entry.poc.title
@@ -85,100 +95,19 @@
             [matTooltip]="entry.isCompleted ? 'Mark as not done' : 'Mark as done'"
             (click)="toggleCompleted(entry.poc.id)"
           >
-            <mat-icon [class.text-[color:var(--mat-sys-primary)]]="!entry.isCompleted">{{
+            <mat-icon [class]="!entry.isCompleted ? 'text-(--mat-sys-primary)' : ''">{{
               entry.isCompleted ? 'check_circle' : 'radio_button_unchecked'
             }}</mat-icon>
           </button>
         </div>
-      </mat-expansion-panel-header>
-
-      <div class="px-4 pb-4">
-        <p class="mt-0 text-sm leading-relaxed text-[color:var(--mat-sys-on-surface-variant)]">
-          {{ entry.poc.summary }}
-        </p>
-
-        <div
-          class="my-4 rounded-lg border-l-4 border-[color:var(--mat-sys-primary)] bg-[color:var(--mat-sys-surface-container-high)] px-3 py-2"
-        >
-          <p class="m-0 text-sm leading-relaxed">{{ entry.poc.prompt }}</p>
-        </div>
-
-        <section class="mb-4">
-          <h3 class="mb-2 text-sm font-semibold">Data &mdash; use the PokéAPI</h3>
-          <ul class="m-0 flex flex-col gap-1">
-            @for (endpoint of entry.poc.endpoints; track endpoint.path) {
-              <li class="flex flex-col text-sm">
-                <code class="font-mono text-[0.8rem] text-[color:var(--mat-sys-primary)]"
-                  >GET {{ endpoint.path }}</code
-                >
-                <span class="text-[color:var(--mat-sys-on-surface-variant)]">
-                  {{ endpoint.note }}
-                </span>
-              </li>
-            }
-          </ul>
-        </section>
-
-        <section class="mb-4">
-          <h3 class="mb-2 text-sm font-semibold">Steps</h3>
-          <ol class="m-0 flex list-decimal flex-col gap-3 pl-5">
-            @for (step of entry.poc.steps; track step.title) {
-              <li>
-                <p class="m-0 font-medium">{{ step.title }}</p>
-                <p
-                  class="mt-1 mb-0 text-sm leading-relaxed whitespace-pre-line text-[color:var(--mat-sys-on-surface-variant)]"
-                >
-                  {{ step.task }}
-                </p>
-                <p class="mt-1 mb-0 text-xs text-[color:var(--mat-sys-primary)]">
-                  <mat-icon class="mr-1 align-middle text-sm">school</mat-icon>{{ step.learn }}
-                </p>
-              </li>
-            }
-          </ol>
-        </section>
-
-        @if (entry.poc.stretch.length) {
-          <section class="mb-4">
-            <h3 class="mb-2 text-sm font-semibold">Stretch goals</h3>
-            <ul class="m-0 flex list-disc flex-col gap-1 pl-5 text-sm leading-relaxed">
-              @for (stretch of entry.poc.stretch; track stretch) {
-                <li class="text-[color:var(--mat-sys-on-surface-variant)]">{{ stretch }}</li>
-              }
-            </ul>
-          </section>
-        }
-
-        <section class="mb-4">
-          <h3 class="mb-2 text-sm font-semibold">Starting point</h3>
-          <pre
-            class="m-0 overflow-x-auto rounded-lg bg-[color:var(--mat-sys-surface-container-high)] p-3 font-mono text-[0.85rem] leading-relaxed"
-          ><code>{{ entry.poc.starter }}</code></pre>
-        </section>
-
-        @if (entry.coveredQuestions.length) {
-          <section>
-            <h3 class="mb-2 text-sm font-semibold">Questions this covers</h3>
-            <div class="flex flex-wrap gap-2">
-              @for (question of entry.coveredQuestions; track question.id) {
-                <a
-                  class="rounded-full bg-[color:var(--mat-sys-surface-container-highest)] px-2 py-0.5 text-xs font-medium text-[color:var(--mat-sys-on-surface-variant)] no-underline hover:text-[color:var(--mat-sys-primary)]"
-                  [routerLink]="['/', question.category]"
-                  [title]="question.answer"
-                  >{{ label(question.category) }} &middot; {{ question.question }}</a
-                >
-              }
-            </div>
-          </section>
-        }
-      </div>
-    </mat-expansion-panel>
-  } @empty {
-    <p class="px-4 py-6 text-center text-[color:var(--mat-sys-on-surface-variant)]">
-      No POCs match these filters.
-      @if (hasActiveFilters()) {
-        <button mat-button type="button" (click)="clearFilters()">Clear filters</button>
-      }
-    </p>
-  }
-</mat-accordion>
+      </li>
+    }
+  </ul>
+} @else {
+  <p class="px-4 py-6 text-center text-(--mat-sys-on-surface-variant)">
+    No POCs match these filters.
+    @if (hasActiveFilters()) {
+      <button mat-button type="button" (click)="clearFilters()">Clear filters</button>
+    }
+  </p>
+}
