@@ -43,6 +43,25 @@ describe('PocList', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
+  it('should show how long each poc takes, next to an alarm clock', async () => {
+    const fixture = await createList();
+    const root = fixture.nativeElement as HTMLElement;
+
+    // Guards the whole chain at once: the tag resolving to PocDuration, the
+    // minutes input being bound, and the icon rendering inside it.
+    const durations = Array.from(root.querySelectorAll('app-poc-duration'));
+
+    expect(durations).toHaveLength(POCS.length);
+    for (const duration of durations) {
+      expect(duration.querySelector('.material-symbols-outlined')?.textContent?.trim()).toBe(
+        'timer',
+      );
+      expect(duration.querySelector('[data-testid="duration"]')?.textContent?.trim()).toMatch(
+        /^[\d]+ (min|hr)( [\d]+ min)?$/,
+      );
+    }
+  });
+
   it('should show every poc by default', async () => {
     const fixture = await createList();
 

@@ -6,6 +6,7 @@ export const RXJS_POCS: Poc[] = [
     category: 'rxjs',
     title: 'Live search that does not jank the page',
     summary: 'The canonical RxJS pipeline: debounce, dedupe, cancel, recover.',
+    durationMinutes: 45,
     prompt:
       'Type into a search box and query the PokéAPI as you type. The pipeline has to stop hammering the API, cancel requests that are no longer wanted, and survive a 404 without killing the stream.',
     endpoints: [
@@ -73,6 +74,7 @@ readonly results$ = this.term.valueChanges.pipe(
     category: 'rxjs',
     title: 'A filter store out of Subjects',
     summary: 'Promise vs Observable, cold vs hot, and the four Subject variants.',
+    durationMinutes: 60,
     prompt:
       'Build the shared filter state for the dex - sidebar filters and a results table both read it - using RxJS primitives first. Know exactly which Subject variant you chose and why.',
     endpoints: [{ path: '/pokemon?limit=', note: 'Re-queried whenever the filter changes' }],
@@ -140,6 +142,7 @@ export class DexFilterService {
     category: 'rxjs',
     title: 'A dashboard assembled from three endpoints',
     summary: 'forkJoin vs combineLatest vs withLatestFrom vs merge, side by side.',
+    durationMinutes: 45,
     prompt:
       'A dashboard shows three panels from three endpoints. The rules are: show the dashboard only when all three have arrived, and refresh it if any one of them changes. Pick the operator and defend the choice.',
     endpoints: [
@@ -201,6 +204,7 @@ readonly withType$ = featured$.pipe(
     category: 'rxjs',
     title: 'switchMap, mergeMap, concatMap and exhaustMap side by side',
     summary: 'The same source, four operators, four behaviours you can time.',
+    durationMinutes: 60,
     prompt:
       'Take one stream of user intent and run it through all four flattening operators. Log the emission order with timestamps so the difference is measured, not remembered.',
     endpoints: [
@@ -265,6 +269,7 @@ save$.pipe(exhaustMap((value) => this.save$(value).pipe(finalize(() => this.savi
     category: 'rxjs',
     title: 'Stop asking for the same Pokémon six times',
     summary: 'share vs shareReplay vs refCount, proven with a request counter.',
+    durationMinutes: 30,
     prompt:
       'Six places in the app need the same Pokémon detail. Build the cache with Observables and measure the request count for every variation.',
     endpoints: [{ path: '/pokemon/{name}', note: 'The request being shared and cached' }],
@@ -329,6 +334,7 @@ getPokemon(name: string): Observable<Pokemon> {
     category: 'rxjs',
     title: 'Make a flaky endpoint survivable',
     summary: 'catchError placement, retry with backoff, and per-request isolation.',
+    durationMinutes: 60,
     prompt:
       'The PokéAPI rate-limits and occasionally 500s. Your dashboard has four panels. One panel failing must not take down the other three, and a retry storm must not make it worse.',
     endpoints: [
@@ -394,6 +400,7 @@ const panel$ = (source: Observable<unknown>, fallback: unknown) =>
     category: 'rxjs',
     title: 'Find the memory leak, then fix it properly',
     summary: 'A subscription that is never torn down, and every correct way to prevent it.',
+    durationMinutes: 75,
     prompt:
       'Memory grows steadily as users move around the dex. Find what is holding on to the subscriptions, fix it, and show the number going back down.',
     endpoints: [

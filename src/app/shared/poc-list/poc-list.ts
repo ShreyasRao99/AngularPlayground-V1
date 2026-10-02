@@ -8,6 +8,7 @@ import { RouterLink } from '@angular/router';
 import { Category } from '../../../types/questions-type';
 import { POCS } from '../../poc/pocs';
 import { categoryLabel, POC_CATEGORIES, PocCategory } from '../categories';
+import { PocDuration } from '../poc-duration/poc-duration';
 import { PocStore } from '../poc-store';
 
 type CompletionFilter = 'all' | 'done' | 'todo';
@@ -32,6 +33,7 @@ const POKEAPI_DOCS = 'https://pokeapi.co/docs/v2#pokemon';
     MatIconModule,
     MatTooltipModule,
     RouterLink,
+    PocDuration,
   ],
   selector: 'app-poc-list',
   changeDetection: ChangeDetectionStrategy.OnPush,

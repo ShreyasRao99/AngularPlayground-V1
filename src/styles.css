@@ -1,3 +1,52 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import 'tailwindcss';
+
+/*
+ * Material Symbols, which is a variable icon font and does not share anything
+ * with the Material Icons family mat-icon renders through. Written out by hand
+ * rather than pulled from a stylesheet because the class only ever appears in
+ * one component and the whole rule is the font-face contract for a ligature.
+ */
+.poc-duration {
+  font-size: 0.75rem;
+  /* One line box, one em tall, matching the icon box below. Same height for the
+     text and the glyph is what actually lines them up: centring two different
+     heights leaves them correct but not aligned, because the glyph then sits on
+     the font's own baseline inside the taller box. */
+  line-height: 1;
+}
+
+/*
+ * A ligature icon font draws each glyph on its own baseline, so left to flow
+ * as ordinary inline text it sits high next to a line of copy and the row looks
+ * ragged. Giving it a box that is exactly as tall as it is wide and centring the
+ * glyph inside makes it line up with whatever it sits beside. 1em so the box
+ * tracks the font-size, and flex-none so a flex parent cannot squeeze it out of
+ * square.
+ */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  font-weight: normal;
+  /* 'liga' is what swaps the word "timer" for the glyph. */
+  font-feature-settings: 'liga';
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  /* 1em, not a ratio: the box is then exactly the same size as the line box of
+     the text beside it, so the pair is aligned by construction. */
+  width: 1em;
+  height: 1em;
+  font-size: 1em;
+  line-height: 1;
+  vertical-align: middle;
+}

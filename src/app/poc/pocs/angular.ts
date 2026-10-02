@@ -6,6 +6,7 @@ export const ANGULAR_POCS: Poc[] = [
     category: 'angular',
     title: 'Card shell with named projection slots',
     summary: 'One card layout, four call sites, no duplicated markup.',
+    durationMinutes: 60,
     prompt:
       'Four places in the dex need a card: the grid, the search results, the "my favourites" list and the detail header. Build the shell once with content projection and let each caller decide what goes in.',
     endpoints: [
@@ -81,6 +82,7 @@ export class PokemonCard {}
     category: 'angular',
     title: 'Reusable pagination component',
     summary: 'Pull your pagination out of the list so any list can use it.',
+    durationMinutes: 90,
     prompt:
       'Paginate the PokéAPI list, then pull the pagination out into an <app-paginator> that any list can use. No page index logic is allowed to live inside the list.',
     endpoints: [
@@ -155,6 +157,7 @@ export class Paginator {
     category: 'angular',
     title: 'Star rating component that works inside a form',
     summary: 'model() for two-way binding, transformed inputs, then a real ControlValueAccessor.',
+    durationMinutes: 75,
     prompt:
       'Build a 5-star rating with a hover preview, then make it work inside a reactive form. The hover state must never leak into the saved value.',
     endpoints: [
@@ -249,6 +252,7 @@ export class StarRating implements ControlValueAccessor {
     category: 'angular',
     title: 'Pokémon to-do list with filters and persistence',
     summary: 'Full CRUD on a signal array, derived filters, and a child component with clean IO.',
+    durationMinutes: 120,
     prompt:
       'Add, toggle, delete and edit a "catch list", filter it by All/Active/Completed, show a count of remaining items, and persist to localStorage. Everything in one feature folder.',
     endpoints: [
@@ -331,6 +335,7 @@ export class TodoStore {
     category: 'angular',
     title: 'Two unrelated components that must stay in sync',
     summary: 'A sidebar filter and a results list with no parent to talk to.',
+    durationMinutes: 60,
     prompt:
       'Build a filter sidebar and a results table that know nothing about each other, yet must always agree. If one of them can be deleted without breaking the app, the design is wrong.',
     endpoints: [
@@ -402,6 +407,7 @@ export class DexFilterStore {
     category: 'angular',
     title: 'Generate the filter form from a JSON schema',
     summary: 'Forms built at runtime, shared across a stepper, plus an async validator.',
+    durationMinutes: 90,
     prompt:
       'The backend owns the filter definition: it sends a JSON schema and the app has to build the form from it. Then add a "name already taken" check that runs while the user types.',
     endpoints: [
@@ -480,6 +486,7 @@ form = new FormGroup({ name: new FormControl('', { asyncValidators: [nameTaken],
     category: 'angular',
     title: 'Auth, spinner and error reporting as interceptors',
     summary: 'One cross-cutting concern per interceptor, and an order that matters.',
+    durationMinutes: 75,
     prompt:
       'Every PokéAPI call in the app needs the same four things: an auth header, a global spinner counter, a normalised error shape, and a trace id in the logs. Implement them as interceptors rather than copy-paste.',
     endpoints: [
@@ -544,6 +551,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) =>
     category: 'angular',
     title: 'A lazy admin route only admins can reach',
     summary: 'Lazy loading plus access control, and hiding the UI that guards the route.',
+    durationMinutes: 45,
     prompt:
       'Two lazy routes: a public dex and an admin reports route. The admin route must not be reachable without the admin role, and the UI must not offer a link that leads nowhere.',
     endpoints: [
@@ -611,6 +619,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) =>
     category: 'angular',
     title: 'Type badge directive and a colour pipe',
     summary: 'Behaviour without a template, and a pure function in a pipe.',
+    durationMinutes: 60,
     prompt:
       'Every Pokémon card needs a coloured, clickable type badge. Build it as an attribute directive for the behaviour and a pipe for the colour, so both pieces are independently testable.',
     endpoints: [

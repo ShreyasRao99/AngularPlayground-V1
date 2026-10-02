@@ -6,6 +6,7 @@ export const PERFORMANCE_POCS: Poc[] = [
     category: 'performance',
     title: 'A 500+ row Pokédex table that stays smooth',
     summary: 'Change detection, track keys and paging, applied to one real table.',
+    durationMinutes: 90,
     prompt:
       'Render a sortable, filterable table of every Pokémon the PokéAPI knows about. Measure it before and after, and be able to name the cost of every change you made.',
     endpoints: [
@@ -84,6 +85,7 @@ readonly sorted = computed(() => {
     category: 'performance',
     title: 'Load the sprites without jank or layout shift',
     summary: 'Image sizing, lazy loading and measuring LCP and CLS for real.',
+    durationMinutes: 60,
     prompt:
       'A dex page shows 151 sprites. Make it load fast, never jump, and measure whether you actually improved anything.',
     endpoints: [{ path: '/pokemon?limit=151', note: 'Every sprite URL in one payload' }],
@@ -159,6 +161,7 @@ new PerformanceObserver((list) => {
     category: 'performance',
     title: 'Cache PokéAPI responses and prefetch on intent',
     summary: 'Stop asking for the same Pokémon twice, and warm the cache before the click.',
+    durationMinutes: 60,
     prompt:
       'Users open cards, go back, open them again. Make the second open instant, and make the first one feel instant too, without breaking correctness.',
     endpoints: [
@@ -234,6 +237,7 @@ prefetch$.subscribe();`,
     category: 'performance',
     title: 'Prove where the time goes before you optimise',
     summary: 'Marks, measures, long tasks and the three different things you can be measuring.',
+    durationMinutes: 60,
     prompt:
       'A page is slow and nobody agrees why. Build the instrumentation that settles the argument: where the time is actually spent, and whether it is initial load, a reload or a route transition.',
     endpoints: [

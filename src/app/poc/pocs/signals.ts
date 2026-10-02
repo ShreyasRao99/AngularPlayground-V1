@@ -6,6 +6,7 @@ export const SIGNALS_POCS: Poc[] = [
     category: 'signals',
     title: 'Signal vs Observable: one Pokémon detail',
     summary: 'The most important difference, shown by the numbers.',
+    durationMinutes: 30,
     prompt:
       'Fetch one Pokémon with both approaches and prove to yourself that signals do not push a stream of values in the same way, and why that removes the diamond problem.',
     endpoints: [{ path: '/pokemon/{name}', note: 'The same endpoint used for both approaches' }],
@@ -46,6 +47,7 @@ readonly pokemon$ = this.name$.pipe(switchMap((name) => this.api.getPokemon(name
     category: 'signals',
     title: 'A signalStore for the filtered dex',
     summary: 'Build the same store twice, see which one reads cleaner.',
+    durationMinutes: 60,
     prompt:
       'Re-implement the dex filter store with NgRx signalStore and contrast it with the RxJS service you wrote before.',
     endpoints: [
@@ -120,6 +122,7 @@ export const DexStore = signalStore(
     category: 'signals',
     title: 'Effects: when to use them, and when to walk away',
     summary: 'The trap with set() inside an effect, and untracked as the escape hatch.',
+    durationMinutes: 45,
     prompt:
       'Build an effect that saves the filter to localStorage, logs a message on filter change, and tracks only what you meant to track. Then reproduce the anti-pattern and fix it.',
     endpoints: [
@@ -182,6 +185,7 @@ constructor() {
     category: 'signals',
     title: 'Plan to move an Angular 12 RxJS app to Signals',
     summary: 'A real migration plan, not a big bang.',
+    durationMinutes: 120,
     prompt:
       'You have an Angular 12 app with heavy RxJS usage. Plan the migration to signals, including what stays, what goes, and how to avoid breaking anything in production.',
     endpoints: [{ path: '/pokemon?limit=', note: 'Used as an example data surface to migrate' }],
@@ -247,6 +251,7 @@ readonly results$ = this.term$.pipe(switchMap((t) => searchPokemon(t))); // stay
     category: 'signals',
     title: 'Load Pokémon detail with the resource API',
     summary: 'Status, error and reload without re-inventing a loading flag.',
+    durationMinutes: 30,
     prompt:
       'Replace your hand-rolled loading/error state with the new resource API for one detail page, and compare the code you delete.',
     endpoints: [{ path: '/pokemon/{name}', note: 'The resource request' }],

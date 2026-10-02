@@ -34,6 +34,17 @@ function links(fixture: ComponentFixture<QuestionDetail>): HTMLAnchorElement[] {
   return Array.from(root(fixture).querySelectorAll('a'));
 }
 
+/**
+ * The hrefs of one `app-question-nav`, by position: 0 is the copy in the sticky
+ * header, 1 is the one at the foot of the answer. Scoping to a single copy is
+ * what keeps these assertions honest now there are two of them.
+ */
+function navHrefs(fixture: ComponentFixture<QuestionDetail>, index: number): (string | null)[] {
+  const nav = root(fixture).querySelectorAll('app-question-nav')[index];
+
+  return Array.from(nav.querySelectorAll('a')).map((link) => link.getAttribute('href'));
+}
+
 describe('QuestionDetail', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -71,19 +82,41 @@ describe('QuestionDetail', () => {
 
   it('should walk to the previous and next question in the category', async () => {
     const fixture = await createDetail('performance', 'performance-2');
-    const hrefs = links(fixture).map((link) => link.getAttribute('href'));
 
-    expect(hrefs).toContain('/performance/performance-1');
-    expect(hrefs).toContain('/performance/performance-3');
+    expect(navHrefs(fixture, 1)).toEqual([
+      '/performance/performance-1',
+      '/performance/performance-3',
+    ]);
+  });
+
+  it('should offer the same pair in the sticky header as at the end', async () => {
+    const fixture = await createDetail('performance', 'performance-2');
+
+    // a reader part way down the answer should not have to scroll to reach it
+    expect(navHrefs(fixture, 0)).toEqual(navHrefs(fixture, 1));
+    expect(root(fixture).querySelector('header')?.querySelectorAll('app-question-nav').length).toBe(
+      1,
+    );
+  });
+
+  it('should name the two navigation landmarks differently', async () => {
+    const fixture = await createDetail('performance', 'performance-2');
+    const names = Array.from(root(fixture).querySelectorAll('nav')).map((nav) =>
+      nav.getAttribute('aria-label'),
+    );
+
+    // two landmarks with one name are announced as a single ambiguous region
+    expect(names).toHaveLength(2);
+    expect(new Set(names).size).toBe(2);
   });
 
   it('should not link past the start of the category', async () => {
     const first = authored('misc-2');
     const fixture = await createDetail('misc', first.id);
-    const hrefs = links(fixture).map((link) => link.getAttribute('href'));
 
     // misc holds two questions, so the first one can only link forwards
-    expect(hrefs.filter((href) => href?.startsWith('/misc/'))).toEqual(['/misc/misc-6']);
+    expect(navHrefs(fixture, 0)).toEqual(['/misc/misc-6']);
+    expect(navHrefs(fixture, 1)).toEqual(['/misc/misc-6']);
   });
 
   it('should toggle read state for the routed question only', async () => {

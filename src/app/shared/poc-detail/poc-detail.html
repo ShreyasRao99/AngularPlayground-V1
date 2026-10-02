@@ -1,37 +1,73 @@
 @if (poc(); as poc) {
   <section class="mx-auto flex max-w-3xl flex-col gap-4 p-4 sm:p-6">
-    <a
-      class="inline-flex items-center gap-1 self-start text-sm font-medium text-(--mat-sys-primary) no-underline hover:underline"
-      routerLink="/poc"
-      aria-label="Back to all proofs of concept"
+    <!--
+      Sticky so "which proof of concept am I on, is it done, and how do I get back"
+      stays on screen while the walkthrough scrolls. Same shape as the question
+      page's header: the negative margins let the backdrop run to the edge of the
+      column while the text stays on the same line as the body, and line-clamp-2
+      stops a long title from eating the viewport.
+    -->
+    <header
+      class="sticky top-0 z-10 -mx-4 flex flex-col gap-2 border-b border-(--mat-sys-outline-variant) bg-(--mat-sys-surface)/90 px-4 pt-4 pb-3 backdrop-blur sm:-mx-6 sm:px-6"
     >
-      <mat-icon class="leading-none">arrow_back</mat-icon>
-      All proofs of concept
-    </a>
-
-    <div class="flex flex-wrap items-center gap-2">
-      <span
-        class="rounded-full bg-(--mat-sys-primary-container) px-2 py-0.5 text-xs font-medium whitespace-nowrap text-(--mat-sys-on-primary-container)"
-        >{{ label(poc.category) }}</span
+      <a
+        class="inline-flex items-center gap-1 self-start text-sm font-medium text-(--mat-sys-primary) no-underline hover:underline"
+        routerLink="/poc"
+        aria-label="Back to all proofs of concept"
       >
-      <span class="text-sm tabular-nums text-(--mat-sys-on-surface-variant)"
-        >Proof of concept {{ position() + 1 }} of {{ total() }}</span
-      >
+        <mat-icon class="size-4.5! text-lg! leading-none!">arrow_back</mat-icon>
+        All proofs of concept
+      </a>
 
-      <button
-        mat-stroked-button
-        type="button"
-        class="ml-auto"
-        [attr.aria-pressed]="isCompleted()"
-        [attr.aria-label]="(isCompleted() ? 'Mark as not done: ' : 'Mark as done: ') + poc.title"
-        (click)="toggleCompleted()"
-      >
-        <mat-icon>{{ isCompleted() ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
-        {{ isCompleted() ? 'Done' : 'Mark as done' }}
-      </button>
-    </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <span
+          class="rounded-full bg-(--mat-sys-primary-container) px-2 py-0.5 text-xs font-medium whitespace-nowrap text-(--mat-sys-on-primary-container)"
+          >{{ label(poc.category) }}</span
+        >
+        <span class="text-sm tabular-nums text-(--mat-sys-on-surface-variant)"
+          >Proof of concept {{ position() + 1 }} of {{ total() }}</span
+        >
 
-    <h1 class="m-0 text-xl leading-snug font-semibold sm:text-2xl">{{ poc.title }}</h1>
+        <app-poc-duration [minutes]="poc.durationMinutes" />
+
+        <!--
+          Sized to match the "Mark as read" button on the question page, and for
+          the same reasons: see the note there. At Material's default this was the
+          one control on the row that read a size larger than the metadata around
+          it. The height token is dropped so the padding and the content set the
+          height, otherwise the icon ends up hard against the border.
+        -->
+        <button
+          mat-stroked-button
+          type="button"
+          class="ml-auto px-3.75! py-1.25! [--mat-button-outlined-container-height:auto] [--mat-button-outlined-icon-spacing:4px] [--mat-button-outlined-label-text-size:0.75rem]"
+          [attr.aria-pressed]="isCompleted()"
+          [attr.aria-label]="(isCompleted() ? 'Mark as not done: ' : 'Mark as done: ') + poc.title"
+          (click)="toggleCompleted()"
+        >
+          <mat-icon class="size-4.5! text-lg! leading-none!">{{
+            isCompleted() ? 'check_circle' : 'radio_button_unchecked'
+          }}</mat-icon>
+          {{ isCompleted() ? 'Done' : 'Mark as done' }}
+        </button>
+      </div>
+
+      <h1 class="m-0 line-clamp-2 text-xl leading-snug font-semibold sm:text-2xl">
+        {{ poc.title }}
+      </h1>
+
+      <!--
+        Repeated at the foot of the page on purpose, for the same reason as on the
+        question page: halfway down a long walkthrough the pair at the bottom is
+        off screen. Labelled differently from that copy because two navigation
+        landmarks sharing a name are announced as one ambiguous region.
+      -->
+      <app-question-nav
+        label="Previous and next proof of concept"
+        [previous]="previousLink()"
+        [next]="nextLink()"
+      />
+    </header>
 
     <p class="m-0 text-[0.95rem] leading-relaxed text-(--mat-sys-on-surface-variant)">
       {{ poc.summary }}
@@ -120,35 +156,12 @@
       </section>
     }
 
-    <nav
-      class="mt-2 flex items-center gap-3 border-t border-(--mat-sys-outline-variant) pt-4"
-      aria-label="Proof of concept navigation"
-    >
-      @if (previous(); as prev) {
-        <!-- Plain link, not mat-button: see the note in question-detail.html. -->
-        <a
-          class="flex min-w-0 flex-1 items-center gap-1 overflow-hidden text-sm font-medium text-(--mat-sys-primary) no-underline hover:underline"
-          [routerLink]="['/poc', prev.id]"
-          [title]="prev.title"
-        >
-          <mat-icon class="shrink-0">arrow_back</mat-icon>
-          <span class="min-w-0 truncate">{{ prev.title }}</span>
-        </a>
-      } @else {
-        <span class="min-w-0 flex-1"></span>
-      }
-
-      @if (next(); as nextPoc) {
-        <a
-          class="flex min-w-0 flex-1 items-center justify-end gap-1 overflow-hidden text-sm font-medium text-(--mat-sys-primary) no-underline hover:underline"
-          [routerLink]="['/poc', nextPoc.id]"
-          [title]="nextPoc.title"
-        >
-          <span class="min-w-0 truncate">{{ nextPoc.title }}</span>
-          <mat-icon class="shrink-0">arrow_forward</mat-icon>
-        </a>
-      }
-    </nav>
+    <app-question-nav
+      class="mt-2 border-t border-(--mat-sys-outline-variant) pt-4"
+      label="Previous and next proof of concept, at the end of the content"
+      [previous]="previousLink()"
+      [next]="nextLink()"
+    />
   </section>
 } @else {
   <section class="mx-auto flex max-w-3xl flex-col items-start gap-4 p-4 sm:p-6">

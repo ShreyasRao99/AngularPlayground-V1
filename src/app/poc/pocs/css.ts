@@ -6,6 +6,7 @@ export const CSS_POCS: Poc[] = [
     category: 'css',
     title: 'The Pokédex card, box model and all',
     summary: 'Padding vs margin, block vs inline vs inline-block, centring without flex.',
+    durationMinutes: 45,
     prompt:
       'Style a Pokédex card from the raw sprite and stats the PokéAPI gives you. Do it with the box model, not with a framework, and be able to say what each declaration is doing.',
     endpoints: [
@@ -69,6 +70,7 @@ export const CSS_POCS: Poc[] = [
     category: 'css',
     title: 'Grid for the dex, Flexbox for the toolbar',
     summary: 'Choosing between Grid and Flexbox, and reading align-items vs justify-content.',
+    durationMinutes: 60,
     prompt:
       'Two layouts in one screen: a wrapping grid of Pokémon cards, and a horizontal toolbar of type filters with a search box at the end. Pick the right tool for each and stop reaching for the wrong one.',
     endpoints: [
@@ -125,6 +127,7 @@ export const CSS_POCS: Poc[] = [
     category: 'css',
     title: 'Pin the filter bar while the list scrolls',
     summary: 'relative, absolute, fixed and sticky, each demonstrated on the same element.',
+    durationMinutes: 30,
     prompt:
       'The type filter bar has to stay reachable while you scroll through 151 cards. Take one element and step it through all four position values, watching what each one actually anchors to.',
     endpoints: [{ path: '/type/{type}', note: 'Filter chip state that stays pinned' }],
@@ -174,6 +177,7 @@ export const CSS_POCS: Poc[] = [
     category: 'css',
     title: 'Light and dark themes with tokens, and no !important',
     summary: 'Custom properties as the single source of truth, specificity used on purpose.',
+    durationMinutes: 60,
     prompt:
       'Ship a light/dark theme for the dex. Every colour and radius comes from one place, switching the theme is one attribute, and you never reach for !important to win an argument with your own stylesheet.',
     endpoints: [{ path: '/type/{type}', note: 'Type colours you expose as themed tokens' }],
@@ -243,6 +247,7 @@ export const CSS_POCS: Poc[] = [
     category: 'css',
     title: 'One stylesheet, phone to desktop',
     summary: 'rem vs em vs px vs % vs vw, and mobile-first breakpoints.',
+    durationMinutes: 45,
     prompt:
       'Make the dex grid genuinely responsive without a device in your hand: relative units so it respects the user font size, and mobile-first breakpoints so small screens get the base styles for free.',
     endpoints: [{ path: '/pokemon?limit=&offset=', note: 'Same content at every breakpoint' }],

@@ -24,6 +24,13 @@ function hrefs(fixture: ComponentFixture<PocDetail>): (string | null)[] {
   return Array.from(root(fixture).querySelectorAll('a')).map((link) => link.getAttribute('href'));
 }
 
+/** Only the links inside the prev/next pair, ignoring the back link and covered questions. */
+function navHrefs(fixture: ComponentFixture<PocDetail>): (string | null)[] {
+  return Array.from(root(fixture).querySelectorAll('app-question-nav a')).map((link) =>
+    link.getAttribute('href'),
+  );
+}
+
 describe('PocDetail', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -32,6 +39,17 @@ describe('PocDetail', () => {
   it('should create', async () => {
     const fixture = await createDetail(POCS[0].id);
     expect(fixture.componentInstance).toBeTruthy();
+  });
+
+  it('should show how long the poc takes, next to an alarm clock', async () => {
+    const poc = POCS.find((item) => item.durationMinutes >= 60)!;
+    const fixture = await createDetail(poc.id);
+    const duration = root(fixture).querySelector('app-poc-duration');
+
+    expect(duration?.querySelector('.material-symbols-outlined')?.textContent?.trim()).toBe(
+      'timer',
+    );
+    expect(duration?.querySelector('[data-testid="duration"]')?.textContent?.trim()).toBe('1 hr');
   });
 
   it('should render the prompt and steps on the page itself', async () => {
@@ -68,10 +86,35 @@ describe('PocDetail', () => {
     expect(links).toContain(`/poc/${POCS[2].id}`);
   });
 
-  it('should not link past the end of the list', async () => {
-    const fixture = await createDetail(POCS[POCS.length - 1].id);
+  // The nav appears twice on the page, so an end of the list is two links, not
+  // one. Asserting the exact set rather than a count keeps the test honest if
+  // the pair is ever duplicated again: what matters is that every link points at
+  // a real neighbour and none points off the end.
+  it('should not link past the start of the list', async () => {
+    const first = await createDetail(POCS[0].id);
 
-    expect(hrefs(fixture).filter((href) => href?.startsWith('/poc/'))).toHaveLength(1);
+    expect(navHrefs(first)).toEqual([`/poc/${POCS[1].id}`, `/poc/${POCS[1].id}`]);
+  });
+
+  it('should not link past the end of the list', async () => {
+    const last = await createDetail(POCS[POCS.length - 1].id);
+
+    expect(navHrefs(last)).toEqual([
+      `/poc/${POCS[POCS.length - 2].id}`,
+      `/poc/${POCS[POCS.length - 2].id}`,
+    ]);
+  });
+
+  it('should label the two nav copies differently', async () => {
+    const fixture = await createDetail(POCS[1].id);
+    const labels = Array.from(root(fixture).querySelectorAll('app-question-nav nav')).map((nav) =>
+      nav.getAttribute('aria-label'),
+    );
+
+    // Two navigation landmarks given the same name are announced as one
+    // ambiguous region, so the copies have to differ.
+    expect(labels).toHaveLength(2);
+    expect(new Set(labels).size).toBe(2);
   });
 
   it('should toggle completion for the routed poc only', async () => {

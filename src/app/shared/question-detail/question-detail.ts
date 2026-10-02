@@ -1,10 +1,20 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  afterRenderEffect,
+  computed,
+  effect,
+  inject,
+  input,
+} from '@angular/core';
+import { ViewportScroller } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { Question } from '../../../types/questions-type';
 import { categoryLabel } from '../categories';
+import { NavTarget, QuestionNav } from '../question-nav/question-nav';
 import { QuestionBadges } from '../question-badges/question-badges';
 import { QuestionStore } from '../question-store';
 
@@ -14,7 +24,7 @@ import { QuestionStore } from '../question-store';
  * gesture returns to the index without any in-page expansion state.
  */
 @Component({
-  imports: [MatButtonModule, MatIconModule, RouterLink, QuestionBadges],
+  imports: [MatButtonModule, MatIconModule, RouterLink, QuestionBadges, QuestionNav],
   selector: 'app-question-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './question-detail.html',
@@ -22,6 +32,7 @@ import { QuestionStore } from '../question-store';
 export class QuestionDetail {
   private readonly store = inject(QuestionStore);
   private readonly title = inject(Title);
+  private readonly scroller = inject(ViewportScroller);
 
   // Bound from the route by withComponentInputBinding(), so it is whatever the
   // URL said rather than a trusted Category - an unknown segment has to render
@@ -55,6 +66,11 @@ export class QuestionDetail {
   protected readonly previous = computed(() => this.neighbour(-1));
   protected readonly next = computed(() => this.neighbour(1));
 
+  // The nav is rendered twice and only needs a route and a label, so the
+  // questions are mapped once here instead of in the template twice over.
+  protected readonly previousLink = computed(() => this.toTarget(this.previous()));
+  protected readonly nextLink = computed(() => this.toTarget(this.next()));
+
   constructor() {
     effect(() => {
       const question = this.question();
@@ -63,6 +79,16 @@ export class QuestionDetail {
           ? `${question.question} · ${categoryLabel(question.category)}`
           : 'Question not found',
       );
+    });
+
+    // Prev/next swaps the route param on this same component instance, so the
+    // router never scrolls and the next answer would open wherever the last one
+    // was left, with the sticky header covering the question it belongs to.
+    // After the render so the new content is already in the DOM and the scroll
+    // is not clamped against the old, shorter one.
+    afterRenderEffect(() => {
+      this.questionId();
+      this.scroller.scrollToPosition([0, 0]);
     });
   }
 
@@ -76,5 +102,11 @@ export class QuestionDetail {
     const target = position + offset;
 
     return position >= 0 && target >= 0 && target < siblings.length ? siblings[target] : undefined;
+  }
+
+  private toTarget(question: Question | undefined): NavTarget | undefined {
+    return question
+      ? { link: ['/', question.category, question.id], label: question.question }
+      : undefined;
   }
 }

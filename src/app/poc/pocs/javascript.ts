@@ -6,6 +6,7 @@ export const JAVASCRIPT_POCS: Poc[] = [
     category: 'javascript',
     title: 'A memoised Pokémon fetcher',
     summary: 'Closures, hoisting and why let/const are not just style.',
+    durationMinutes: 45,
     prompt:
       'Build a fetch wrapper that never asks the PokéAPI for the same Pokémon twice. The cache has to live somewhere, and the interesting part is which language feature gives you that.',
     endpoints: [{ path: '/pokemon/{name or id}', note: 'The call being cached' }],
@@ -74,6 +75,7 @@ function createPokemonFetcher() {
     category: 'javascript',
     title: 'Reduce 151 Pokémon into real statistics',
     summary: 'map/filter/reduce/forEach, ES6+ syntax, and the coercion traps in between.',
+    durationMinutes: 60,
     prompt:
       'Pull a full page of Pokémon and produce a summary a designer asked for. You will use every array method at least once, and you will hit at least one coercion bug on the way.',
     endpoints: [
@@ -145,6 +147,7 @@ const lightest = details.reduce(
     category: 'javascript',
     title: 'A species registry with Map, Set and a prototype chain',
     summary: 'The right collection, a real prototype chain, and freezing what must not change.',
+    durationMinutes: 90,
     prompt:
       'Build a registry that the dex app can query: every Pokémon it has seen, grouped by type, with the exact detail payload behind each one. It will be handed to code you do not control, so part of it must be immutable.',
     endpoints: [
@@ -237,6 +240,7 @@ uiState.set(pokemon, { expanded: false });`,
     category: 'javascript',
     title: 'A typed query builder for the dex API',
     summary: 'Spread vs rest, Object.assign vs spread, and null vs undefined.',
+    durationMinutes: 90,
     prompt:
       'The dex API takes filters as query parameters. Build a small builder that takes a partial filter object, drops the empty values and produces a clean URL string you can hand to fetch.',
     endpoints: [
@@ -297,6 +301,7 @@ console.log(buildDexUrl('pokemon', { limit: 0, type: 'fire' }));`,
     category: 'javascript',
     title: 'One click handler for a 151-card grid',
     summary: 'Capture, bubble, preventDefault, stopPropagation, and this in arrow functions.',
+    durationMinutes: 45,
     prompt:
       'Attach click handling to a grid that renders a variable number of Pokédex cards. Attaching 151 listeners is the wrong answer, and the reason why is the event path.',
     endpoints: [{ path: '/pokemon?limit=151', note: 'How many cards you are handling' }],
@@ -359,6 +364,7 @@ link.addEventListener('click', (event) => {
     category: 'javascript',
     title: 'Split the dex into ES modules and load the detail view on demand',
     summary: 'import/export, dynamic import(), and what actually runs when.',
+    durationMinutes: 60,
     prompt:
       'Start from one 900-line dex file and end up with the initial load carrying only what the grid needs. The detail view should arrive as a separate file the first time it is used.',
     endpoints: [
