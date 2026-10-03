@@ -8,6 +8,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { Category, Difficulty } from '../../../types/questions-type';
 import { QuestionBadges } from '../question-badges/question-badges';
+import { QuestionNotes } from '../question-notes/question-notes';
 import { QuestionStore } from '../question-store';
 
 type ReadFilter = 'all' | 'unread' | 'read';
@@ -27,6 +28,7 @@ interface DifficultyOption {
     MatTooltipModule,
     RouterLink,
     QuestionBadges,
+    QuestionNotes,
   ],
   selector: 'app-question-list',
   changeDetection: ChangeDetectionStrategy.OnPush,

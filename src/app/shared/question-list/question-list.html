@@ -75,6 +75,15 @@
         >
           <app-question-badges [difficulty]="faq.difficulty" [scenarioBased]="faq.scenarioBased" />
 
+          <!--
+            Notes are written from the index too, because the thing you want to
+            write down is often the question you are looking at rather than the
+            one you are reading. It sits outside the row link like the read
+            toggle, and raises itself above the link's full-row overlay so the tap
+            lands on the icon.
+          -->
+          <app-question-notes [questionId]="faq.id" [question]="faq.question" />
+
           <button
             mat-icon-button
             type="button"
