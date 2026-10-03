@@ -104,5 +104,25 @@ export const QuestionStore = signalStore(
         ),
       }));
     },
+
+    /**
+     * Marks exactly the questions in `ids` as read and unreads the rest, which
+     * is what restoring a backup needs - the toggle above can only ever flip one
+     * question, so it cannot express "read state as of that file".
+     *
+     * An id that no longer matches a question is dropped by the same mapping
+     * that drops it from the seeded list, so a backup exported from an older
+     * build cannot resurrect a question that has since been removed.
+     */
+    replaceReadFlags(ids: readonly string[]): void {
+      const read = new Set(ids);
+
+      patchState(store, (state) => ({
+        questionData: state.questionData.map((question) => ({
+          ...question,
+          isRead: read.has(question.id),
+        })),
+      }));
+    },
   })),
 );

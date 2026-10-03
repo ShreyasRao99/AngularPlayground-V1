@@ -11,13 +11,21 @@
     <div class="align-center justify-center">Angular Playground V1</div>
   </div>
 
-  <div class="hidden md:flex text-lg gap-5">
-    <a
-      class="text-white no-underline hover:underline"
-      [href]="feedbackMailto"
-      (click)="openFeedback($event)"
-      >Suggestion/Feedback</a
-    >
+  <div class="flex items-center">
+    <!--
+      Outside the nav below rather than inside it: those links are hidden on a
+      phone, but backup is two icons wide and worth having on every screen size.
+    -->
+    <app-backup-actions />
+
+    <div class="hidden md:flex text-lg gap-5">
+      <a
+        class="text-white no-underline hover:underline"
+        [href]="feedbackMailto"
+        (click)="openFeedback($event)"
+        >Suggestion/Feedback</a
+      >
+    </div>
   </div>
 </mat-toolbar>
 <mat-menu #menu="matMenu">
