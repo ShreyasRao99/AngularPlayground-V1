@@ -3,12 +3,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
+import { BackupActions } from '../shared/backup/backup-actions';
 
 const FEEDBACK_RECIPIENT = 'shreyasrao20000@gmail.com';
 const FEEDBACK_SUBJECT = 'Angular Playground V1 - Suggestion/Feedback';
 
 @Component({
-  imports: [MatToolbarModule, MatButtonModule, MatIconModule, MatMenuModule],
+  imports: [MatToolbarModule, MatButtonModule, MatIconModule, MatMenuModule, BackupActions],
   selector: 'app-header',
   styleUrl: './header.css',
   templateUrl: './header.html',

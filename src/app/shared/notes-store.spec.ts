@@ -94,4 +94,28 @@ describe('NotesStore', () => {
 
     expect(store.notes()).toEqual({ 'html-1': 'kept' });
   });
+
+  it('should swap the whole map in when told to replace it', () => {
+    localStorage.setItem('q-notes', JSON.stringify({ 'html-1': 'first', 'html-2': 'second' }));
+    const store = createStore();
+
+    // restoring a backup replaces rather than merges, so a note the file does not
+    // mention has to go rather than sit in beside the ones it does
+    store.replaceAll({ 'css-3': 'from the file' });
+    TestBed.tick();
+
+    expect(store.notes()).toEqual({ 'css-3': 'from the file' });
+    expect(stored()).toEqual({ 'css-3': 'from the file' });
+  });
+
+  it('should clear every note when replaced with nothing', () => {
+    localStorage.setItem('q-notes', JSON.stringify({ 'html-1': 'a note' }));
+    const store = createStore();
+
+    store.replaceAll({});
+    TestBed.tick();
+
+    expect(store.notes()).toEqual({});
+    expect(stored()).toEqual({});
+  });
 });

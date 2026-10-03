@@ -44,5 +44,15 @@ export const PocStore = signalStore(
           : [...state.completed, id],
       }));
     },
+
+    /**
+     * Replaces the whole list in one patch, for the same reason as
+     * `replaceAll` on the notes: a restored backup is the truth, not something
+     * to merge into what is here. Deduped because a hand-edited file can
+     * repeat an id, and the list is rendered by membership.
+     */
+    replaceCompleted(ids: readonly string[]): void {
+      patchState(store, () => ({ completed: [...new Set(ids)] }));
+    },
   })),
 );

@@ -84,5 +84,18 @@ export const NotesStore = signalStore(
         return { notes: { ...state.notes, [id]: trimmed } };
       });
     },
+
+    /**
+     * Swaps the whole map in one patch, which is what restoring a backup needs:
+     * the file is the truth, so notes it does not mention have to go rather than
+     * merge in beside what is already here.
+     *
+     * Takes the map as already validated - trimmed, and with nothing empty left
+     * in it - because the only caller is the backup reader, which filters at the
+     * point it parses an untrusted file.
+     */
+    replaceAll(notes: Record<string, string>): void {
+      patchState(store, () => ({ notes }));
+    },
   })),
 );
