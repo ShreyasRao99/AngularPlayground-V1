@@ -35,6 +35,11 @@ function selectDifficulties(fixture: ComponentFixture<QuestionList>, value: stri
   fixture.detectChanges();
 }
 
+function notesButtons(fixture: ComponentFixture<QuestionList>): HTMLButtonElement[] {
+  const root = fixture.nativeElement as HTMLElement;
+  return Array.from(root.querySelectorAll<HTMLButtonElement>('app-question-notes button'));
+}
+
 function chipOptions(fixture: ComponentFixture<QuestionList>): HTMLButtonElement[] {
   const root = fixture.nativeElement as HTMLElement;
   return Array.from(
@@ -45,6 +50,13 @@ function chipOptions(fixture: ComponentFixture<QuestionList>): HTMLButtonElement
 describe('QuestionList', () => {
   beforeEach(() => {
     localStorage.clear();
+  });
+
+  afterEach(() => {
+    // the overlay container outlives the dialog's exit animation
+    document.querySelectorAll('app-notes-dialog, .cdk-overlay-container').forEach((node) => {
+      node.remove();
+    });
   });
 
   it('should create', async () => {
@@ -265,6 +277,55 @@ describe('QuestionList', () => {
     expect(first.id).toBe('performance-1');
     expect(first.isRead).toBe(true);
     expect(first.difficulty).toBe('advanced');
+  });
+
+  it("should offer notes on every row, for that row's own question", async () => {
+    const fixture = await createList();
+
+    const labels = notesButtons(fixture).map((button) => button.getAttribute('aria-label'));
+    const questions = rows(fixture).map((link) => link.textContent?.trim());
+
+    // the icon is the same everywhere, so only the label says which row it opens
+    expect(labels.length).toBe(questions.length);
+    questions.forEach((question, index) => {
+      expect(labels[index]).toContain(question);
+    });
+  });
+
+  it('should keep the notes icon outside the row link, above its overlay', async () => {
+    const fixture = await createList();
+    const row = rows(fixture)[0];
+    const notes = (fixture.nativeElement as HTMLElement).querySelector(
+      'app-question-notes button',
+    ) as HTMLButtonElement;
+
+    // nesting it inside the anchor would make the tap navigate as well as open
+    expect(row.contains(notes)).toBe(false);
+    // and the row link is stretched over the whole row, so it has to win on paint
+    expect(notes.classList).toContain('z-10');
+  });
+
+  it("should save a note written from a row against that row's question", async () => {
+    const fixture = await createList();
+    const second = fixture.componentInstance['faqs']()[1];
+
+    notesButtons(fixture)[1].click();
+    await fixture.whenStable();
+
+    const dialog = document.querySelector<HTMLElement>('app-notes-dialog');
+    const field = dialog?.querySelector<HTMLTextAreaElement>('[data-testid="notes-input"]');
+    field!.value = 'Worth another pass before the next round.';
+    field!.dispatchEvent(new Event('input'));
+
+    Array.from(dialog!.querySelectorAll<HTMLButtonElement>('button'))
+      .find((button) => button.textContent?.trim() === 'Save')!
+      .click();
+    await fixture.whenStable();
+
+    // the id has to travel from the row, or every row writes over the same note
+    expect(JSON.parse(localStorage.getItem('q-notes') ?? '{}')).toEqual({
+      [second.id]: 'Worth another pass before the next round.',
+    });
   });
 
   it('should filter when difficulty chips are clicked', async () => {

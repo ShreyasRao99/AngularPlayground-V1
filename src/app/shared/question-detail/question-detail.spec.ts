@@ -133,6 +133,18 @@ describe('QuestionDetail', () => {
     ]);
   });
 
+  it('should offer notes for the routed question, in the sticky header', async () => {
+    const question = authored('performance-1');
+    const fixture = await createDetail('performance', question.id);
+
+    // a note is written after reading the answer, which is when the sticky header
+    // is still the thing on screen
+    const header = root(fixture).querySelector('header');
+    const notes = header?.querySelector<HTMLButtonElement>('app-question-notes button');
+
+    expect(notes?.getAttribute('aria-label')).toBe(`Add notes for: ${question.question}`);
+  });
+
   it('should show a not found state for an unknown id', async () => {
     const fixture = await createDetail('performance', 'performance-999');
 

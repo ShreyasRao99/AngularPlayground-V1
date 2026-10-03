@@ -16,6 +16,7 @@ import { Question } from '../../../types/questions-type';
 import { categoryLabel } from '../categories';
 import { NavTarget, QuestionNav } from '../question-nav/question-nav';
 import { QuestionBadges } from '../question-badges/question-badges';
+import { QuestionNotes } from '../question-notes/question-notes';
 import { QuestionStore } from '../question-store';
 
 /**
@@ -24,7 +25,7 @@ import { QuestionStore } from '../question-store';
  * gesture returns to the index without any in-page expansion state.
  */
 @Component({
-  imports: [MatButtonModule, MatIconModule, RouterLink, QuestionBadges, QuestionNav],
+  imports: [MatButtonModule, MatIconModule, RouterLink, QuestionBadges, QuestionNav, QuestionNotes],
   selector: 'app-question-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './question-detail.html',
