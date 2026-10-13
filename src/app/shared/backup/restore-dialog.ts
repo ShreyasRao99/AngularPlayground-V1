@@ -29,14 +29,14 @@ export interface RestoreDialogData {
     <mat-dialog-content>
       <p class="m-0 mb-3">
         The backup{{ takenOn() ? ' taken ' + takenOn() : '' }} holds
-        {{ plural(backup.readQuestions.length, 'read question') }},
+        {{ plural(backup.markedQuestions.length, 'marked question') }},
         {{ plural(backup.completedPocs.length, 'completed POC') }} and
         {{ plural(noteCount(), 'note') }}.
       </p>
 
       <p class="m-0 text-(--mat-sys-on-surface-variant)">
         Restoring swaps all of it for what the file contains, so the
-        {{ plural(current.readQuestions, 'read question') }},
+        {{ plural(current.markedQuestions, 'marked question') }},
         {{ plural(current.completedPocs, 'completed POC') }} and
         {{ plural(current.notes, 'note') }} saved here now are discarded. Download a fresh backup
         first if you want to keep them.

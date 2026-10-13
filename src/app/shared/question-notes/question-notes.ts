@@ -7,7 +7,7 @@ import { NotesDialog } from './notes-dialog';
 
 /**
  * The notes icon, and the only place the modal is opened from. It sits in the
- * sticky header of a question page next to "Mark as read", and again on the
+ * sticky header of a question page next to "Mark for review", and again on the
  * question's row in the index, so a note can be written either while reading the
  * answer or straight from the list of questions.
  */

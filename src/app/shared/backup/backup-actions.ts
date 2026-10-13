@@ -106,11 +106,11 @@ export class BackupActions {
   // Em dashes as characters, not as `&mdash;`: these are bound as properties and
   // interpolated as text, so neither would decode the entity.
   protected readonly downloadTip =
-    'Save your notes, read questions and finished POCs to this device as a JSON file';
+    'Save your notes, questions marked for review and finished POCs to this device as a JSON file';
 
   protected readonly uploadTip =
     'Restore from a JSON file you downloaded before — it replaces your notes, ' +
-    'read questions and finished POCs in this browser';
+    'questions marked for review and finished POCs in this browser';
 
   /**
    * The services here are fetched from the injector after their module has been

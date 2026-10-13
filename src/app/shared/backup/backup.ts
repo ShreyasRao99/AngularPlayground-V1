@@ -11,18 +11,22 @@ import { QuestionStore } from '../question-store';
 export const BACKUP_APP_ID = 'angular-playground-v1';
 
 /**
- * Bumped only when the shape below changes in a way an older build cannot read.
- * A build refuses a file stamped higher than this rather than guessing, because
- * silently dropping a renamed field would drop the user's notes with it.
+ * Bumped when the shape below changes in a way an older build cannot read. A
+ * build refuses a file stamped higher than this rather than guessing, because
+ * silently dropping a renamed field would drop the user's data with it.
+ *
+ * v2 renamed `readQuestions` to `markedQuestions` when "read" became "mark for
+ * review". A v1 build cannot see the new key, so it has to refuse a v2 file
+ * rather than read it as an empty review list.
  */
-export const BACKUP_VERSION = 1;
+export const BACKUP_VERSION = 2;
 
 export interface BackupFile {
   app: typeof BACKUP_APP_ID;
   version: number;
   /** ISO stamp of when the file was written, shown back to the user on restore. */
   exportedAt: string;
-  readQuestions: string[];
+  markedQuestions: string[];
   completedPocs: string[];
   notes: Record<string, string>;
 }
@@ -34,6 +38,8 @@ type RawBackup = {
   app?: unknown;
   version?: unknown;
   exportedAt?: unknown;
+  markedQuestions?: unknown;
+  /** The v1 name, still read so an older backup can be restored. */
   readQuestions?: unknown;
   completedPocs?: unknown;
   notes?: unknown;
@@ -87,14 +93,14 @@ export function plural(count: number, noun: string): string {
 }
 
 /**
- * "3 notes, 12 read questions" - what the user is told they just saved or
+ * "3 notes, 12 marked questions" - what the user is told they just saved or
  * restored. Whatever the backup does not hold is left out rather than reported as
  * a zero, so an ordinary backup does not open with "0 notes".
  */
 export function describeBackup(backup: BackupFile): string {
   const counts: [number, string][] = [
     [Object.keys(backup.notes).length, 'note'],
-    [backup.readQuestions.length, 'read question'],
+    [backup.markedQuestions.length, 'marked question'],
     [backup.completedPocs.length, 'completed POC'],
   ];
 
@@ -106,7 +112,7 @@ export function describeBackup(backup: BackupFile): string {
 
 /** What the user currently has saved, for the restore confirmation to quote. */
 export interface BackupSummary {
-  readQuestions: number;
+  markedQuestions: number;
   completedPocs: number;
   notes: number;
 }
@@ -143,7 +149,12 @@ export function parseBackup(raw: string): BackupFile {
     );
   }
 
-  if (!('readQuestions' in file) && !('completedPocs' in file) && !('notes' in file)) {
+  if (
+    !('markedQuestions' in file) &&
+    !('readQuestions' in file) &&
+    !('completedPocs' in file) &&
+    !('notes' in file)
+  ) {
     throw new BackupError('That JSON file is not an Angular Playground backup.');
   }
 
@@ -152,7 +163,9 @@ export function parseBackup(raw: string): BackupFile {
     version: BACKUP_VERSION,
     // Absent or nonsense: the dialog falls back rather than showing "Invalid Date".
     exportedAt: typeof file.exportedAt === 'string' ? file.exportedAt : '',
-    readQuestions: readIds(file.readQuestions),
+    // `readQuestions` is the v1 name; reading it lets a backup taken before the
+    // rename still restore.
+    markedQuestions: readIds(file.markedQuestions ?? file.readQuestions),
     completedPocs: readIds(file.completedPocs),
     notes: readNotes(file.notes),
   };
@@ -160,9 +173,9 @@ export function parseBackup(raw: string): BackupFile {
 
 /**
  * Everything the user has that is theirs alone, as one file: notes, which
- * questions they have read, and which POCs they finished. The question and poc
- * content itself is not in here - that ships with the app - so a backup stays
- * small and never goes stale against a newer questions.json.
+ * questions they have marked for review, and which POCs they finished. The
+ * question and poc content itself is not in here - that ships with the app - so a
+ * backup stays small and never goes stale against a newer questions.json.
  */
 @Injectable({ providedIn: 'root' })
 export class Backup {
@@ -175,11 +188,12 @@ export class Backup {
       app: BACKUP_APP_ID,
       version: BACKUP_VERSION,
       exportedAt: new Date().toISOString(),
-      // Only the read ones are kept, matching what the store persists: an unread
-      // question is the default, so listing all of them would balloon the file.
-      readQuestions: this.questions
+      // Only the marked ones are kept, matching what the store persists: an
+      // unmarked question is the default, so listing all of them would balloon
+      // the file.
+      markedQuestions: this.questions
         .questionData()
-        .filter((question) => question.isRead)
+        .filter((question) => question.isMarked)
         .map((question) => question.id),
       completedPocs: [...this.pocs.completed()],
       notes: { ...this.notes.notes() },
@@ -189,7 +203,7 @@ export class Backup {
   /** What the user currently has saved, for the restore confirmation to quote. */
   summary(): BackupSummary {
     return {
-      readQuestions: this.questions.questionData().filter((question) => question.isRead).length,
+      markedQuestions: this.questions.questionData().filter((question) => question.isMarked).length,
       completedPocs: this.pocs.completed().length,
       notes: Object.keys(this.notes.notes()).length,
     };
@@ -238,7 +252,7 @@ export class Backup {
    */
   restore(backup: BackupFile): void {
     this.notes.replaceAll(backup.notes);
-    this.questions.replaceReadFlags(backup.readQuestions);
+    this.questions.replaceMarkedFlags(backup.markedQuestions);
     this.pocs.replaceCompleted(backup.completedPocs);
   }
 }

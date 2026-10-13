@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ViewportScroller } from '@angular/common';
 import { provideRouter } from '@angular/router';
 import { Category, Question } from '../../../types/questions-type';
 import questionsData from '../questions.json';
@@ -55,6 +56,34 @@ describe('QuestionDetail', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
+  // Prev/next only changes the route parameter, so the component is reused and
+  // the router never scrolls. The detail view resets the offset itself, and this
+  // pins that it does so again once the id changes.
+  it('should scroll back to the top when the question changes', async () => {
+    const calls: [number, number][] = [];
+    await TestBed.configureTestingModule({
+      imports: [QuestionDetail],
+      providers: [
+        provideRouter([]),
+        {
+          provide: ViewportScroller,
+          useValue: { scrollToPosition: (position: [number, number]) => calls.push(position) },
+        },
+      ],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(QuestionDetail);
+    fixture.componentRef.setInput('category', 'performance');
+    fixture.componentRef.setInput('questionId', 'performance-1');
+    await fixture.whenStable();
+    calls.length = 0;
+
+    fixture.componentRef.setInput('questionId', 'performance-2');
+    await fixture.whenStable();
+
+    expect(calls).toContainEqual([0, 0]);
+  });
+
   it('should render the authored question and answer, not a teaser', async () => {
     const question = authored('performance-1');
     const fixture = await createDetail('performance', question.id);
@@ -63,6 +92,14 @@ describe('QuestionDetail', () => {
     expect(root(fixture).querySelector('[data-testid="answer"]')?.textContent?.trim()).toBe(
       question.answer,
     );
+  });
+
+  it('should show the whole question, never clamped behind an ellipsis', async () => {
+    const fixture = await createDetail('performance', 'performance-1');
+    const heading = root(fixture).querySelector('h1')!;
+
+    // a clamp hid the rest of a long question on a phone with no way to expand it
+    expect(heading.className).not.toContain('line-clamp');
   });
 
   it('should render every code example without expanding anything', async () => {
@@ -141,7 +178,7 @@ describe('QuestionDetail', () => {
     expect(navHrefs(fixture, 1)).toEqual(['/misc/misc-6']);
   });
 
-  it('should toggle read state for the routed question only', async () => {
+  it('should toggle review state for the routed question only', async () => {
     const fixture = await createDetail('performance', 'performance-2');
 
     root(fixture).querySelector<HTMLButtonElement>('button[aria-pressed]')?.click();
@@ -150,8 +187,8 @@ describe('QuestionDetail', () => {
     expect(root(fixture).querySelector('button[aria-pressed]')?.getAttribute('aria-pressed')).toBe(
       'true',
     );
-    expect(JSON.parse(localStorage.getItem('q-read-flags') ?? '[]')).toEqual([
-      { id: 'performance-2', isRead: true },
+    expect(JSON.parse(localStorage.getItem('q-marked-flags') ?? '[]')).toEqual([
+      { id: 'performance-2', isMarked: true },
     ]);
   });
 
