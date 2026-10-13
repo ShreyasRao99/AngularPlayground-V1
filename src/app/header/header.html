@@ -1,5 +1,5 @@
 <mat-toolbar class="justify-between align-middle">
-  <div class="flex items-center">
+  <div class="flex min-w-0 items-center">
     <button
       mat-icon-button
       aria-label="Toggle navigation menu"
@@ -8,10 +8,10 @@
     >
       <mat-icon class="text-white!">menu</mat-icon>
     </button>
-    <div class="align-center justify-center">Angular Playground V1</div>
+    <div class="min-w-0 truncate">Angular Playground V1</div>
   </div>
 
-  <div class="flex items-center">
+  <div class="flex shrink-0 items-center gap-2">
     <!--
       Outside the nav below rather than inside it: those links are hidden on a
       phone, but backup is two icons wide and worth having on every screen size.
@@ -29,9 +29,5 @@
   </div>
 </mat-toolbar>
 <mat-menu #menu="matMenu">
-  <button
-    mat-menu-item
-    (click)="openFeedback($event)"
-    >Suggestion/Feedback</button
-  >
+  <button mat-menu-item (click)="openFeedback($event)">Suggestion/Feedback</button>
 </mat-menu>

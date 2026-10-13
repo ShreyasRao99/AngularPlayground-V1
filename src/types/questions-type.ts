@@ -21,7 +21,7 @@ export interface Question {
   category: Category;
   difficulty: Difficulty;
   scenarioBased: boolean;
-  isRead: boolean;
+  isMarked: boolean;
   isNew?: boolean;
   question: string;
   answer: string;

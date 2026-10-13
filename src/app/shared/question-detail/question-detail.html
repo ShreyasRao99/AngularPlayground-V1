@@ -6,10 +6,11 @@
   -->
   <section class="mx-auto flex max-w-4xl flex-col gap-4 p-4 sm:p-6">
     <!--
-      Sticky so "which question am I on, is it read, and how do I get back" stays
+      Sticky so "which question am I on, is it marked for review, and how do I get back" stays
       on screen while the answer scrolls. The negative margins let the backdrop
       run to the edge of the column while the text stays on the same line as the
-      body, and line-clamp-2 stops a long question from eating the viewport.
+      body. The question itself is never clamped: it is the one thing a reader has
+      to be able to read in full, and on a phone an ellipsis left no way to.
     -->
     <header
       class="sticky top-0 z-10 -mx-4 flex flex-col gap-2 border-b border-(--mat-sys-outline-variant) bg-(--mat-sys-surface)/90 px-4 pt-4 pb-3 backdrop-blur sm:-mx-6 sm:px-6"
@@ -23,49 +24,63 @@
         All {{ categoryName() }} questions
       </a>
 
-      <div class="flex flex-wrap items-center gap-2">
-        <span class="text-sm tabular-nums text-(--mat-sys-on-surface-variant)"
+      <!--
+        One line on every width: the number and the actions never wrap (shrink-0),
+        and the badges are the only thing that gives, clipping from the right when
+        even they cannot fit. Without this the notes and bookmark dropped onto
+        their own line on a phone.
+      -->
+      <div class="flex items-center gap-2">
+        <span
+          class="shrink-0 text-sm tabular-nums whitespace-nowrap text-(--mat-sys-on-surface-variant)"
           >Question {{ position() + 1 }} of {{ total() }}</span
         >
         <app-question-badges
+          class="min-w-0 overflow-hidden"
           [difficulty]="faq.difficulty"
           [scenarioBased]="faq.scenarioBased"
           [isNew]="!!faq.isNew"
         />
 
         <!--
-          In the sticky header rather than the foot of the answer: it is written
-          once the answer has been read, which is exactly when the header is still
-          the most recent thing on screen. The `ml-auto` stays on the read button
-          below, so the two actions sit together against the trailing edge instead
-          of the free space being split between two auto margins.
+          The two actions share the trailing edge: ml-auto pushes the group right,
+          and the gap keeps the notes icon and the review bookmark from touching.
+          On a phone the icon button box shrinks too: an icon button is a 24px
+          glyph in a 40px box, so its own 8px of padding reads as a big gap
+          between two of them. The 48px touch target is an invisible overlay, so
+          it stays tappable either way. The notes button is first so the bookmark,
+          the more frequent tap, stays on the outside.
         -->
-        <app-question-notes [questionId]="faq.id" [question]="faq.question" />
-
-        <!--
-          Sized at 80% of Material's default, but the height token is dropped so
-          the padding and the content set it: at a fixed 28px height the icon
-          ended up hard against the border. The label size and the icon gap are
-          Material's own tokens; the padding is a utility because Material only
-          exposes a horizontal padding token, and the `!` goes at the end: v4
-          dropped the `!foo` prefix form, which silently compiles to nothing.
-        -->
-        <button
-          mat-stroked-button
-          type="button"
-          class="ml-auto px-3.75! py-1.25! [--mat-button-outlined-container-height:auto] [--mat-button-outlined-icon-spacing:4px] [--mat-button-outlined-label-text-size:0.75rem]"
-          [attr.aria-pressed]="faq.isRead"
-          [attr.aria-label]="(faq.isRead ? 'Mark as unread: ' : 'Mark as read: ') + faq.question"
-          (click)="toggleRead()"
+        <div
+          class="ml-auto flex shrink-0 items-center gap-1 [--mat-icon-button-state-layer-size:32px] sm:gap-3 sm:[--mat-icon-button-state-layer-size:40px]"
         >
-          <mat-icon class="size-4.5! text-lg! leading-none!">{{
-            faq.isRead ? 'check_circle' : 'radio_button_unchecked'
-          }}</mat-icon>
-          {{ faq.isRead ? 'Read' : 'Mark as read' }}
-        </button>
+          <app-question-notes [questionId]="faq.id" [question]="faq.question" />
+
+          <!--
+            Just the bookmark: the glyph says "mark for review" on its own, and the
+            tooltip and aria-label spell out the state for anyone who wants it.
+          -->
+          <button
+            mat-icon-button
+            type="button"
+            [attr.aria-pressed]="faq.isMarked"
+            [attr.aria-label]="
+              (faq.isMarked ? 'Remove from review: ' : 'Mark for review: ') + faq.question
+            "
+            [matTooltip]="faq.isMarked ? 'Remove from review' : 'Mark for review'"
+            (click)="toggleMarked()"
+          >
+            <mat-icon
+              [class]="
+                faq.isMarked ? 'text-(--mat-sys-primary)' : 'text-(--mat-sys-on-surface-variant)'
+              "
+              >{{ faq.isMarked ? 'bookmark' : 'bookmark_border' }}</mat-icon
+            >
+          </button>
+        </div>
       </div>
 
-      <h1 class="m-0 line-clamp-2 text-xl leading-snug font-semibold sm:text-2xl">
+      <h1 class="m-0 text-xl leading-snug font-semibold sm:text-2xl">
         {{ faq.question }}
       </h1>
 
@@ -100,7 +115,15 @@
               [src]="src"
               [title]="example.title"
               loading="lazy"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allow="
+                accelerometer;
+                autoplay;
+                clipboard-write;
+                encrypted-media;
+                gyroscope;
+                picture-in-picture;
+                web-share;
+              "
               allowfullscreen
             ></iframe>
           }

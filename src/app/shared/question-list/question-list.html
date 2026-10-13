@@ -1,5 +1,17 @@
 <div class="mb-3 flex flex-col gap-3 px-4">
   <div class="flex flex-wrap items-center gap-x-4 gap-y-3">
+    <mat-button-toggle-group
+      class="marked-filter self-center [--mat-button-toggle-height:32px]"
+      hideSingleSelectionIndicator
+      aria-label="Filter by review status"
+      [value]="markedFilter()"
+      (change)="onMarkedFilterChange($event)"
+    >
+      <mat-button-toggle value="all">All</mat-button-toggle>
+      <mat-button-toggle value="marked">For review</mat-button-toggle>
+      <mat-button-toggle value="unmarked">Not marked</mat-button-toggle>
+    </mat-button-toggle-group>
+
     <mat-chip-listbox
       multiple
       aria-label="Filter by difficulty"
@@ -13,22 +25,6 @@
       }
     </mat-chip-listbox>
 
-    <mat-checkbox [checked]="scenarioFilter()" (change)="scenarioFilter.set($event.checked)">
-      Scenario based only
-    </mat-checkbox>
-
-    <mat-button-toggle-group
-      class="read-filter self-center [--mat-button-toggle-height:32px]"
-      hideSingleSelectionIndicator
-      aria-label="Filter by read status"
-      [value]="readFilter()"
-      (change)="onReadFilterChange($event)"
-    >
-      <mat-button-toggle value="all">All</mat-button-toggle>
-      <mat-button-toggle value="unread">Unread</mat-button-toggle>
-      <mat-button-toggle value="read">Read</mat-button-toggle>
-    </mat-button-toggle-group>
-
     @if (hasActiveFilters()) {
       <button mat-button type="button" (click)="clearFilters()">
         <mat-icon>filter_alt_off</mat-icon>
@@ -38,34 +34,35 @@
   </div>
 
   <p class="m-0 text-sm text-(--mat-sys-on-surface-variant)">
-    Showing {{ faqs().length }} of {{ categoryTotal() }} &middot; {{ readCount() }} read
+    Showing {{ faqs().length }} of {{ categoryTotal() }} &middot; {{ markedCount() }} for review
   </p>
 </div>
 
 @if (faqs().length) {
-  <ul
-    class="m-0 list-none border-t border-(--mat-sys-outline-variant) p-0"
-    aria-label="Questions"
-  >
+  <ul class="m-0 list-none border-t border-(--mat-sys-outline-variant) p-0" aria-label="Questions">
     @for (faq of faqs(); track faq.id) {
       <li
         class="relative flex flex-wrap items-start gap-x-3 gap-y-1 px-4 py-3 hover:bg-(--mat-sys-surface-container) has-focus-visible:outline-2 has-focus-visible:-outline-offset-2 has-focus-visible:outline-(--mat-sys-primary) sm:items-center"
       >
         <span
           class="w-6 shrink-0 pt-0.5 text-sm tabular-nums sm:pt-0"
-          [class]="!faq.isRead ? 'text-(--mat-sys-primary)' : 'text-(--mat-sys-on-surface-variant)'"
+          [class]="
+            faq.isMarked ? 'text-(--mat-sys-primary)' : 'text-(--mat-sys-on-surface-variant)'
+          "
           >{{ $index + 1 }}.</span
         >
 
         <!--
           The link stretches over the whole row (`after:inset-0`) so the tap
           target is the full width on a phone, not just the question text. The
-          read toggle is a sibling rather than a child, so it stays a real
+          review toggle is a sibling rather than a child, so it stays a real
           button instead of a control nested inside an anchor.
         -->
         <a
           class="min-w-0 flex-1 text-[0.95rem] leading-snug font-medium no-underline after:absolute after:inset-0 after:content-[''] hover:text-(--mat-sys-primary)"
-          [class]="faq.isRead ? 'text-(--mat-sys-on-surface-variant)' : 'text-(--mat-sys-on-surface)'"
+          [class]="
+            faq.isMarked ? 'text-(--mat-sys-on-surface)' : 'text-(--mat-sys-on-surface-variant)'
+          "
           [routerLink]="['/', faq.category, faq.id]"
           >{{ faq.question }}</a
         >
@@ -82,7 +79,7 @@
           <!--
             Notes are written from the index too, because the thing you want to
             write down is often the question you are looking at rather than the
-            one you are reading. It sits outside the row link like the read
+            one you are reading. It sits outside the row link like the review
             toggle, and raises itself above the link's full-row overlay so the tap
             lands on the icon.
           -->
@@ -92,14 +89,19 @@
             mat-icon-button
             type="button"
             class="relative z-10 shrink-0"
-            [attr.aria-pressed]="faq.isRead"
-            [attr.aria-label]="(faq.isRead ? 'Mark as unread: ' : 'Mark as read: ') + faq.question"
-            [matTooltip]="faq.isRead ? 'Mark as unread' : 'Mark as read'"
-            (click)="toggleRead(faq.id)"
+            [attr.aria-pressed]="faq.isMarked"
+            [attr.aria-label]="
+              (faq.isMarked ? 'Remove from review: ' : 'Mark for review: ') + faq.question
+            "
+            [matTooltip]="faq.isMarked ? 'Remove from review' : 'Mark for review'"
+            (click)="toggleMarked(faq.id)"
           >
-            <mat-icon [class]="!faq.isRead ? 'text-(--mat-sys-primary)' : ''">{{
-              faq.isRead ? 'check_circle' : 'radio_button_unchecked'
-            }}</mat-icon>
+            <mat-icon
+              [class]="
+                faq.isMarked ? 'text-(--mat-sys-primary)' : 'text-(--mat-sys-on-surface-variant)'
+              "
+              >{{ faq.isMarked ? 'bookmark' : 'bookmark_border' }}</mat-icon
+            >
           </button>
         </div>
       </li>

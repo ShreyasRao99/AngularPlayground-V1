@@ -5,7 +5,7 @@ import { QuestionStore } from '../question-store';
 import { BACKUP_APP_ID, BACKUP_VERSION, Backup, BackupError, parseBackup } from './backup';
 
 const NOTES_KEY = 'q-notes';
-const READ_KEY = 'q-read-flags';
+const MARKED_KEY = 'q-marked-flags';
 const COMPLETED_KEY = 'poc-completed';
 
 /** A file as `build` would have written it, for the parser to be fed. */
@@ -14,7 +14,7 @@ function file(overrides: Record<string, unknown> = {}): string {
     app: BACKUP_APP_ID,
     version: BACKUP_VERSION,
     exportedAt: '2026-10-03T09:00:00.000Z',
-    readQuestions: ['html-1'],
+    markedQuestions: ['html-1'],
     completedPocs: ['signals-1'],
     notes: { 'html-1': 'remember this' },
     ...overrides,
@@ -25,7 +25,7 @@ describe('parseBackup', () => {
   it('should read back a file this app wrote', () => {
     const parsed = parseBackup(file());
 
-    expect(parsed.readQuestions).toEqual(['html-1']);
+    expect(parsed.markedQuestions).toEqual(['html-1']);
     expect(parsed.completedPocs).toEqual(['signals-1']);
     expect(parsed.notes).toEqual({ 'html-1': 'remember this' });
     expect(parsed.exportedAt).toBe('2026-10-03T09:00:00.000Z');
@@ -54,21 +54,25 @@ describe('parseBackup', () => {
   });
 
   it('should accept a backup stamped with an older version', () => {
-    // older files only ever had fewer keys, and a missing key already reads as
-    // empty, so there is nothing to migrate
-    expect(parseBackup(file({ version: BACKUP_VERSION - 1 })).readQuestions).toEqual(['html-1']);
+    // a v1 file has the old `readQuestions` name, which the parser still reads so
+    // a backup taken before the rename can be restored
+    const parsed = parseBackup(
+      file({ version: 1, readQuestions: ['html-1'], markedQuestions: undefined }),
+    );
+
+    expect(parsed.markedQuestions).toEqual(['html-1']);
   });
 
   it('should keep the ids it can use and drop the ones it cannot', () => {
     const parsed = parseBackup(
-      file({ readQuestions: ['html-1', 42, null, '', { id: 'css-1' }, 'html-2'] }),
+      file({ markedQuestions: ['html-1', 42, null, '', { id: 'css-1' }, 'html-2'] }),
     );
 
-    expect(parsed.readQuestions).toEqual(['html-1', 'html-2']);
+    expect(parsed.markedQuestions).toEqual(['html-1', 'html-2']);
   });
 
   it('should drop a repeated id', () => {
-    expect(parseBackup(file({ readQuestions: ['html-1', 'html-1'] })).readQuestions).toEqual([
+    expect(parseBackup(file({ markedQuestions: ['html-1', 'html-1'] })).markedQuestions).toEqual([
       'html-1',
     ]);
   });
@@ -92,10 +96,10 @@ describe('parseBackup', () => {
   it('should read a field of the wrong shape as empty rather than throwing', () => {
     // one damaged field should not cost the user the other two hundred questions
     const parsed = parseBackup(
-      file({ readQuestions: 'html-1', completedPocs: { a: 1 }, notes: ['a note'] }),
+      file({ markedQuestions: 'html-1', completedPocs: { a: 1 }, notes: ['a note'] }),
     );
 
-    expect(parsed.readQuestions).toEqual([]);
+    expect(parsed.markedQuestions).toEqual([]);
     expect(parsed.completedPocs).toEqual([]);
     expect(parsed.notes).toEqual({});
   });
@@ -106,8 +110,8 @@ describe('parseBackup', () => {
   });
 
   it('should accept a backup that only ever holds notes', () => {
-    // a user who has read nothing still has a valid backup to restore
-    expect(parseBackup(file({ readQuestions: [], completedPocs: [], notes: {} })).notes).toEqual(
+    // a user who has marked nothing still has a valid backup to restore
+    expect(parseBackup(file({ markedQuestions: [], completedPocs: [], notes: {} })).notes).toEqual(
       {},
     );
   });
@@ -123,12 +127,12 @@ describe('Backup', () => {
     localStorage.clear();
   });
 
-  it('should gather the notes, read questions and finished pocs', () => {
+  it('should gather the notes, marked questions and finished pocs', () => {
     const store = create();
     const questions = TestBed.inject(QuestionStore);
     const pocs = TestBed.inject(PocStore);
 
-    questions.toggleRead('html-1');
+    questions.toggleMarked('html-1');
     pocs.toggleCompleted('signals-1');
     TestBed.inject(NotesStore).setNote('css-2', 'a note');
     TestBed.tick();
@@ -136,14 +140,14 @@ describe('Backup', () => {
     expect(store.build()).toMatchObject({
       app: BACKUP_APP_ID,
       version: BACKUP_VERSION,
-      readQuestions: ['html-1'],
+      markedQuestions: ['html-1'],
       completedPocs: ['signals-1'],
       notes: { 'css-2': 'a note' },
     });
   });
 
-  it('should leave unread questions out of the file', () => {
-    // unread is the default, so listing every question would make the file huge
+  it('should leave unmarked questions out of the file', () => {
+    // unmarked is the default, so listing every question would make the file huge
     // to say nothing that changes on restore
     const store = create();
     const questions = TestBed.inject(QuestionStore);
@@ -151,26 +155,26 @@ describe('Backup', () => {
     const total = questions.questionData().length;
     expect(total).toBeGreaterThan(1);
 
-    expect(store.build().readQuestions).toEqual([]);
+    expect(store.build().markedQuestions).toEqual([]);
   });
 
   it('should count what is saved', () => {
     const store = create();
 
-    expect(store.summary()).toEqual({ readQuestions: 0, completedPocs: 0, notes: 0 });
+    expect(store.summary()).toEqual({ markedQuestions: 0, completedPocs: 0, notes: 0 });
 
-    TestBed.inject(QuestionStore).toggleRead('html-1');
+    TestBed.inject(QuestionStore).toggleMarked('html-1');
     TestBed.inject(PocStore).toggleCompleted('signals-1');
     TestBed.inject(NotesStore).setNote('css-2', 'a note');
     TestBed.tick();
 
-    expect(store.summary()).toEqual({ readQuestions: 1, completedPocs: 1, notes: 1 });
+    expect(store.summary()).toEqual({ markedQuestions: 1, completedPocs: 1, notes: 1 });
   });
 
   it('should round trip through a file and come back where it started', () => {
     const store = create();
 
-    TestBed.inject(QuestionStore).toggleRead('html-1');
+    TestBed.inject(QuestionStore).toggleMarked('html-1');
     TestBed.inject(PocStore).toggleCompleted('signals-1');
     TestBed.inject(NotesStore).setNote('css-2', 'a note');
     TestBed.tick();
@@ -183,8 +187,8 @@ describe('Backup', () => {
     TestBed.tick();
 
     expect(JSON.parse(localStorage.getItem(NOTES_KEY) ?? '{}')).toEqual({ 'css-2': 'a note' });
-    expect(JSON.parse(localStorage.getItem(READ_KEY) ?? '[]')).toEqual([
-      { id: 'html-1', isRead: true },
+    expect(JSON.parse(localStorage.getItem(MARKED_KEY) ?? '[]')).toEqual([
+      { id: 'html-1', isMarked: true },
     ]);
     expect(JSON.parse(localStorage.getItem(COMPLETED_KEY) ?? '[]')).toEqual(['signals-1']);
   });
@@ -198,23 +202,25 @@ describe('Backup', () => {
     TestBed.inject(PocStore).toggleCompleted('signals-1');
     TestBed.tick();
 
-    store.restore(parseBackup(file({ notes: {}, completedPocs: [], readQuestions: [] })));
+    store.restore(parseBackup(file({ notes: {}, completedPocs: [], markedQuestions: [] })));
     TestBed.tick();
 
     expect(JSON.parse(localStorage.getItem(NOTES_KEY) ?? '{}')).toEqual({});
     expect(JSON.parse(localStorage.getItem(COMPLETED_KEY) ?? '[]')).toEqual([]);
-    expect(JSON.parse(localStorage.getItem(READ_KEY) ?? '[]')).toEqual([]);
+    expect(JSON.parse(localStorage.getItem(MARKED_KEY) ?? '[]')).toEqual([]);
   });
 
   it('should ignore a question id that no longer exists', () => {
     // a file exported from an older build must not resurrect a removed question
     const store = create();
 
-    store.restore(parseBackup(file({ readQuestions: ['html-1', 'a-question-that-was-removed'] })));
+    store.restore(
+      parseBackup(file({ markedQuestions: ['html-1', 'a-question-that-was-removed'] })),
+    );
     TestBed.tick();
 
     const questions = TestBed.inject(QuestionStore);
-    expect(questions.questionData().some((question) => question.isRead)).toBe(true);
+    expect(questions.questionData().some((question) => question.isMarked)).toBe(true);
     expect(
       questions.questionData().every((question) => question.id !== 'a-question-that-was-removed'),
     ).toBe(true);
@@ -235,7 +241,7 @@ describe('Backup', () => {
       type: 'application/json',
     });
 
-    await expect(store.read(chosen)).resolves.toMatchObject({ readQuestions: ['html-1'] });
+    await expect(store.read(chosen)).resolves.toMatchObject({ markedQuestions: ['html-1'] });
   });
 });
 
@@ -292,7 +298,7 @@ describe('Backup.download', () => {
 
   it('should write the backup into the file it offers', async () => {
     const store = create();
-    TestBed.inject(QuestionStore).toggleRead('html-1');
+    TestBed.inject(QuestionStore).toggleMarked('html-1');
     TestBed.tick();
 
     const written = store.download();

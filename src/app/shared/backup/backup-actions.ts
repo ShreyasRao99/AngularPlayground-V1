@@ -28,7 +28,19 @@ import type { RestoreDialog, RestoreDialogData } from './restore-dialog';
 @Component({
   selector: 'app-backup-actions',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'inline-flex shrink-0 items-center' },
+  host: { class: 'inline-flex shrink-0 items-center [--mat-icon-button-state-layer-size:36px]' },
+  styles: `
+    /*
+     * The outlined Symbols glyphs are thinner than the filled Material Icons the
+     * rest of the toolbar uses, and their ink sits below the middle of the em box,
+     * so next to the title they read as light and low. Filling them matches the
+     * weight, and the small lift puts their optical centre on the text baseline.
+     */
+    .toolbar-glyph {
+      font-variation-settings: 'FILL' 1;
+      transform: translateY(-2px);
+    }
+  `,
   imports: [MatButtonModule],
   template: `
     <!--
@@ -45,7 +57,9 @@ import type { RestoreDialog, RestoreDialogData } from './restore-dialog';
           like the menu button beside it, because the toolbar is painted with the
           primary colour and Material's default icon colour is on-surface.
         -->
-        <span class="material-symbols-outlined text-white!" aria-hidden="true">download</span>
+        <span class="material-symbols-outlined toolbar-glyph text-white!" aria-hidden="true"
+          >download</span
+        >
       </button>
 
       <!--
@@ -69,7 +83,9 @@ import type { RestoreDialog, RestoreDialogData } from './restore-dialog';
 
     <span class="group relative inline-flex">
       <button mat-icon-button type="button" [attr.aria-label]="uploadTip" (click)="pick()">
-        <span class="material-symbols-outlined text-white!" aria-hidden="true">upload</span>
+        <span class="material-symbols-outlined toolbar-glyph text-white!" aria-hidden="true"
+          >upload</span
+        >
       </button>
 
       <span
@@ -106,11 +122,11 @@ export class BackupActions {
   // Em dashes as characters, not as `&mdash;`: these are bound as properties and
   // interpolated as text, so neither would decode the entity.
   protected readonly downloadTip =
-    'Save your notes, read questions and finished POCs to this device as a JSON file';
+    'Save your notes, questions marked for review and finished POCs to this device as a JSON file';
 
   protected readonly uploadTip =
     'Restore from a JSON file you downloaded before — it replaces your notes, ' +
-    'read questions and finished POCs in this browser';
+    'questions marked for review and finished POCs in this browser';
 
   /**
    * The services here are fetched from the injector after their module has been

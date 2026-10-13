@@ -2,13 +2,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BackupActions } from './backup-actions';
 
 const DOWNLOAD_TIP =
-  'Save your notes, read questions and finished POCs to this device as a JSON file';
+  'Save your notes, questions marked for review and finished POCs to this device as a JSON file';
 
 const BACKUP = JSON.stringify({
   app: 'angular-playground-v1',
-  version: 1,
+  version: 2,
   exportedAt: '2026-10-03T09:00:00.000Z',
-  readQuestions: ['html-1'],
+  markedQuestions: ['html-1'],
   completedPocs: ['signals-1'],
   notes: { 'css-2': 'a note from the file' },
 });
@@ -233,7 +233,7 @@ describe('BackupActions', () => {
     await choose(fixture, BACKUP);
 
     const text = dialog().textContent ?? '';
-    expect(text).toContain('1 read question');
+    expect(text).toContain('1 marked question');
     expect(text).toContain('1 completed POC');
     expect(text).toContain('1 note');
   });

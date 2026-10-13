@@ -10,6 +10,7 @@ import {
 import { ViewportScroller } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { DomSanitizer, SafeResourceUrl, Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { Question, QuestionExample } from '../../../types/questions-type';
@@ -25,7 +26,15 @@ import { QuestionStore } from '../question-store';
  * gesture returns to the index without any in-page expansion state.
  */
 @Component({
-  imports: [MatButtonModule, MatIconModule, RouterLink, QuestionBadges, QuestionNav, QuestionNotes],
+  imports: [
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+    RouterLink,
+    QuestionBadges,
+    QuestionNav,
+    QuestionNotes,
+  ],
   selector: 'app-question-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './question-detail.html',
@@ -94,8 +103,8 @@ export class QuestionDetail {
     });
   }
 
-  protected toggleRead(): void {
-    this.store.toggleRead(this.questionId());
+  protected toggleMarked(): void {
+    this.store.toggleMarked(this.questionId());
   }
 
   /**

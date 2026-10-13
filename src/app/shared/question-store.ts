@@ -7,10 +7,12 @@ type QuestionStoreState = {
   questionData: Question[];
 };
 
+type MarkedFlag = { id: string; isMarked: boolean };
 type ReadFlag = { id: string; isRead: boolean };
 type LegacyFlag = { id: string; importance?: string; forLater?: boolean };
 
-const STORAGE_KEY = 'q-read-flags';
+const STORAGE_KEY = 'q-marked-flags';
+const READ_STORAGE_KEY = 'q-read-flags';
 const LEGACY_STORAGE_KEY = 'q-flags';
 
 const seed: Question[] = Object.values(questionsData).flat() as Question[];
@@ -37,27 +39,37 @@ function parseArray<T>(raw: string | null): T[] {
   }
 }
 
-function toReadMap<T extends { id: string }>(
+function toMarkedMap<T extends { id: string }>(
   raw: string | null,
-  toIsRead: (flag: T) => boolean | null,
+  toIsMarked: (flag: T) => boolean | null,
 ): Record<string, boolean> {
   const entries = parseArray<T>(raw)
     .filter((flag) => typeof flag?.id === 'string')
-    .map((flag) => [idMigrations[flag.id] ?? flag.id, toIsRead(flag)] as const)
+    .map((flag) => [idMigrations[flag.id] ?? flag.id, toIsMarked(flag)] as const)
     .filter((entry): entry is readonly [string, boolean] => entry[1] !== null);
   return Object.fromEntries(entries);
 }
 
 // `difficulty` and `scenarioBased` are curated in questions.json and are never
-// persisted — only the user's read state is, so shipping new labels is not
+// persisted — only the user's review mark is, so shipping new labels is not
 // shadowed by a stale localStorage entry.
-function loadReadFlags(): Record<string, boolean> {
+function loadMarkedFlags(): Record<string, boolean> {
   const stored = localStorage.getItem(STORAGE_KEY);
-  // Only read is persisted, so the stored list is empty when nothing is marked
-  // read. Fall back to the legacy key on absence, not on emptiness — otherwise
-  // unmarking the last question would resurrect stale legacy read state.
+  // Only the mark is persisted, so the stored list is empty when nothing is
+  // marked. Fall back on absence, not on emptiness — otherwise clearing the last
+  // mark would resurrect stale state from an older key.
   if (stored !== null) {
-    return toReadMap(stored, (flag: ReadFlag) =>
+    return toMarkedMap(stored, (flag: MarkedFlag) =>
+      typeof flag?.isMarked === 'boolean' ? flag.isMarked : null,
+    );
+  }
+
+  // One-time bridge from the read flags this feature used to store. "Read" is not
+  // quite "marked for review", but carrying it over keeps the user's existing
+  // progress instead of silently dropping it.
+  const read = localStorage.getItem(READ_STORAGE_KEY);
+  if (read !== null) {
+    return toMarkedMap(read, (flag: ReadFlag) =>
       typeof flag?.isRead === 'boolean' ? flag.isRead : null,
     );
   }
@@ -67,7 +79,7 @@ function loadReadFlags(): Record<string, boolean> {
     return {};
   }
 
-  return toReadMap(legacy, (flag: LegacyFlag) =>
+  return toMarkedMap(legacy, (flag: LegacyFlag) =>
     typeof flag?.forLater === 'boolean' ? flag.forLater : null,
   );
 }
@@ -77,10 +89,13 @@ export const QuestionStore = signalStore(
   withState(initialState),
   withHooks((store) => ({
     onInit() {
-      const read = loadReadFlags();
+      const marked = loadMarkedFlags();
 
       patchState(store, {
-        questionData: seed.map((question) => ({ ...question, isRead: read[question.id] === true })),
+        questionData: seed.map((question) => ({
+          ...question,
+          isMarked: marked[question.id] === true,
+        })),
       });
 
       effect(() => {
@@ -89,38 +104,38 @@ export const QuestionStore = signalStore(
           JSON.stringify(
             store
               .questionData()
-              .map(({ id, isRead }) => ({ id, isRead }))
-              .filter((flag) => flag.isRead),
+              .map(({ id, isMarked }) => ({ id, isMarked }))
+              .filter((flag) => flag.isMarked),
           ),
         );
       });
     },
   })),
   withMethods((store) => ({
-    toggleRead(id: string) {
+    toggleMarked(id: string) {
       patchState(store, (state) => ({
         questionData: state.questionData.map((question) =>
-          question.id === id ? { ...question, isRead: !question.isRead } : question,
+          question.id === id ? { ...question, isMarked: !question.isMarked } : question,
         ),
       }));
     },
 
     /**
-     * Marks exactly the questions in `ids` as read and unreads the rest, which
+     * Marks exactly the questions in `ids` for review and clears the rest, which
      * is what restoring a backup needs - the toggle above can only ever flip one
-     * question, so it cannot express "read state as of that file".
+     * question, so it cannot express "review state as of that file".
      *
      * An id that no longer matches a question is dropped by the same mapping
      * that drops it from the seeded list, so a backup exported from an older
      * build cannot resurrect a question that has since been removed.
      */
-    replaceReadFlags(ids: readonly string[]): void {
-      const read = new Set(ids);
+    replaceMarkedFlags(ids: readonly string[]): void {
+      const marked = new Set(ids);
 
       patchState(store, (state) => ({
         questionData: state.questionData.map((question) => ({
           ...question,
-          isRead: read.has(question.id),
+          isMarked: marked.has(question.id),
         })),
       }));
     },

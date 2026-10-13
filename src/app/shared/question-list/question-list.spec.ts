@@ -4,7 +4,7 @@ import { provideRouter } from '@angular/router';
 import { Question } from '../../../types/questions-type';
 import { QuestionList } from './question-list';
 
-type ReadFlag = { id: string; isRead: boolean };
+type MarkedFlag = { id: string; isMarked: boolean };
 
 async function createList(category: Question['category'] = 'performance') {
   await TestBed.configureTestingModule({
@@ -25,7 +25,7 @@ function rows(fixture: ComponentFixture<QuestionList>): HTMLAnchorElement[] {
   return Array.from(root.querySelectorAll<HTMLAnchorElement>('li > a'));
 }
 
-function readButtons(fixture: ComponentFixture<QuestionList>): HTMLButtonElement[] {
+function markButtons(fixture: ComponentFixture<QuestionList>): HTMLButtonElement[] {
   const root = fixture.nativeElement as HTMLElement;
   return Array.from(root.querySelectorAll<HTMLButtonElement>('button[aria-pressed]'));
 }
@@ -83,31 +83,22 @@ describe('QuestionList', () => {
     expect(rows(fixture).length).toBe(12);
   });
 
-  it('should filter to scenario based questions only', async () => {
+  it('should toggle review state and filter on it', async () => {
     const fixture = await createList();
-
-    fixture.componentInstance['scenarioFilter'].set(true);
-    fixture.detectChanges();
-
-    expect(rows(fixture).length).toBe(4);
-  });
-
-  it('should toggle read state and filter on it', async () => {
-    const fixture = await createList();
-    const buttons = readButtons(fixture);
+    const buttons = markButtons(fixture);
     expect(buttons.length).toBe(24);
 
     buttons[0].click();
     fixture.detectChanges();
 
     expect(buttons[0].getAttribute('aria-pressed')).toBe('true');
-    expect(fixture.componentInstance['readCount']()).toBe(1);
+    expect(fixture.componentInstance['markedCount']()).toBe(1);
 
-    fixture.componentInstance['readFilter'].set('unread');
+    fixture.componentInstance['markedFilter'].set('unmarked');
     fixture.detectChanges();
     expect(rows(fixture).length).toBe(23);
 
-    fixture.componentInstance['readFilter'].set('read');
+    fixture.componentInstance['markedFilter'].set('marked');
     fixture.detectChanges();
     expect(rows(fixture).length).toBe(1);
   });
@@ -119,7 +110,7 @@ describe('QuestionList', () => {
     expect(first.getAttribute('href')).toBe('/performance/performance-1');
   });
 
-  it('should give a row exactly one colour class, whichever read state it is in', async () => {
+  it('should give a row exactly one colour class, whichever review state it is in', async () => {
     const fixture = await createList();
     const colourClasses = (element: Element | null) =>
       Array.from(element?.classList ?? []).filter((name) => name.startsWith('text-('));
@@ -129,19 +120,19 @@ describe('QuestionList', () => {
       colourClasses((fixture.nativeElement as HTMLElement).querySelectorAll('li > span')[index]);
 
     // Two of these both set `color`, so whichever Tailwind happens to emit last
-    // wins - the read state has to come from a single class, not a static one
+    // wins - the review state has to come from a single class, not a static one
     // plus a conditional one.
-    expect(linkColours(0)).toEqual(['text-(--mat-sys-on-surface)']);
-    expect(numberColours(0)).toEqual(['text-(--mat-sys-primary)']);
-
-    fixture.componentInstance['toggleRead']('performance-1');
-    fixture.detectChanges();
-
     expect(linkColours(0)).toEqual(['text-(--mat-sys-on-surface-variant)']);
     expect(numberColours(0)).toEqual(['text-(--mat-sys-on-surface-variant)']);
+
+    fixture.componentInstance['toggleMarked']('performance-1');
+    fixture.detectChanges();
+
+    expect(linkColours(0)).toEqual(['text-(--mat-sys-on-surface)']);
+    expect(numberColours(0)).toEqual(['text-(--mat-sys-primary)']);
   });
 
-  it('should keep the row layout classes when the read state swaps the colour', async () => {
+  it('should keep the row layout classes when the review state swaps the colour', async () => {
     const fixture = await createList();
     const [link] = rows(fixture);
 
@@ -151,7 +142,7 @@ describe('QuestionList', () => {
       expect(link.classList.contains(name)).toBe(true);
     }
 
-    fixture.componentInstance['toggleRead']('performance-1');
+    fixture.componentInstance['toggleMarked']('performance-1');
     fixture.detectChanges();
 
     for (const name of layout) {
@@ -159,13 +150,13 @@ describe('QuestionList', () => {
     }
   });
 
-  it('should keep the read toggle outside the row link', async () => {
+  it('should keep the review toggle outside the row link', async () => {
     const fixture = await createList();
     const row = rows(fixture)[0];
 
     // nesting the button inside the anchor would make the toggle navigate as
     // well as mark, and is invalid markup
-    expect(row.contains(readButtons(fixture)[0])).toBe(false);
+    expect(row.contains(markButtons(fixture)[0])).toBe(false);
     expect(row.textContent?.trim()).not.toBe('');
   });
 
@@ -193,17 +184,17 @@ describe('QuestionList', () => {
     expect(rows(fixture).length).toBe(12);
   });
 
-  it('should persist only read state to localStorage', async () => {
+  it('should persist only review state to localStorage', async () => {
     const fixture = await createList();
 
-    readButtons(fixture)[0].click();
+    markButtons(fixture)[0].click();
     fixture.detectChanges();
 
-    const saved = JSON.parse(localStorage.getItem('q-read-flags') ?? '[]') as ReadFlag[];
-    expect(saved).toEqual([{ id: 'performance-1', isRead: true }]);
+    const saved = JSON.parse(localStorage.getItem('q-marked-flags') ?? '[]') as MarkedFlag[];
+    expect(saved).toEqual([{ id: 'performance-1', isMarked: true }]);
   });
 
-  it('should filter by read status using the segmented control', async () => {
+  it('should filter by review status using the segmented control', async () => {
     const fixture = await createList();
     const root = fixture.nativeElement as HTMLElement;
     const group = root.querySelector('mat-button-toggle-group');
@@ -211,47 +202,48 @@ describe('QuestionList', () => {
       root.querySelectorAll<HTMLButtonElement>('mat-button-toggle button'),
     );
     expect(toggles.length).toBe(3);
-    expect(toggles.map((toggle) => toggle.textContent?.trim())).toEqual(['All', 'Unread', 'Read']);
+    expect(toggles.map((toggle) => toggle.textContent?.trim())).toEqual([
+      'All',
+      'For review',
+      'Not marked',
+    ]);
     // height is driven by a Material token, not a hard-coded pixel rule
     expect(group?.classList).toContain('[--mat-button-toggle-height:32px]');
 
-    readButtons(fixture)[0].click();
+    markButtons(fixture)[0].click();
     fixture.detectChanges();
 
     toggles[1].click();
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(fixture.componentInstance['readFilter']()).toBe('unread');
-    expect(rows(fixture).length).toBe(23);
+    expect(fixture.componentInstance['markedFilter']()).toBe('marked');
+    expect(rows(fixture).length).toBe(1);
 
-    // the token override is scoped to `.read-filter .mat-button-toggle-checked`,
+    // the token override is scoped to `.marked-filter .mat-button-toggle-checked`,
     // so the checked class has to sit on a descendant of the group
     const checked = group?.querySelector('.mat-button-toggle-checked');
-    expect(checked?.querySelector('button')?.textContent?.trim()).toBe('Unread');
+    expect(checked?.querySelector('button')?.textContent?.trim()).toBe('For review');
   });
 
-  it('should not resurrect legacy read state once the new key exists but is empty', async () => {
+  it('should not resurrect legacy review state once the new key exists but is empty', async () => {
     // unmarking the last question stores an empty list, which must not be
-    // mistaken for "no saved state" and re-imported from the legacy key
-    localStorage.setItem('q-read-flags', '[]');
-    localStorage.setItem(
-      'q-flags',
-      JSON.stringify([{ id: 'performance-1', importance: 'high', forLater: true }]),
-    );
+    // mistaken for "no saved state" and re-imported from an older key
+    localStorage.setItem('q-marked-flags', '[]');
+    localStorage.setItem('q-read-flags', JSON.stringify([{ id: 'performance-1', isRead: true }]));
 
     const fixture = await createList();
     const first = fixture.componentInstance['faqs']()[0];
 
     expect(first.id).toBe('performance-1');
-    expect(first.isRead).toBe(false);
+    expect(first.isMarked).toBe(false);
   });
 
   it('should not let stale localStorage shadow curated difficulty and scenario labels', async () => {
     localStorage.setItem(
-      'q-read-flags',
+      'q-marked-flags',
       JSON.stringify([
-        { id: 'performance-12', isRead: true, difficulty: 'basic', scenarioBased: false },
+        { id: 'performance-12', isMarked: true, difficulty: 'basic', scenarioBased: false },
       ]),
     );
 
@@ -260,9 +252,19 @@ describe('QuestionList', () => {
       (item) => item.id === 'performance-12',
     );
 
-    expect(question?.isRead).toBe(true);
+    expect(question?.isMarked).toBe(true);
     expect(question?.difficulty).toBe('medium');
     expect(question?.scenarioBased).toBe(true);
+  });
+
+  it('should bridge read flags saved under the previous feature name', async () => {
+    localStorage.setItem('q-read-flags', JSON.stringify([{ id: 'performance-1', isRead: true }]));
+
+    const fixture = await createList();
+    const first = fixture.componentInstance['faqs']()[0];
+
+    expect(first.id).toBe('performance-1');
+    expect(first.isMarked).toBe(true);
   });
 
   it('should migrate flags saved under the legacy shape', async () => {
@@ -275,7 +277,7 @@ describe('QuestionList', () => {
     const first = fixture.componentInstance['faqs']()[0];
 
     expect(first.id).toBe('performance-1');
-    expect(first.isRead).toBe(true);
+    expect(first.isMarked).toBe(true);
     expect(first.difficulty).toBe('advanced');
   });
 
@@ -339,18 +341,5 @@ describe('QuestionList', () => {
 
     expect(fixture.componentInstance['difficultyFilter']()).toEqual(['advanced']);
     expect(rows(fixture).length).toBe(7);
-  });
-
-  it('should filter when the scenario checkbox is clicked', async () => {
-    const fixture = await createList();
-    const root = fixture.nativeElement as HTMLElement;
-    const checkbox = root.querySelector<HTMLInputElement>('mat-checkbox input');
-
-    checkbox?.click();
-    await fixture.whenStable();
-    fixture.detectChanges();
-
-    expect(fixture.componentInstance['scenarioFilter']()).toBe(true);
-    expect(rows(fixture).length).toBe(4);
   });
 });
