@@ -1,4 +1,4 @@
-import{ft as U,qn as tu,t as $}from"./chunk-CeFf50PM.js";import{a as V,i as J,n as B,r as H,t as $$1}from"./chunk-DPR9E1Ll.js";var p={html:[{id:`html-1`,category:`html`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is semantic HTML?`,answer:`Semantic HTML uses tags that describe their meaning rather than only their appearance — header, nav, main, article, section, aside and footer. It improves accessibility for screen readers and helps search engines understand the page structure, while also making the code easier to read for other developers.`,examples:[{title:`Semantic structure of a page`,code:`<body>
+import{Jn as tu,pt as U,t as $}from"./chunk-NkH-Iayh.js";import{a as V,i as J,n as B,r as H,t as $$1}from"./chunk-CyqiKYTw.js";var p={html:[{id:`html-1`,category:`html`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is semantic HTML?`,answer:`Semantic HTML uses tags that describe their meaning rather than only their appearance — header, nav, main, article, section, aside and footer. It improves accessibility for screen readers and helps search engines understand the page structure, while also making the code easier to read for other developers. Semantic tags are not a display mode: some are block-level (e.g. <header>, <main>, <section>) and some are inline (e.g. <strong>, <em>), so "semantic" says what the element means, never how it is displayed.`,examples:[{title:`Semantic structure of a page`,code:`<body>
   <header><nav aria-label="Main">...</nav></header>
   <main>
     <article>
@@ -8,7 +8,10 @@ import{ft as U,qn as tu,t as $}from"./chunk-CeFf50PM.js";import{a as V,i as J,n 
     <aside>Related links</aside>
   </main>
   <footer>...</footer>
-</body>`,explanation:`header/nav/main/article/section/aside/footer describe meaning, so screen readers and search engines get the structure for free.`}]},{id:`html-2`,category:`html`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is the difference between a div and a span?`,answer:`A div is a block-level container that takes the full available width and starts on a new line, while a span is an inline container that flows inside a line of text. Use a div to group larger layout blocks and a span to style or group a fragment of text without breaking the line.`,examples:[{title:`block vs inline vs span`,code:`<style>
+</body>`,explanation:`header/nav/main/article/section/aside/footer describe meaning, so screen readers and search engines get the structure for free.`},{title:`Semantic tags come in block-level and inline flavours`,code:`<header>...</header>   <!-- block-level semantic element: starts on its own line -->
+
+<p>This word is <strong>important</strong> but stays inline.</p>
+<!-- <strong>/<em> are inline semantic elements: they carry meaning without breaking the line -->`,explanation:`Semantics and display are independent: <header> is a block-level semantic element, while <strong> is an inline one.`}]},{id:`html-2`,category:`html`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is the difference between a div and a span?`,answer:`A div is a block-level container that takes the full available width and starts on a new line, while a span is an inline container that flows inside a line of text. Use a div to group larger layout blocks and a span to style or group a fragment of text without breaking the line.`,examples:[{title:`block vs inline vs span`,code:`<style>
   .box { width: 100px; height: 40px; background: #90caf9; }
   .tag  { background: #ffcc80; }
 </style>
@@ -21,13 +24,22 @@ import{ft as U,qn as tu,t as $}from"./chunk-CeFf50PM.js";import{a as V,i as J,n 
 
 <div id="main-banner">Sale</div>
 <span class="chip">new</span>
-<span class="chip">beta</span>`,explanation:`The id must be unique and is what fragment links (#main-banner) and JS lookups use; the class is the reusable hook.`}]},{id:`html-4`,category:`html`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`How do I make an image render well on different screen sizes?`,answer:`Let the image scale proportionally with max-width: 100% and height: auto, and provide several source variants using the srcset and sizes attributes so the browser picks the right file for the viewport. Reserve the space with width and height attributes to avoid layout shift while loading.`,examples:[{title:`Responsive image with srcset`,code:`<img
-  src="hero-800.jpg"
-  srcset="hero-400.jpg 400w, hero-800.jpg 800w, hero-1600.jpg 1600w"
-  sizes="(max-width: 640px) 100vw, 50vw"
-  width="1600" height="900"
-  alt="Team reviewing a dashboard"
-  style="max-width:100%;height:auto">`,explanation:`srcset+sizes let the browser pick the smallest file that still looks sharp; width/height reserve the box to avoid layout shift.`}]},{id:`html-5`,category:`html`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`Why is the alt attribute important on images?`,answer:`The alt attribute provides a text alternative that is announced by screen readers and shown when the image fails to load. It is required when the image conveys information, and should describe the content or purpose. Decorative images can use an empty alt="", but hiding them without an attribute hurts accessibility.`,examples:[{title:`Meaningful vs decorative alt`,code:`<img src="chart.png" alt="Revenue grew from 2.1M to 3.4M in Q3">
+<span class="chip">beta</span>`,explanation:`The id must be unique and is what fragment links (#main-banner) and JS lookups use; the class is the reusable hook.`}]},{id:`html-4`,category:`html`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`How do I make an image render well on different screen sizes?`,answer:`A box only keeps an image's proportions if you tell it the ratio up front, and there are two ways. The classic technique is the padding hack: wrap the image in a container whose padding-bottom is the height divided by the width as a percentage (56.25% for a 16:9 image), and absolutely position the image to fill that box - because the padding is calculated from the container's width, the ratio holds before the image has loaded. The modern replacement is the CSS aspect-ratio property: set aspect-ratio on the element and it strictly respects the original image ratio, with no wrapper and no absolute positioning. If you are designing for modern browsers, skip the padding hack and use aspect-ratio.`,examples:[{title:`The padding hack`,code:`.ratio {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;   /* 9 / 16 = 0.5625 -> a 16:9 box */
+}
+.ratio img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}`,explanation:`A percentage padding-bottom is resolved against the container's width, so the box holds a 16:9 ratio before the image arrives; the image is absolutely positioned to fill it.`},{title:`Modern CSS aspect-ratio (skip the hack)`,code:`img {
+  width: 100%;
+  aspect-ratio: 16 / 9;   /* strictly respects the original image ratio */
+  object-fit: cover;      /* crop instead of distorting */
+}`,explanation:`aspect-ratio does the padding hack's job with no wrapper and no absolute positioning; for modern browsers you can skip the padding hack entirely.`}]},{id:`html-5`,category:`html`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`Why is the alt attribute important on images?`,answer:`The alt attribute provides a text alternative that is announced by screen readers and shown when the image fails to load. It is required when the image conveys information, and should describe the content or purpose. Decorative images can use an empty alt="", but hiding them without an attribute hurts accessibility.`,examples:[{title:`Meaningful vs decorative alt`,code:`<img src="chart.png" alt="Revenue grew from 2.1M to 3.4M in Q3">
 
 <img src="divider.svg" alt="">   <!-- decorative: say nothing -->
 
@@ -48,7 +60,7 @@ import{ft as U,qn as tu,t as $}from"./chunk-CeFf50PM.js";import{a as V,i as J,n 
 <input id="email" type="email">
 
 <!-- or nested -->
-<label>Email <input type="email"></label>`,explanation:`Use for+id or nesting for accessibility and click-to-focus.`}]},{id:`html-9`,category:`html`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is the difference between async and defer on a <script> tag?`,answer:`Both load the script without blocking HTML parsing. defer downloads in parallel and executes once the document has been parsed, in order, right before DOMContentLoaded - reliable for scripts that touch the DOM. async downloads in parallel and executes as soon as it is ready, interrupting parsing and ignoring order - fine for analytics but unsafe for interdependent scripts.`,examples:[{title:`async vs defer`,code:`<!-- executes as soon as loaded, order not guaranteed -->
+<label>Email <input type="email"></label>`,explanation:`Use for+id or nesting for accessibility and click-to-focus.`}]},{id:`html-9`,category:`html`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is the difference between async and defer on a <script> tag?`,answer:`Both are boolean attributes that let an external script download without blocking HTML parsing; the difference is when it executes. defer downloads in parallel and executes once the document has been parsed, in order, right before DOMContentLoaded - reliable for scripts that touch the DOM. async downloads in parallel and executes as soon as it is ready, which can interrupt parsing and ignores order - fine for independent analytics but unsafe for scripts that depend on each other. Neither blocks parsing, but only defer preserves execution order.`,examples:[{title:`async vs defer`,code:`<!-- executes as soon as loaded, order not guaranteed -->
 <script async src="analytics.js"><\/script>
 
 <!-- executes after parsing, in order -->
@@ -57,7 +69,7 @@ import{ft as U,qn as tu,t as $}from"./chunk-CeFf50PM.js";import{a as V,i as J,n 
 <p>This is <b>bold</b> and <i>italic</i>.</p>`,explanation:`strong/em carry meaning; b/i are purely visual.`}]},{id:`html-12`,category:`html`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`How does native browser form validation work and when would you disable it?`,answer:`Constraints like required, type='email', min/max length and the pattern attribute are validated by the browser: the form is blocked from submitting and the :invalid pseudo-class lets you style errors. Setting novalidate (or noValidate) on the form disables native bubbles so you can run your own validation - useful when you need consistent messaging or server-side rules.`,examples:[{title:`Form validation`,code:`<form novalidate (ngSubmit)="submit()">
   <input required type="email">
   <button>Submit</button>
-</form>`,explanation:`novalidate disables native validation for custom error handling.`}]}],css:[{id:`css-1`,category:`css`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is the CSS box model?`,answer:`Every element is rendered as a box made of four layers, from the inside out: content, padding, border and margin. Content holds the actual content, padding adds space between content and border, the border frames the box, and margin creates space between this box and its neighbours. box-sizing: border-box makes width and height include padding and border.`,examples:[{title:`Box model with content-box vs border-box`,code:`.card {
+</form>`,explanation:`novalidate disables native validation for custom error handling.`}]}],css:[{id:`css-1`,category:`css`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is the CSS box model?`,answer:`Every element is rendered as a box made of four layers, from the inside out: content, padding, border and margin. Content holds the actual content, padding adds space between content and border, the border frames the box, and margin creates space between this box and its neighbours. box-sizing: border-box makes width and height include padding and border: because the declared width now measures the border box, the content area shrinks to leave room for that padding and border instead of the element growing past the width you set. Margin sits outside the box and is never part of box-sizing.`,examples:[{title:`Box model with content-box vs border-box`,code:`.card {
   width: 200px;
   padding: 20px;
   border: 5px solid #333;
@@ -75,7 +87,16 @@ import{ft as U,qn as tu,t as $}from"./chunk-CeFf50PM.js";import{a as V,i as J,n 
 /* 0,1,0 */ .note {}
 /* 1,0,0 */ #main {}
 /* an author !important also beats the style attribute, and can only be beaten by another !important */
-.foo { color: red !important; }`,explanation:`Cascade + specificity decide; !important breaks the normal order, and the only escape from it is another !important.`}]},{id:`css-7`,category:`css`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What are CSS custom properties (variables) and how are themes built with them?`,answer:`Custom properties are defined on a selector with --name and read with var(--name). They cascade and can be redefined on a themed container, which is how theming works: define --primary, --bg and --text on :root, then override them on a .dark or [data-theme='dark'] selector. Because they cascade, a component can read var(--primary) and automatically adapt to whichever theme is active.`,examples:[{title:`CSS variables for theming`,code:`:root {
+.foo { color: red !important; }`,explanation:`Cascade + specificity decide; !important breaks the normal order, and the only escape from it is another !important.`},{title:`Where pseudo-class, attribute and type selectors rank`,code:`/* 0,0,1 - a type selector */
+button { color: black; }
+
+/* 0,1,0 - class, attribute and pseudo-class all weigh the same */
+.note       { color: blue; }
+[type=text] { color: green; }
+a:hover     { color: red; }
+
+/* 1,0,0 - an id outranks every one of the above */
+#submit { color: purple; }`,explanation:`A pseudo-class (:hover), an attribute selector ([type=text]) and a class each count 0,1,0 - above type selectors, below an id. The later of two equal rules wins.`}]},{id:`css-7`,category:`css`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What are CSS custom properties (variables) and how are themes built with them?`,answer:`Custom properties are defined on a selector with --name and read with var(--name). They cascade and can be redefined on a themed container, which is how theming works: define --primary, --bg and --text on :root, then override them on a .dark or [data-theme='dark'] selector. Because they cascade, a component can read var(--primary) and automatically adapt to whichever theme is active.`,examples:[{title:`CSS variables for theming`,code:`:root {
   --bg: #fff;
   --text: #111;
 }
@@ -88,7 +109,14 @@ import{ft as U,qn as tu,t as $}from"./chunk-CeFf50PM.js";import{a as V,i as J,n 
 body {
   background: var(--bg);
   color: var(--text);
-}`,explanation:`Redefining on a container/theme selector cascades to all children.`}]},{id:`css-8`,category:`css`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is the difference between position: relative, absolute, fixed and sticky?`,answer:`relative offsets an element from its normal flow position without removing it from flow. absolute takes the element out of flow and positions it relative to the nearest positioned ancestor (a relative/absolute parent); without one, relative to the containing block. fixed positions it relative to the viewport, so it stays put while scrolling. sticky toggles between relative and fixed as the element crosses a scroll threshold - useful for section headers.`,examples:[{title:`Positioning`,code:`.parent { position: relative; height: 200px; }
+}`,explanation:`Redefining on a container/theme selector cascades to all children.`},{title:`Toggling the theme from HTML`,code:`<html data-theme="light">
+  <body>
+    <button (click)="toggleTheme()">Toggle theme</button>
+  </body>
+</html>
+
+// toggleTheme() flips one attribute:
+// document.documentElement.dataset.theme = 'dark'`,explanation:`Because the variables are redefined under [data-theme='dark'], flipping that single attribute re-themes every element that reads var(--bg) or var(--text).`}]},{id:`css-8`,category:`css`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is the difference between position: relative, absolute, fixed and sticky?`,answer:`relative offsets an element from its normal flow position without removing it from flow. absolute takes the element out of flow and positions it relative to the nearest positioned ancestor (a relative/absolute parent); without one, relative to the containing block. fixed positions it relative to the viewport, so it stays put while scrolling. sticky toggles between relative and fixed as the element crosses a scroll threshold - useful for section headers.`,examples:[{title:`Positioning`,code:`.parent { position: relative; height: 200px; }
 .child-abs { position: absolute; top: 10px; right: 10px; }
 .sticky { position: sticky; top: 0; }`,explanation:`absolute relative to nearest positioned ancestor; sticky toggles on scroll.`}]},{id:`css-9`,category:`css`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What are responsive breakpoints and why is mobile-first preferable?`,answer:`Breakpoints are viewport widths where the layout changes, defined with media queries (@media (min-width: 768px)). Mobile-first means you write the base styles for small screens and layer on wider layouts with min-width queries, so narrow devices get less CSS and no override churn. Because min-width is additive, wide screens upgrade rather than narrow screens override.`,examples:[{title:`Mobile-first`,code:`/* base mobile */ .grid { display: block; }
 /* tablet+ */ @media (min-width: 768px) { .grid { display: grid; grid-template-columns: 1fr 1fr; } }`,explanation:`min-width queries add layout as viewport grows.`}]},{id:`css-10`,category:`css`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is the difference between px, rem, em, % and vw/vh?`,answer:`px is a fixed unit; rem is relative to the root font-size (so 2rem scales with the user's base size and stays predictable); em is relative to the element's own font-size and compounds as it nests; % is relative to the parent's size for the same property; vw/vh are 1% of viewport width/height. Prefer rem for spacing and text so zoom and browser font settings work, and %/flex units for layout.`,examples:[{title:`Units`,code:`html { font-size: 16px; }
@@ -119,11 +147,24 @@ console.log(c.get()); // 2  (count is unreachable from outside)`,explanation:`co
   arrow: () => typeof this,                    // whatever this was where obj was created
 };
 
-const detached = obj.regular; // this = undefined in strict mode`,explanation:`Arrows capture this lexically, so detaching them changes nothing.`}]},{id:`js-6`,category:`javascript`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is the difference between a function and a method?`,answer:`A function is a standalone callable, usually declared at module scope and invoked by name. A method is a function that lives on an object and is invoked as obj.method(), so it receives the object as this. The same function object can be used either way - what changes is how it is called and therefore what this is. A standalone function that does not use this at all is better described as a plain function, not a method.`,examples:[{title:`Same function, two call styles`,code:`function greet() { return 'Hi ' + this.name; }
+const detached = obj.regular; // this = undefined in strict mode`,explanation:`Arrows capture this lexically, so detaching them changes nothing.`},{title:`No own arguments and not constructable`,code:`const counter = {
+  count: 0,
+  tick() {
+    [1, 2, 3].forEach(() => {
+      this.count++;              // arrow inherits this = counter
+    });
+  },
+};
+
+function Sum(a, b) { return arguments.length; }  // own arguments
+new Sum(1, 2);                                    // works as a constructor
+
+const ArrowSum = (a, b) => arguments.length;      // ReferenceError: arguments is not defined
+// new ArrowSum(1, 2);                            // TypeError: ArrowSum is not a constructor`,explanation:`An arrow has no this, arguments or prototype of its own, so it cannot receive a dynamic this, cannot be newed, and must use ...rest instead of arguments.`}]},{id:`js-6`,category:`javascript`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is the difference between a function and a method?`,answer:`A function is a standalone callable, usually declared at module scope and invoked by name. A method is a function that lives on an object and is invoked as obj.method(), so it receives the object as this. The same function object can be used either way - what changes is how it is called and therefore what this is. A standalone function that does not use this at all is better described as a plain function, not a method.`,examples:[{title:`Same function, two call styles`,code:`function greet() { return 'Hi ' + this.name; }
 const user = { name: 'Ada', greet };
 user.greet();      // 'Hi Ada'  (method - this = user)
 const g = user.greet;
-g();              // TypeError in strict mode (this = undefined)`,explanation:`A function becomes a method through its call site, which supplies this.`}]},{id:`js-7`,category:`javascript`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is event propagation, and what are the capture and bubble phases?`,answer:`DOM events travel through the tree in three phases. Capture goes from the root down to the target, letting ancestors inspect the event before it arrives. The target phase fires listeners registered on the target itself. Bubble goes back up from the target to the root, which is where most listeners run. addEventListener accepts a third argument - true registers in the capture phase, false (default) or omit registers in the bubble phase.`,examples:[{title:`Listening in each phase`,code:`document.addEventListener('click', log, true);  // capture: root first
+g();              // TypeError in strict mode (this = undefined)`,explanation:`A function becomes a method through its call site, which supplies this.`}]},{id:`js-7`,category:`javascript`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is event propagation, and what are the capture and bubble phases?`,answer:`Event propagation is the process by which an event travels through the DOM tree to determine which element's listeners fire and in what order. It has three phases. Capturing (the trickle-down): the event starts at the root — window/document — and travels down through every ancestor until it reaches the target. Target: the event arrives at the element that was actually triggered (event.target) and the listeners attached directly to it run. Bubbling (floating up): the event reverses and travels back up from the target through its parents and ancestors to the root, which is where most listeners run. addEventListener accepts a third argument - true registers in the capture phase, false (the default) or omitted registers in the bubble phase.`,examples:[{title:`Listening in each phase`,code:`document.addEventListener('click', log, true);  // capture: root first
 button.addEventListener('click', log);      // target
 panel.addEventListener('click', log);       // bubble: nearest ancestor first
 
@@ -140,13 +181,25 @@ const total = nums.reduce((acc, n) => acc + n, 0); // 10`,explanation:`Each oper
 const byLetter = words.reduce((acc, w) => {
   (acc[w[0]] ||= []).push(w);
   return acc;
-}, {});`,explanation:`reduce is the general-purpose fold - handy for grouping, counting and building lookups.`}]},{id:`js-10`,category:`javascript`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is the spread operator, and how is it different from rest parameters?`,answer:`Spread (...) expands an iterable into individual elements or properties at the call site - used to copy arrays/objects and to pass an array as separate arguments. Rest parameters collect leftover arguments into an array, and rest in destructuring gathers the remaining properties into an object. They use the same three dots but sit in opposite positions: spread produces many values, rest collects many values into one.`,examples:[{title:`Both directions`,code:`const nums = [1, 2, 3];
+}, {});`,explanation:`reduce is the general-purpose fold - handy for grouping, counting and building lookups.`}]},{id:`js-10`,category:`javascript`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is the spread operator, and how is it different from rest parameters?`,answer:`Spread (...) expands an iterable into individual elements or properties at the call site - used to copy arrays/objects and to pass an array as separate arguments. Rest parameters collect an indefinite number of arguments passed to a function into a real array, and must be the last parameter in the definition; rest in destructuring gathers the remaining properties into an object. They use the same three dots but sit in opposite positions: spread produces many values from one, rest collects many values into one.`,examples:[{title:`Both directions`,code:`const nums = [1, 2, 3];
 const copy = [...nums, 4];                 // spread (produce)
 
 function sum(...args) { return args.reduce((a, b) => a + b, 0); }
 sum(...nums);                              // spread args + rest params
 
-const { id, ...rest } = user;             // rest in destructuring (collect)`,explanation:`Spread spreads out, rest gathers in.`}]},{id:`js-11`,category:`javascript`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What are Map, Set and WeakMap, and how do they differ from plain objects and arrays?`,answer:`Set holds unique values with fast has/add and preserves insertion order. Map holds key-value pairs with a typed API and reliable iteration, and unlike an object it accepts any value as a key and exposes size, keys(), values() and entries(). WeakMap is the non-enumerable, garbage-collectable variant of Map: keys must be objects and entries vanish when the key is unreachable, which is why it is used for private per-object caches. Use a Set for membership tests instead of indexOf on an array.`,examples:[{title:`Membership and lookup`,code:`const allowed = new Set(['html', 'css']);
+const { id, ...rest } = user;             // rest in destructuring (collect)`,explanation:`Spread spreads out, rest gathers in.`},{title:`Rest parameters bundle arguments into an array`,code:`function sumAll(...numbers) {
+  return numbers.reduce((total, num) => total + num, 0);
+}
+
+sumAll(1, 2, 3);        // 6
+sumAll(10, 20, 30, 40); // 100`,explanation:`...numbers is a true array, so array methods work on it directly - unlike the old arguments object.`},{title:`Positional parameters plus rest`,code:`function displayBio(firstName, lastName, ...hobbies) {
+  console.log(\`\${firstName} \${lastName} likes:\`);
+  console.log(hobbies); // hobbies is a true array
+}
+
+displayBio('John', 'Doe', 'Cycling', 'Reading', 'Cooking');
+// John Doe likes:
+// ['Cycling', 'Reading', 'Cooking']`,explanation:`The rest parameter must come last; it takes everything the earlier named parameters did not.`}]},{id:`js-11`,category:`javascript`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What are Map, Set and WeakMap, and how do they differ from plain objects and arrays?`,answer:`Set holds unique values with fast has/add and preserves insertion order. Map holds key-value pairs with a typed API and reliable iteration, and unlike an object it accepts any value as a key and exposes size, keys(), values() and entries(). WeakMap is the non-enumerable, garbage-collectable variant of Map: keys must be objects and entries vanish when the key is unreachable, which is why it is used for private per-object caches. Use a Set for membership tests instead of indexOf on an array.`,examples:[{title:`Membership and lookup`,code:`const allowed = new Set(['html', 'css']);
 allowed.has('css');            // true  (O(1) - array indexOf would be O(n))
 
 const byId = new Map([[1, 'Ada'], [2, 'Lin']]);
@@ -157,7 +210,16 @@ function visits(node) { return meta.get(node)?.visits ?? 0; }`,explanation:`Beca
 setTimeout(() => console.log('4 macrotask'), 0);
 Promise.resolve().then(() => console.log('3 microtask'));
 console.log('2 sync');
-// 1 sync, 2 sync, 3 microtask, 4 macrotask`,explanation:`All synchronous code runs first, then microtasks, then the next macrotask.`}]},{id:`js-13`,category:`javascript`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is the prototype chain?`,answer:`Every JavaScript object has an internal [[Prototype]] link, and property lookup walks that chain until it hits null. Functions inherit from Function.prototype, arrays from Array.prototype, and any object can be linked to your own object so instances share behaviour - that is how "inheritance" works in JavaScript, through delegation rather than copying. Object.create(proto) sets the link directly, and class syntax is sugar over the same mechanism.`,examples:[{title:`Manual delegation`,code:`const animal = { speaks() { return 'generic sound'; } };
+// 1 sync, 2 sync, 3 microtask, 4 macrotask`,explanation:`All synchronous code runs first, then microtasks, then the next macrotask.`}]},{id:`js-13`,category:`javascript`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is the prototype chain?`,answer:`Prototypes are the mechanism by which JavaScript objects inherit features from one another. Every object has a built-in property, its prototype (the internal [[Prototype]] link), and the prototype is itself an object with its own prototype - so property lookup walks a chain and stops only when it reaches a prototype whose own prototype is null. That is how arrays inherit from Array.prototype, functions from Function.prototype, and how any object can delegate shared behaviour to another: "inheritance" in JavaScript is delegation along the chain, not copying. Object.create(proto) sets the link directly, Object.getPrototypeOf reads it, and class syntax is sugar over the same mechanism.`,examples:[{title:`Properties are found along the chain`,code:`const myObject = {
+  city: 'Madrid',
+  greet() {
+    console.log(\`Greetings from \${this.city}\`);
+  },
+};
+
+myObject.greet();                // Greetings from Madrid
+myObject.toString();             // found on Object.prototype, not on myObject
+Object.getPrototypeOf(myObject); // Object.prototype -> ... -> null`,explanation:`greet() is the object's own property; toString() is found further up the chain, which is why you can call methods you never wrote.`},{title:`Manual delegation`,code:`const animal = { speaks() { return 'generic sound'; } };
 const dog = Object.create(animal);
 dog.name = 'Rex';
 
@@ -194,7 +256,24 @@ Math.min(...nums);                    // -9
 // safe for huge arrays
 const min = nums.reduce((m, n) => (n < m ? n : m), Infinity); // -9
 
-Math.min(...[]);                    // Infinity (often not what you want)`,explanation:`Spread is clearest for normal data; reduce avoids the argument-count limit.`}]}],angular:[{id:`angular-1`,category:`angular`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is a component in Angular?`,answer:`A component is an Angular building block that combines an HTML template, styles and a TypeScript class that holds the logic and state. Components are standalone by default in modern Angular and import the dependencies they use directly in their imports array.`,examples:[{title:`A standalone component`,code:`import { Component, inject } from '@angular/core';
+Math.min(...[]);                    // Infinity (often not what you want)`,explanation:`Spread is clearest for normal data; reduce avoids the argument-count limit.`}]},{id:`js-21`,category:`javascript`,difficulty:`medium`,scenarioBased:!1,isRead:!1,isNew:!0,question:`Why is JavaScript single-threaded, and how does the event loop keep it from blocking?`,answer:`Synchronous code runs one statement at a time, in order, and nothing else runs until it finishes. Asynchronous code schedules work to run later and returns immediately, so the thread stays free to keep going. JavaScript is single-threaded because it was born as a browser scripting language: one thread per tab owns the DOM, and if multiple threads mutated the document at once the UI would race and break, so the language runs on one main thread with an event loop that yields to rendering between tasks. Single-threaded means one call stack, so exactly one thing executes at a time. It avoids blocking through the event loop and its two queues: when an async API settles (network, timer, a resolved promise), the runtime does not interrupt the current code; it queues a callback and only runs it once the stack is empty. The microtask queue (promise handlers, queueMicrotask, MutationObserver) is drained completely after each task; the macrotask queue (setTimeout, setInterval, I/O, browser events) runs one task at a time, then the microtask queue empties again, then the browser may paint. Long synchronous work janks the page; long async work stays responsive because the stack empties between small units. Web Workers are the escape hatch for genuinely parallel compute, with the price that they have no DOM access.`,examples:[{title:`Synchronous vs asynchronous at a glance`,code:`console.log('A');                       // sync: runs now, in order
+const x = add(1, 2);                  // sync: result available inline
+console.log(x);                       // '3' immediately
+
+setTimeout(() => console.log('C'), 0);      // scheduled macrotask
+Promise.resolve().then(() => console.log('B')); // scheduled microtask
+
+console.log('D');                     // sync: runs now
+// output order: A, 3, D, B, C`,explanation:`Sync code finishes inline; async callbacks run later. Even a 0ms timer is still a task, and the microtask (B) always beats it because the microtask queue drains before the next macrotask.`},{title:`Why one thread does not block: the event loop`,code:`// The event loop, simplified:
+while (true) {
+  drain the ENTIRE microtask queue;  // promises, queueMicrotask
+  if (stack is empty) run ONE macrotask; // timers, I/O, DOM events
+  render if needed;                  // layout + paint
+}
+
+// Callbacks only run when the stack is empty, which is the yield point
+// that keeps the UI responsive - provided no single sync task runs
+// so long that it never yields.`,explanation:`The microtask queue empties fully after each task; the macrotask queue runs one task at a time. Callbacks never interrupt running code, so the page stays interactive for async-heavy work.`}]}],angular:[{id:`angular-1`,category:`angular`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is a component in Angular?`,answer:`A component is an Angular building block that combines an HTML template, styles and a TypeScript class that holds the logic and state. Components are standalone by default in modern Angular and import the dependencies they use directly in their imports array.`,examples:[{title:`A standalone component`,code:`import { Component, inject } from '@angular/core';
 import { UserCard } from './user-card';
 
 @Component({
@@ -205,7 +284,7 @@ import { UserCard } from './user-card';
 export class UserList {
   private readonly store = inject(UserStore);
   readonly users = computed(() => this.store.active());
-}`,explanation:`Template, styles and class in one place; everything it needs is listed in imports.`}]},{id:`angular-2`,category:`angular`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is data binding in Angular?`,answer:`Data binding connects the component class to the template. Interpolation {{ }} and property binding [property] flow from class to view, event binding (event) flows from view to class, and two-way binding [(ngModel)] or model() flows both ways.`,examples:[{title:`Interpolation`,code:`<h1>Hello {{ user().name }}</h1>`,explanation:`Class -> view, rendered as text (escaped).`},{title:`Property binding`,code:`<img [src]="avatarUrl()" [disabled]="isPending()" />`,explanation:`Sets a DOM/component property instead of an attribute.`},{title:`Event binding`,code:`<button (click)="save()">Save</button>`,explanation:`View -> class: the handler receives a native or $event value.`},{title:`Two-way binding`,code:`<input [ngModel]="name()" (ngModelChange)="name.set($event)" />`,explanation:`Expands to a property binding plus an event binding; with signals you usually write both sides explicitly.`}]},{id:`angular-3`,category:`angular`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is an Angular directive?`,answer:`A directive is a class that extends HTML behaviour — structure or presentation — without an associated template. Attribute directives change an element's appearance or behaviour, while structural directives add, remove or repeat elements in the DOM - *ngIf and *ngFor are the classic ones, replaced in modern templates by the built-in @if / @for control-flow blocks.`,examples:[{title:`Component directive`,code:`<app-header [title]="pageTitle()" />`,explanation:`A component is a directive with a template - it adds a new element to the DOM.`},{title:`Structural directive`,code:`@if (isLoggedIn()) { <app-admin /> }`,explanation:`Structural directives add or remove DOM (@if/@for/@switch are built-ins now).`},{title:`Attribute directive`,code:`<button matButton appAutofocus>Go</button>`,explanation:`Attribute directives change behaviour or appearance of the host element without adding markup.`}]},{id:`angular-4`,category:`angular`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is dependency injection?`,answer:`Dependency injection is how Angular provides the services a component or class needs. A class declares its dependencies in its constructor or with inject(), and Angular's injector resolves them. Services marked providedIn: 'root' are app-wide singletons.`,examples:[{title:`Root-provided service`,code:`@Injectable({ providedIn: 'root' })
+}`,explanation:`Template, styles and class in one place; everything it needs is listed in imports.`}]},{id:`angular-2`,category:`angular`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is data binding in Angular?`,answer:`Data binding connects the component class to the template. Interpolation {{ }} and property binding [property] flow from class to view, event binding (event) flows from view to class, and two-way binding [(ngModel)] or model() flows both ways.`,examples:[{title:`Interpolation`,code:`<h1>Hello {{ user().name }}</h1>`,explanation:`Class -> view, rendered as text (escaped).`},{title:`Property binding`,code:`<img [src]="avatarUrl()" [disabled]="isPending()" />`,explanation:`Sets a DOM/component property instead of an attribute.`},{title:`Event binding`,code:`<button (click)="save()">Save</button>`,explanation:`View -> class: the handler receives a native or $event value.`},{title:`Two-way binding`,code:`<input [ngModel]="name()" (ngModelChange)="name.set($event)" />`,explanation:`Expands to a property binding plus an event binding; with signals you usually write both sides explicitly.`}]},{id:`angular-3`,category:`angular`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is an Angular directive?`,answer:`A directive is a class that extends HTML behaviour — structure or presentation — without an associated template. Attribute directives change an element's appearance or behaviour, while structural directives add, remove or repeat elements in the DOM - *ngIf and *ngFor are the classic ones, replaced in modern templates by the built-in @if / @for control-flow blocks.`,examples:[{title:`Component directive`,code:`<app-header [title]="pageTitle()" />`,explanation:`A component is a directive with a template - it adds a new element to the DOM.`},{title:`Structural directive`,code:`@if (isLoggedIn()) { <app-admin /> }`,explanation:`Structural directives add or remove DOM (@if/@for/@switch are built-ins now).`},{title:`Attribute directive`,code:`<button matButton appAutofocus>Go</button>`,explanation:`Attribute directives change behaviour or appearance of the host element without adding markup.`}]},{id:`angular-4`,category:`angular`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is dependency injection?`,answer:`Dependency injection is how Angular provides the services a component or class needs. Instead of a class creating its own dependencies with new, it declares what it needs - in its constructor or with inject() - and Angular's injector resolves and supplies them, which is the "no manual instantiating" part. The advantages are loose coupling (a class depends on a token, not a concrete implementation), testability (swap in a fake via the same token), a single place to control scope and lifetime (an app-wide singleton or one instance per component or route), and easier refactoring because the wiring lives in the injector rather than being scattered through constructors. Services marked providedIn: 'root' are app-wide singletons.`,examples:[{title:`Root-provided service`,code:`@Injectable({ providedIn: 'root' })
 export class ApiClient {
   private readonly http = inject(HttpClient);
 }
@@ -274,7 +353,7 @@ private readonly destroyRef = inject(DestroyRef);
 
 ngOnInit() {
   this.timer$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.tick());
-}`,explanation:`In the heap snapshot, detached DOM retained by a live subscription is the giveaway; takeUntilDestroyed (or the async pipe) makes cleanup automatic.`}]},{id:`angular-12`,category:`angular`,difficulty:`medium`,scenarioBased:!0,isRead:!1,question:`You need a reusable form input that works both with ngModel and inside a reactive form. How do you build it?`,answer:`Implement ControlValueAccessor on a component: writeValue populates the control, registerOnChange/registerOnTouched wire the UI to the form model, and setDisabledState handles enable/disable. Then it can be used with [(ngModel)] or [formControl]/formControlName exactly like a native input.`,examples:[{title:`ControlValueAccessor`,code:`@Component({
+}`,explanation:`In the heap snapshot, detached DOM retained by a live subscription is the giveaway; takeUntilDestroyed (or the async pipe) makes cleanup automatic.`}]},{id:`angular-12`,category:`angular`,difficulty:`medium`,scenarioBased:!0,isRead:!1,question:`You need a reusable form input that works both with ngModel and inside a reactive form. How do you build it?`,answer:`Implement ControlValueAccessor on a component: writeValue populates the control, registerOnChange/registerOnTouched wire the UI to the form model, and setDisabledState handles enable/disable. You might ask why this is needed - could you not just read the ngModel value and build the payload yourself? For one screen you could, but then the component knows nothing about the form around it. Implementing CVA makes the component speak the same contract as a native input, so it works with [(ngModel)] and with [formControl]/formControlName, participates in validation and touched/dirty/pending state, responds to form.reset(), honours setDisabledState, and composes inside a parent formGroup. The emitted value is only one part of that contract; the rest is what makes it interchangeable with a real input.`,examples:[{title:`ControlValueAccessor`,code:`@Component({
   selector: 'app-rating',
   providers: [{ provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => Rating), multi: true }],
 })
@@ -334,10 +413,11 @@ ngOnInit(): void {
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authReq = req.clone({ setHeaders: { Authorization: 'Bearer token' } });
   return next(authReq);
-};`,explanation:`Modern functional interceptor: clone and chain with next.`}]},{id:`angular-20`,category:`angular`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is a pipe and the difference between pure and impure pipes?`,answer:`A pipe transforms a value in the template ({{ value | date: 'short' }}). A pure pipe's transform runs only when its input reference changes, so Angular skips re-running it on every change detection pass - the default and the fast path. An impure pipe (pure: false) runs on every change detection cycle, needed for stateful transforms, but it costs performance, so make it the exception.`,examples:[{title:`Pure vs impure pipe`,code:`@Pipe({ name: 'filter', pure: false })
+};`,explanation:`Modern functional interceptor: clone and chain with next.`}]},{id:`angular-20`,category:`angular`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is a pipe and the difference between pure and impure pipes?`,answer:`A pipe transforms a value in the template ({{ value | date: 'short' }}). A pure pipe (the default) runs its transform only when Angular detects a "pure change" to an input argument: a change to a primitive value (string, number, boolean) or a new object/array reference. That is why mutating data in place - pushing into an array or editing a property of an object - does not re-run a pure pipe: the reference is unchanged, so Angular sees no change. That is the classic pure-pipe pitfall. An impure pipe (pure: false) runs during every change detection cycle - every keystroke, click or timer tick - so it does pick up mutations and data changing independently of its arguments, but at a real performance cost. Make pure the rule and impure the exception.`,examples:[{title:`Why a pure pipe misses a mutation`,code:`items.push(newItem);         // same array reference -> a pure pipe does not re-run
+this.items.set([...items]);  // new reference -> the pipe re-runs`,explanation:`A pure pipe keys off the argument's reference, so an in-place mutation is invisible to it; hand it a new array (or use an impure pipe).`},{title:`Pure vs impure pipe`,code:`@Pipe({ name: 'filter', pure: false })
 export class FilterPipe implements PipeTransform {
   transform(list: any[], q: string) { /* runs every CD cycle */ return ...; }
-}`,explanation:`pure (default) runs on reference changes only; impure runs every change detection cycle.`}]},{id:`angular-21`,category:`angular`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is content projection (ng-content)?`,answer:`Content projection lets a parent component pass markup into a child's template via <ng-content>. In a card or modal component the child defines named slots with <ng-content select="[slot='header']"> and the parent fills them by putting slot="header" on its content, which makes the component reusable without prop-drilling markup. Multi-slot projection uses the select attribute; a catch-all ng-content without select grabs everything else.`,examples:[{title:`Multi-slot content projection`,code:`<app-card>
+}`,explanation:`pure (default) runs on primitive or reference changes only; impure runs every change detection cycle.`}]},{id:`angular-21`,category:`angular`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is content projection (ng-content)?`,answer:`Content projection lets a parent component pass markup into a child's template via <ng-content>. In a card or modal component the child defines named slots with <ng-content select="[slot='header']"> and the parent fills them by putting slot="header" on its content, which makes the component reusable without prop-drilling markup. Multi-slot projection uses the select attribute; a catch-all ng-content without select grabs everything else.`,examples:[{title:`Multi-slot content projection`,code:`<app-card>
   <h2 slot="header">Title</h2>
   <p>Body content</p>
   <button slot="footer">OK</button>
@@ -547,7 +627,252 @@ export class TrackedErrorHandler implements ErrorHandler {
 }
 
 // upload the maps at build time, never serve them publicly
-npx sentry-cli sourcemaps upload --release $VERSION dist/browser`,explanation:`Hidden source maps are uploaded to the tracker and excluded from the bundle you deploy.`}]}],performance:[{id:`performance-1`,category:`performance`,difficulty:`advanced`,scenarioBased:!1,isRead:!1,question:`What happens when a user types a URL into the browser and presses enter?`,answer:`The first question of this category, and the one that reveals whether you actually
+npx sentry-cli sourcemaps upload --release $VERSION dist/browser`,explanation:`Hidden source maps are uploaded to the tracker and excluded from the bundle you deploy.`}]},{id:`angular-32`,category:`angular`,difficulty:`advanced`,scenarioBased:!1,isRead:!1,isNew:!0,question:`What are micro-frontends, and how would you implement them in Angular?`,answer:`A micro-frontend splits one UI into independently built, independently deployed applications owned by separate teams, stitched together into a single product for the user. In Angular the common approaches are: module federation (Webpack 5, or Native Federation for the esbuild/Vite application builder), where a shell loads remote apps at runtime and shares framework singletons; Web Components via Angular Elements, where each micro-app is exported as a custom element and may even be written in another framework; and iframes for hard isolation at the cost of integration and performance. The genuinely hard parts are not the loading mechanism. Angular must be a shared singleton, not one copy per remote. Routing from the shell into a remote has to be designed. The apps need an agreed way to communicate (custom events, a shared event bus, or a shared state library). And a shared design system has to stop the UI drifting. Add the operational cost too: several pipelines, several versions of shared dependencies, and a much harder end-to-end testing story. The honest framing is that a modular monolith in an Nx workspace is the better default, and micro-frontends are justified only when independent deployment and team autonomy outweigh that complexity.`,examples:[{title:`Runtime composition with Native Federation`,code:`// federation.config.js (remote app)
+export default withNativeFederation({
+  name: 'checkout',
+  exposes: { './routes': './projects/checkout/src/app/checkout.routes.ts' },
+});
+
+// shell: load the remote only when its route is hit
+const routes: Routes = [{
+  path: 'checkout',
+  loadChildren: () =>
+    loadRemoteModule('checkout', './routes').then((m) => m.CHECKOUT_ROUTES),
+}];`,explanation:`The shell is a normal Angular app; the remote is a separately deployed one loaded lazily at runtime. Shared packages (including @angular/core) are configured as singletons so there is one framework instance.`},{title:`A framework-agnostic boundary with Angular Elements`,code:`import { createApplication } from '@angular/platform-browser';
+import { createCustomElement } from '@angular/elements';
+
+const app = await createApplication({ providers: [/* ... */] });
+const el = createCustomElement(CheckoutWidget, { injector: app.injector });
+customElements.define('checkout-widget', el);
+// <checkout-widget></checkout-widget> mounts the Angular app anywhere`,explanation:`Exposing the app as a custom element gives a clean boundary that a legacy host page, or a host built with another framework, can consume.`}]},{id:`angular-33`,category:`angular`,difficulty:`advanced`,scenarioBased:!1,isRead:!1,isNew:!0,question:`How do you write a custom validator and an async validator in Angular reactive forms?`,answer:`A validator is just a function that takes a control and returns either null (valid) or an errors object. For a reusable one, return a factory so you can pass a parameter: forbiddenName('admin') returns (control: AbstractControl) => ValidationErrors | null. Attach it when you build the FormControl, or later with addValidators(). The keys of the returned object are what the template switches on, so expose the key and the value that failed rather than baking a message into the validator. Cross-field rules such as password === confirmPassword belong on the parent FormGroup, not the control, because one control cannot see its sibling. An async validator is the same idea but returns an Observable or a Promise; the control goes to status 'pending' while it runs, and Angular only runs it once the synchronous validators pass. Always debounce it and cancel stale work (or use updateOn: 'blur'), otherwise you fire a server request on every keystroke and race the responses. In template-driven forms the same logic is packaged as a directive registered on NG_VALIDATORS / NG_ASYNC_VALIDATORS; in reactive forms the function is enough.`,examples:[{title:`A reusable synchronous validator`,code:`import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+
+export function forbiddenName(name: string): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const taken = control.value?.toLowerCase() === name.toLowerCase();
+    return taken ? { forbiddenName: { value: control.value } } : null;
+  };
+}
+
+// new FormControl('', [Validators.required, forbiddenName('admin')])`,explanation:`Return null when valid and a keyed errors object when not; the template reacts to form.controls.name.hasError('forbiddenName').`},{title:`Cross-field rule and an async availability check`,code:`import { AbstractControl, AsyncValidatorFn, ValidationErrors } from '@angular/forms';
+import { timer, of } from 'rxjs';
+import { switchMap, map, catchError } from 'rxjs/operators';
+
+// Cross-field: lives on the FormGroup
+export const passwordsMatch = (g: AbstractControl): ValidationErrors | null =>
+  g.get('password')?.value === g.get('confirm')?.value
+    ? null
+    : { passwordsMismatch: true };
+
+// Async: runs only after sync validators pass, debounced so it runs on pause
+export function uniqueUsername(api: UsersApi): AsyncValidatorFn {
+  return (control: AbstractControl) =>
+    timer(300).pipe(
+      switchMap(() => api.isTaken(control.value)),
+      map((taken) => (taken ? { usernameTaken: true } : null)),
+      catchError(() => of(null)),
+    );
+}
+
+// new FormGroup({...}, { validators: passwordsMatch });`,explanation:`One control cannot see its sibling, so the group validator compares them; timer() plus switchMap debounces and cancels stale checks so an older response cannot overwrite a newer one.`}]},{id:`angular-34`,category:`angular`,difficulty:`medium`,scenarioBased:!1,isRead:!1,isNew:!0,question:`How does JWT authentication work in the UI, what is sent to the backend, and what does the backend do with it?`,answer:`The UI posts credentials (username and password) once; the backend checks them and returns a signed token, usually with a short expiry, plus often a longer-lived refresh token. A JWT is three base64url parts: header.payload.signature. Where you store it matters. The safest option is an httpOnly, Secure, SameSite cookie that the server sets, because JavaScript and therefore an XSS attack cannot read it; if you keep it in JavaScript, prefer memory for the access token and treat localStorage as XSS-exposed. The important division of responsibility is that the UI never verifies the signature and never trusts claims for security. It may decode the payload to read exp or a display name, but that is cosmetic only: decoding is not verifying. On every call the client sends the token, typically Authorization: Bearer <token> (with withCredentials: true when it lives in a cookie). The backend verifies the signature with the secret or public key, checks exp/nbf, issuer and audience, then reads the claims (sub, roles) to authorise the request. In Angular an HTTP interceptor attaches the header and handles a 401 by refreshing the token and retrying once. A token is a credential, so never log it or put it in a URL.`,examples:[{title:`Attach the token and refresh on 401`,code:`@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+  private auth = inject(AuthStore);
+
+  intercept(req: HttpRequest<unknown>, next: HttpHandler) {
+    const token = this.auth.accessToken();
+    const authReq = token
+      ? req.clone({ setHeaders: { Authorization: \`Bearer \${token}\` } })
+      : req;
+
+    return next.handle(authReq).pipe(
+      catchError((err: HttpErrorResponse) =>
+        err.status === 401
+          ? this.auth.refreshAndRetry(authReq, next)
+          : throwError(() => err)),
+    );
+  }
+}`,explanation:`One place adds the header to every request; a 401 triggers a refresh and a single retry instead of an error surfacing on every in-flight call.`},{title:`The UI only decodes; the backend verifies`,code:`// JWT = base64url(header).base64url(payload).signature
+// The UI may read the payload for display only:
+const claims = JSON.parse(atob(token.split('.')[1]));
+const expired = claims.exp * 1000 < Date.now();
+
+// The backend, on every request:
+// 1. verify the signature (secret or public key)
+// 2. check exp / nbf / iss / aud
+// 3. trust sub + roles for authorisation
+// Never make an access decision from a client-decoded token.`,explanation:`Decoding is not verifying: the payload is attacker-visible and attacker-editable, so it is fine for display and useless for a security decision.`}]},{id:`angular-35`,category:`angular`,difficulty:`basic`,scenarioBased:!1,isRead:!1,isNew:!0,question:`What are pipes in Angular, and how do you create a custom pipe?`,answer:`A pipe transforms a value for display, written in a template with the | operator, so the component keeps the raw data while the view shows a formatted version. Angular ships DatePipe, CurrencyPipe, DecimalPipe, PercentPipe, UpperCasePipe, TitleCasePipe, SlicePipe, JsonPipe, KeyValuePipe and AsyncPipe. A custom pipe is a small class decorated with @Pipe({ name: 'truncate' }) that implements PipeTransform with a transform(value, ...args) method; you then add the class to the standalone component's imports (or declare it in a shared module) and use it as {{ text | truncate: 20 }}. Pipes are pure by default: Angular re-runs one only when its input reference changes, so the transform must be deterministic and free of side effects. Setting pure: false re-runs it on every change detection cycle, which is why an impure pipe over a large list is a well-known performance trap. Keep pipes for display-only transformations; heavy work belongs in computed() or a component, and async state belongs to the async pipe.`,examples:[{title:`A custom pipe`,code:`import { Pipe, PipeTransform } from '@angular/core';
+
+@Pipe({ name: 'truncate' })
+export class TruncatePipe implements PipeTransform {
+  transform(value: string, limit = 20, ellipsis = '\\u2026'): string {
+    return value.length > limit ? value.slice(0, limit) + ellipsis : value;
+  }
+}
+
+// standalone component: imports: [TruncatePipe]
+// template: {{ description | truncate: 40 }}`,explanation:`Extra arguments after the first are passed with colons; the pipe is reusable because it is a standalone class, and correct because a string input is compared by value.`},{title:`Pure vs impure in practice`,code:`// Pure (default): recomputed only when \`items\` becomes a new reference
+@Pipe({ name: 'total', pure: true })
+// @Pipe({ name: 'total', pure: false }) recomputes on EVERY change detection tick
+
+// So this shows a stale total until you replace the array:
+this.items.push(item);              // same reference -> pipe does not run
+this.items = [...this.items, item]; // new reference -> pipe runs`,explanation:`Pure pipes trade freshness for speed; if a mutation must be reflected, either produce a new reference or derive the value from a computed() signal instead.`}]},{id:`angular-36`,category:`angular`,difficulty:`medium`,scenarioBased:!1,isRead:!1,isNew:!0,question:`What is new in the recent Angular releases?`,answer:`The last few majors have been mostly about signals, zoneless and the build. v17 introduced the built-in control flow (@if/@for/@switch), @defer for lazy-loading template chunks, and the new esbuild/Vite application builder that replaced webpack. v18 brought experimental zoneless change detection and the @let template variable. v19 made standalone the default (standalone: true was no longer needed), shipped incremental hydration, and added the resource() API for async state. v20 stabilised effect, linkedSignal and toSignal, made incremental hydration and route-level render modes stable, promoted zoneless to developer preview, and introduced the experimental httpResource. v21 made zoneless the default for new apps and stopped including zone.js by default, released experimental Signal Forms, made Vitest the default test runner, provided HttpClient by default, and launched Angular Aria in developer preview. v22 stabilised Signal Forms, Angular Aria and the async reactivity APIs (resource/httpResource), made OnPush the default change detection strategy for new apps, and renamed ChangeDetectionStrategy.Default to Eager. The theme across all of it is signal-first, zoneless and performance by default, and every claim here is worth checking against the release blog, because the pace is fast.`,examples:[{title:`New control flow and defer`,code:`@if (user(); as u) {
+  <h1>{{ u.name }}</h1>
+} @else {
+  <p>Signed out</p>
+}
+
+@for (item of items(); track item.id) {
+  <app-row [item]="item" />
+} @empty {
+  <p>No items</p>
+}
+
+@defer (on viewport) {
+  <app-heavy-chart />
+} @placeholder {
+  <div class="chart-skeleton"></div>
+}`,explanation:`Built-in control flow replaced the structural directives; @defer splits a component into its own bundle and loads it only when its trigger fires.`},{title:`Signals and zoneless by default`,code:`import { provideZonelessChangeDetection } from '@angular/core';
+
+bootstrapApplication(App, {
+  providers: [provideZonelessChangeDetection()],
+});
+
+export class Counter {
+  count = signal(0);
+  double = computed(() => this.count() * 2);
+  // no zone.js: updates are scheduled when a signal a template read changes
+}`,explanation:`New Angular apps are zoneless and use OnPush by default, so change detection is driven by signal writes and inputs instead of zone.js patching every browser event.`}]},{id:`angular-37`,category:`angular`,difficulty:`advanced`,scenarioBased:!1,isRead:!1,isNew:!0,question:`How does change detection work in Angular with zone.js, and how does it work now without it? Walk through what happens from root to child when an event fires in a child.`,answer:`Change detection is Angular asking 'did anything I rendered need to update?', and the mechanism differs by era. With zone.js: zone patches browser APIs (addEventListener, setTimeout, promises, XHR), and when any async task settles it notifies Angular, which runs change detection from the root component down to every leaf. Under the default strategy every component in the tree is visited and its template bindings compared by reference, re-rendering subtrees with new values. So an event in a deeply nested child still triggers a full root-to-leaf pass, because zone only knows that something async happened, not where. In the zoneless era (the default since Angular 21) the framework does not patch globals. It tracks precise triggers - a signal a template reads being written, an input changing, a host or template listener firing, markForCheck(), or an attached view - and a scheduler runs change detection for exactly those components and their descendants, with OnPush as the default. The traversal is still top-down from root to child, but only inside the subtree that actually changed; untouched branches are skipped entirely. The mental model: with zones it is 'check everything after any asynchronous work'; zoneless it is 'check the minimum subtree that something actually touched'.`,examples:[{title:`With zone.js: patch, then walk the whole tree`,code:`// zone.js wraps browser APIs: addEventListener, setTimeout,
+// Promise, XHR. When any of them settles, zone signals Angular
+// to run change detection from the root down:
+//
+//   RootComponent
+//    \u251C\u2500\u2500 Header    (checked)
+//    \u251C\u2500\u2500 Child     (checked)  <- event fired here
+//    \u2514\u2500\u2500 List      (checked)
+//
+// Every component is visited (default strategy) even though the
+// event happened only in Child, because zone cannot say where.`,explanation:`Zone's granularity is 'some async task settled', not 'this component changed', so the default is a full-tree pass; OnPush is how you opt subtrees out of it.`},{title:`Zoneless: the signal knows where it changed`,code:`bootstrapApplication(App, {
+  providers: [provideZonelessChangeDetection()],
+});
+
+@Component({ changeDetection: ChangeDetectionStrategy.OnPush })
+export class List {
+  readonly rows = inject(Store).rows; // a signal
+  // when Store writes that signal, only components whose template
+  // reads rows() are scheduled; the scheduler still runs top-down
+  // from their root, but skips everything untouched.
+}`,explanation:`The signal carries dependency information, so change detection is notification-based: unaffected branches are never visited, and the root-to-child traversal happens only inside the subtree that changed.`}]},{id:`angular-38`,category:`angular`,difficulty:`medium`,scenarioBased:!1,isRead:!1,isNew:!0,question:`What are the advantages of using Renderer2 instead of touching the DOM directly?`,answer:`Renderer2 is Angular's abstraction layer over the DOM, injected per component, and its advantages are about portability, lifecycle and safety rather than speed. First, platform safety: it creates elements through Angular's abstraction, so the same code runs in the browser, during server-side rendering (where document does not exist) and in Web Workers, instead of crashing on a direct document.createElement call. Second, it plays by Angular's rules: elements it creates are tied into component style encapsulation and are cleaned up when the component is destroyed. Third, lifecycle: Renderer2.listening() returns a teardown function and Angular invokes destroy() at component teardown, so listeners and elements you add imperatively do not leak. Fourth, it is a deliberate, audited API: manipulating the DOM through the renderer keeps you out of raw innerHTML and is the documented path for anything a template cannot express. The honest limit: Renderer2 is not a reactivity tool - DOM changes it makes are not reflected in state, so in the zoneless/signal default you still own keeping the template and the DOM in agreement. And not everything needs it: structural work belongs in templates, and for plain element access Angular also exposes the DOCUMENT token.`,examples:[{title:`SSR-safe imperative DOM work`,code:`import { Directive, ElementRef, Renderer2, inject } from '@angular/core';
+
+@Directive({ selector: '[appHighlight]' })
+export class HighlightDirective {
+  private el = inject(ElementRef);
+  private renderer = inject(Renderer2);
+
+  ngOnInit() {
+    // the same code runs on server and browser:
+    this.renderer.addClass(this.el.nativeElement, 'highlight');
+    const off = this.renderer.listen(this.el.nativeElement, 'click', () => this.flash());
+  }
+}`,explanation:`Read through ElementRef, write through Renderer2: addClass and listen keep working during SSR and are torn down with the directive, where raw window/document would crash the server render.`},{title:`Listening returns a teardown`,code:`// Every renderer method that subscribes returns a function to undo it:
+const removeClick = this.renderer.listen(el, 'click', onClick);
+const removeKey  = this.renderer.listen(el, 'keydown', onKey);
+
+// call them when the directive is destroyed:
+ngOnDestroy() { removeClick(); removeKey(); }
+
+// Angular's component teardown also disposes what it tracked.`,explanation:`Renderer2 tracks what you attached and disposes it on destroy, so imperative DOM code cannot leave orphan listeners behind.`}]},{id:`angular-39`,category:`angular`,difficulty:`medium`,scenarioBased:!1,isRead:!1,isNew:!0,question:`What is view encapsulation in Angular, and what are its types?`,answer:`View encapsulation controls how far the CSS you write in a component's styles reaches. Emulated (the default) rewrites your styles during compilation: every element of the component gets a unique attribute such as _ngcontent-abc123, and every selector gets the same attribute appended, so the rules only match that component. You get the isolation of shadow DOM without actually using it; the trade-off is rewritten CSS at build time and the fact that it is not impenetrable - :host, :host-context and ::ng-deep still reach across it. ShadowDom puts the component's template into a real shadow root, so its styles are fully isolated from the document: nothing leaks in and nothing leaks out; the price is that global styles and external libraries stop affecting the component. None adds no scoping at all: the component's styles become global document styles. Choose Emulated for normal component styling, None when you deliberately want global CSS (often for a styles file at app level), and ShadowDom for a strict public widget where hard isolation matters more than inheriting the app's theme.`,examples:[{title:`Emulated: attribute rewriting`,code:`@Component({
+  selector: 'app-card',
+  encapsulation: ViewEncapsulation.Emulated,
+  styles: [\`.title { font-weight: 600; }\`],
+  template: \`<p class="title">Hello</p>\`,
+})
+
+// compiled to:
+//   .title[_ngcontent-abc123] { font-weight: 600; }
+//   <app-card _ngcontent-abc123>
+//     <p _ngcontent-abc123 class="title">Hello</p>
+//   </app-card>`,explanation:`The attribute on both selector and element keeps the rule inside the component while the DOM stays in the normal document - that is what makes it the cheap default.`},{title:`ShadowDom vs None at a glance`,code:`ViewEncapsulation.ShadowDom
+  - template goes inside a real shadow root
+  - styles fully isolated: nothing leaks in or out
+  - global styles and third-party libs stop applying
+  - use for a strict standalone widget
+
+ViewEncapsulation.None
+  - no scoping at all: styles are injected globally
+  - component's CSS can affect anything (name collisions!)
+  - use only when you deliberately want document-level CSS`,explanation:`The two ends of the spectrum: hard isolation for a public widget, no isolation when you opt out on purpose; Emulated sits between them as the day-to-day default.`}]},{id:`angular-40`,category:`angular`,difficulty:`medium`,scenarioBased:!1,isRead:!1,isNew:!0,question:`What are the Angular component lifecycle hooks, and how do they change in the signal-based era?`,answer:`Lifecycle hooks are the calls Angular makes as a component is created, updated and torn down. Creation order: constructor (plain TypeScript, nothing bound yet), ngOnChanges (runs before ngOnInit and again on every decorated @Input change, handing you a SimpleChanges object of previous/current values), ngOnInit (once, after inputs resolve), ngDoCheck (every change detection pass, for custom checks), ngAfterContentInit and ngAfterContentChecked (projected content), ngAfterViewInit and ngAfterViewChecked (the component's own view), then ngOnDestroy (teardown, where manual subscriptions, listeners and timers must be unwound). The list is unchanged in the signal era; what changes is what you reach for. Signal inputs do not fire ngOnChanges - it is decorated-input only - so previous/current logic moves to an effect() that tracks the input. constructor becomes the natural place to set up signals, because input() signals are readable immediately and need no waiting pass. ngDoCheck and the ...Checked hooks exist for pain cases that rarely arise now, since a signal a template reads schedules exactly the update it needs. computed() replaces most derived-value bookkeeping, and the cleanup that used to live in ngOnDestroy is handled by DestroyRef and by effect() and afterRenderEffect() that dispose themselves with the component. So a modern component leans on computed/effect plus OnInit and OnDestroy, and the rest of the pipeline is mostly invisible.`,examples:[{title:`The lifecycle in order`,code:`constructor()            // plain TS; inputs not resolved yet
+ngOnChanges()            // every @Input change, incl. the first
+ngOnInit()               // once: component ready
+ngDoCheck()              // every change detection pass
+ngAfterContentInit()     // projected content ready
+ngAfterContentChecked()
+ngAfterViewInit()        // own view ready
+ngAfterViewChecked()
+ngOnDestroy()            // teardown: unsubscribe, clear timers`,explanation:`The full pipeline runs creation -> change -> destruction; the only two you will consciously use most days are constructor/onInit and onDestroy.`},{title:`Signal inputs skip ngOnChanges`,code:`// decorated @Input -> ngOnChanges fires with previous/current:
+@Input() name = '';                    // changes land in ngOnChanges
+
+// signal input -> ngOnChanges does NOT fire, use an effect instead:
+readonly name = input.required<string>();
+effect(() => {
+  const current = this.name();
+  console.log('name changed to', current);
+});
+
+// derived values: computed, not a hook
+readonly greeting = computed(() => \`Hello \${this.name()}\`);`,explanation:`Signal inputs bypass ngOnChanges by design, so tracked changes move to effect() and derived values move to computed(); that is the main way hooks shrink in the signal era.`}]},{id:`angular-41`,category:`angular`,difficulty:`medium`,scenarioBased:!1,isRead:!1,isNew:!0,question:`What are the Angular route guards, with a small example of each?`,answer:`Route guards are functions the router runs while resolving a navigation to decide whether it proceeds. The current API is functional: canActivate (may this route be entered - auth/access control), canActivateChild (same check for every child of a route, protecting a whole section), canMatch (participates in route matching, picking between several route objects for the same URL - feature flag or user type), canDeactivate (may we leave - unsaved changes), and resolve (prefetch data before the component renders; generally discouraged today, prefer loading after navigation with a loading state). Each guard returns boolean, a UrlTree to redirect, or an Observable/Promise of those. You can list several guards on a route; they run in order and the first false or UrlTree stops navigation. The old class-based guards (CanActivate, CanActivateChild, CanDeactivate, Resolve - and CanLoad, removed in v15) still appear in legacy code; functional guards run inside the injection context, so inject() works directly and testing one is just calling a function.`,examples:[{title:`canActivate, canMatch and canDeactivate`,code:`export const requireLogin = (): boolean => inject(AuthStore).isLoggedIn();
+
+export const isPro = (): boolean => inject(FlagStore).pro();
+
+export const confirmLeave = (cmp: Editor): boolean =>
+  cmp.dirty ? window.confirm('Leave without saving?') : true;
+
+const routes: Routes = [
+  { path: 'pro', canMatch: [isPro], component: ProComponent },
+  { path: 'editor',
+    canActivate: [requireLogin],
+    canDeactivate: [confirmLeave],
+    component: Editor },
+];`,explanation:`Return false to block navigation, a UrlTree to redirect; guards run in listed order, and inject() works inside them because they execute in the injection context.`},{title:`canActivateChild protects a whole section`,code:`export const adminOnly = (): boolean | UrlTree =>
+  inject(AuthStore).isAdmin()
+    ? true
+    : inject(Router).createUrlTree(['/forbidden']);
+
+const routes: Routes = [{
+  path: 'admin',
+  canActivateChild: [adminOnly],
+  children: [
+    { path: 'users', component: UsersComponent },
+    { path: 'settings', component: SettingsComponent },
+  ],
+}];`,explanation:`One guard covers every child, so a newly added admin sub-page cannot be forgotten; a UrlTree gracefully redirects instead of failing the navigation.`}]},{id:`angular-42`,category:`angular`,difficulty:`medium`,scenarioBased:!1,isRead:!1,isNew:!0,question:`How do you embed an iframe such as a YouTube video in Angular, and what are DomSanitizer, SafeResourceUrl and bypassSecurityTrustResourceUrl?`,answer:`Angular treats anything that can execute code as untrusted by default. That includes an iframe's src, an img src, a javascript: link and [innerHTML]: these bindings are sanitized, and anything Angular cannot prove safe is stripped or blocked before it reaches the DOM. DomSanitizer is the injectable that sits at that boundary - it is how you tell Angular a value is safe - and its methods map to the exact context the value will be used in. For an iframe the context is RESOURCE_URL, so the correct call is bypassSecurityTrustResourceUrl(url), which returns a SafeResourceUrl: a wrapper type, not a string, that marks the value as trusted for that binding and stops the sanitizer from touching it. That is the whole reason SafeResourceUrl exists - it is Angular's ticket saying 'I vouch for this resource URL'. What keeps it safe is the rule that you only bypass when you control or strictly validate the input. The safe pattern is to never echo raw data into the src: parse a video id from an allow-list of hosts and rebuild the URL from that id, so a hostile string can never reach the iframe. Bypassing with an unvalidated user-supplied URL is how XSS sneaks in, because a crafted src can point at attacker content that runs under your origin. Finally, trust is per-value: the wrapper applies only to the binding you bind it to, and the same string used anywhere else is still sanitized.`,examples:[{title:`Embed only after validating the input`,code:`import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+
+export class VideoPlayer {
+  private sanitizer = inject(DomSanitizer);
+
+  // strict: allow-list the hosts, rebuild the URL from a matched id,
+  // never echo the raw string into the iframe
+  embedUrl(raw: string): SafeResourceUrl | null {
+    const id = raw.match(
+      /(?:youtube\\.com\\/(?:watch\\?v=|embed\\/|shorts\\/)|youtu\\.be\\/)([A-Za-z0-9_-]{5,})/
+    )?.[1];
+
+    return id
+      ? this.sanitizer.bypassSecurityTrustResourceUrl(
+          \`https://www.youtube.com/embed/\${id}\`,
+        )
+      : null;
+  }
+}
+// template: <iframe [src]="embedUrl(videoUrl)" title="Video" allowfullscreen></iframe>`,explanation:`The id is matched against a fixed pattern and the URL is assembled from that id only, so the value you mark trusted is something you constructed - an attacker cannot smuggle arbitrary content into the src.`},{title:`The trust contexts at a glance`,code:`// Each bypass matches the context Angular would otherwise sanitize:
+bypassSecurityTrustResourceUrl(url)  // iframe src, <video>/<audio>, css url()
+bypassSecurityTrustUrl(url)           // <a href>, <img src>
+bypassSecurityTrustHtml(html)         // [innerHTML]
+bypassSecurityTrustStyle(css)         // [style] bindings
+bypassSecurityTrustScript(script)     // <script> content
+
+// These are not strings but wrapper types (SafeResourceUrl, SafeUrl, ...)
+// that mark the value as trusted for that one binding. A plain string in
+// the same binding is sanitized and may not make it into the DOM at all.`,explanation:`Pick the bypass that matches the binding: iframe/video sources need the ResourceUrl flavour, not TrustUrl. The wrapper is per-value, so using it does not weaken sanitization anywhere else.`}]}],performance:[{id:`performance-1`,category:`performance`,difficulty:`advanced`,scenarioBased:!1,isRead:!1,question:`What happens when a user types a URL into the browser and presses enter?`,answer:`The first question of this category, and the one that reveals whether you actually
 understand the network or just the framework. Walk it in order without
 skipping: URL parsing, DNS resolution to an IP, TCP connection, TLS handshake,
 the HTTP request, the response, and then what the browser does with the bytes. Two
@@ -591,8 +916,11 @@ tests whether you know the order rather than the file names. The order is: the
 browser receives index.html, discovers the module script, downloads and executes
 main.ts, main.ts calls bootstrapApplication with a root component, Angular creates
 that component, its template renders, and only then does anything user-visible
-appear. The root component class is inert until bootstrapApplication instantiates
-it. Within that you should be able to name where the router fits: the root template
+appear. Behind the scenes, the build tool read the main property in angular.json
+(which points at src/main.ts) and the Angular CLI injected the compiled bundle
+scripts near the bottom of index.html, which is why main-XYZ.js is the first
+application code to run. The root component class is inert until
+bootstrapApplication instantiates it and renders it into the <app-root> placeholder. Within that you should be able to name where the router fits: the root template
 contains router-outlet, the router reads the current URL, matches it against the
 route config, and for a lazy route triggers a dynamic import before the routed
 component is created. Mention that in Angular 21+ this app is zoneless by default,
@@ -1370,35 +1698,30 @@ Failure mode to avoid
   Three waivers in a month and people stop reading the warnings. At that point the
   budget is decoration.`,explanation:`Justifying the number from real data, adding a per-bundle budget as well as initial,
 using kB casing, and having an explicit waiver process rather than quietly raising
-limits.`}]},{id:`performance-19`,category:`performance`,difficulty:`basic`,scenarioBased:!1,isRead:!1,question:`What is SSR and hydration, and what does each cost?`,answer:`Two separate features that are usually discussed as one, and separating them is the
-point. SSR renders the component tree to HTML on the server so the user sees content
-before JavaScript runs, which fixes LCP on slow networks and makes the page
-indexable. Hydration is then the browser booting Angular over that existing HTML so
-the app becomes interactive, which requires Angular to find and attach to the
-server-rendered nodes. The costs: SSR needs a Node runtime in production, a platform
-check on every third-party dependency, and a risk of hydration-mismatch errors when
-server and client disagree. The maturity answer is to be clear about whether you need
-SSR at all, since a CSR app with good caching may not.`,examples:[{title:`Server render, then attach`,code:`What each one is
-  SSR         the server renders the component tree to an HTML string, so the first
-              paint does not wait for JavaScript. This is what fixes LCP and SEO.
-  Hydration   the browser boots Angular over that existing DOM instead of throwing it
-              away and re-rendering. Cheaper than client rendering from scratch -
-              that is the point - but strict: if server HTML and the client tree
-              disagree you get a hydration mismatch error rather than a silent fix.
+limits.`}]},{id:`performance-19`,category:`performance`,difficulty:`basic`,scenarioBased:!1,isRead:!1,question:`What is SSR and hydration, in plain terms?`,answer:`SSR, or server-side rendering, means the server runs your Angular app and sends the browser a fully built HTML page, instead of an almost-empty page that only fills in once JavaScript has loaded. The user sees real content immediately, which is faster on slow connections and much better for search engines. Hydration is the next step. When the JavaScript finally arrives in the browser, Angular does not throw that HTML away and render everything again; it attaches to the HTML that is already there, wires up event listeners and makes the page interactive. Reusing the existing markup is the whole point, and it is what the word hydration means. Two things follow from that. First, the server and the browser must produce exactly the same markup, otherwise Angular reports a hydration mismatch. Second, SSR means you now need a Node server in production, and any code that touches window or document has to be guarded so it still runs on the server. That Node server is only the renderer, not a replacement for your backend: your real API (or database) is still there and still involved. The difference is where data is fetched - during the server render an injectable can call HttpClient and bake the result into the HTML, so the first paint already contains the data instead of an empty shell that fetches afterwards. From then on the browser talks to the same backend as before. It is worth it for public, content-heavy pages and SEO; for a dashboard behind a login, plain client-side rendering with good caching is often the better trade.`,examples:[{title:`What actually happens, step by step`,code:`Without SSR
+  Browser downloads a nearly empty index.html -> downloads and runs JS ->
+  renders the app -> user finally sees content. First paint waits on JS.
 
-The production cost of SSR
-  - Node becomes a runtime dependency in production, not just a build-time one
-  - every component and dependency must tolerate running on the server:
-      no window or document at module scope
-      isPlatformBrowser(this.platformId) ? ... : ...
-  - chart and map libraries usually need stubs or dynamic import behind a check
+With SSR + hydration
+  1. Server renders the components to an HTML string and sends it. It may call
+     the real API or database here, so the HTML already carries the data.
+  2. Browser paints that HTML right away, before any JS runs.
+  3. JS loads; Angular hydrates: it reuses the existing DOM instead of
+     recreating it, attaches event listeners and becomes interactive.
 
-When it is worth it
-  Worth it: public content pages, SEO, first-visit users on poor networks.
-  Questionable: an authenticated dashboard behind a login. Almost every real user has
-  been there before, so you pay SSR and hydration cost for a cold-cache user you will
-  rarely see.`,explanation:`Separating SSR from hydration, naming the platform-check cost, and being honest about
-when SSR is not worth it for an authenticated app.`}]},{id:`performance-20`,category:`performance`,difficulty:`basic`,scenarioBased:!1,isRead:!1,question:`What does a Performance API measurement look like in practice, and how would you trust it?`,answer:`Trust is the graded word. In-app marks are useful for route transitions and slow
+So SSR fixes what the user sees first; hydration fixes when it becomes usable.`,explanation:`SSR is about the first paint; hydration is about turning that server-rendered HTML into a live, interactive app without rebuilding the DOM.`},{title:`Keeping server-only code safe`,code:`import { isPlatformBrowser } from '@angular/common';
+import { inject, PLATFORM_ID } from '@angular/core';
+
+export class Analytics {
+  private platformId = inject(PLATFORM_ID);
+
+  track(event: string) {
+    // window/document do not exist on the server, so guard them
+    if (isPlatformBrowser(this.platformId)) {
+      window.navigator.sendBeacon('/collect', event);
+    }
+  }
+}`,explanation:`Code that runs during SSR has no DOM, so anything touching window or document is wrapped in a platform check to avoid breaking the server render.`}]},{id:`performance-20`,category:`performance`,difficulty:`basic`,scenarioBased:!1,isRead:!1,question:`What does a Performance API measurement look like in practice, and how would you trust it?`,answer:`Trust is the graded word. In-app marks are useful for route transitions and slow
 interactions, but they only measure your application - not the network, not the
 browser parse, and nothing that happens before your code runs, which is where
 first-load problems live. So pair them: browser-native measurement for what the user
@@ -1509,7 +1832,29 @@ readonly rows = toSignal(
   { initialValue: [] as Row[] },
 );
 
-readonly compare = computed(() => this.comparators[this.sort()]);  // cached, not re-created`,explanation:`One request per settled query instead of one per keystroke; the comparator is computed once per sort change.`}]}],rxjs:[{id:`rxjs-1`,category:`rxjs`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is an Observable in RxJS and how is it different from a Promise?`,answer:`An Observable is lazy, cold by default, and can emit multiple values over time; it supports cancellation via unsubscribe() and is composable with operators. A Promise is eager, emits at most one value, is not cancellable, and is not pipeable. For example: new Observable(sub => { interval(1000).subscribe(n => sub.next(n)); return () => clear(); }) emits many values and can be torn down, while fetch() returns a single-value Promise.`,examples:[{title:`Observable vs Promise`,code:`// Observable (multiple values, cancellable)
+readonly compare = computed(() => this.comparators[this.sort()]);  // cached, not re-created`,explanation:`One request per settled query instead of one per keystroke; the comparator is computed once per sort change.`}]},{id:`performance-24`,category:`performance`,difficulty:`advanced`,scenarioBased:!1,isRead:!1,isNew:!0,question:`What caching strategies do you use in a front-end application?`,answer:`There are several layers, and a good answer names which one solves which problem. The browser HTTP cache (Cache-Control: max-age, immutable, plus ETag revalidation) and a CDN edge cache are for static assets and GET responses you control; content-hashed filenames (main.abc123.js) let you cache them forever and bust the cache on deploy. A service worker (Angular's built-in ngsw or Workbox) adds a layer independent of the network with runtime strategies: cache-first for static assets, network-first for fresh data, and stale-while-revalidate when you want a fast render plus a background refresh. Inside the running app you cache in memory: an HTTP interceptor or a shareReplay'd observable deduplicates and shares one request across components, and a signals store (or NgRx entity) keeps already-loaded data so a route transition does not refetch. Persistence (localStorage, IndexedDB) survives reloads for things like a user profile or a feature list. The hard part is invalidation, not storage: version your cache keys, prefer stale-while-revalidate over a long max-age for data, never cache authenticated responses in shared caches, and always keep a path to force a refresh. Without an invalidation story a cache just makes bugs look intermittent.`,examples:[{title:`HTTP cache headers: immutable assets vs revalidated data`,code:`// Build output: content-hashed name -> cache forever, never revalidate
+// Cache-Control: public, max-age=31536000, immutable
+
+// API GET that must stay fresh: no freshness, revalidate every use
+// Cache-Control: no-cache
+// ETag: "v42"
+// -> browser sends If-None-Match: "v42"; a 304 keeps the body, no transfer`,explanation:`Hashed assets can be immutable because the name changes with the content; data uses ETag so an unchanged response comes back as a 304 instead of a full body.`},{title:`Share one in-flight request across components (shareReplay)`,code:`import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, shareReplay } from 'rxjs';
+
+@Injectable({ providedIn: 'root' })
+export class UsersService {
+  private http = inject(HttpClient);
+  private cache$?: Observable<User[]>;
+
+  getUsers(): Observable<User[]> {
+    // refCount: false keeps the last result even when nothing is subscribed
+    this.cache$ ??= this.http
+      .get<User[]>('/api/users')
+      .pipe(shareReplay({ bufferSize: 1, refCount: false }));
+    return this.cache$;
+  }
+}`,explanation:`Every caller after the first subscribes to the same underlying request instead of firing another one; swap in a signal store or Workbox runtime caching for the persisted layer.`}]}],rxjs:[{id:`rxjs-1`,category:`rxjs`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is an Observable in RxJS and how is it different from a Promise?`,answer:`An Observable is lazy, cold by default, and can emit multiple values over time; it supports cancellation via unsubscribe() and is composable with operators. A Promise is eager, emits at most one value, is not cancellable, and is not pipeable. For example: new Observable(sub => { interval(1000).subscribe(n => sub.next(n)); return () => clear(); }) emits many values and can be torn down, while fetch() returns a single-value Promise.`,examples:[{title:`Observable vs Promise`,code:`// Observable (multiple values, cancellable)
 import { Observable, interval } from 'rxjs';
 const obs = new Observable(sub => {
   const id = setInterval(() => sub.next(Date.now()), 1000);
@@ -1524,7 +1869,7 @@ http.get('/api').subscribe(...);
 
 // Hot: shared via shareReplay
 const shared$ = http.get('/api').pipe(shareReplay({bufferSize: 1}));
-shared$.subscribe(...); shared$.subscribe(...);`,explanation:`Cold = per-subscriber producer; hot = shared producer.`}]},{id:`rxjs-3`,category:`rxjs`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`Explain Subjects, BehaviorSubject, ReplaySubject, and AsyncSubject with a common use case.`,answer:`Subject: multicast, no initial value, subscribers only get values emitted after subscribing (useful for event buses). BehaviorSubject: requires an initial value, emits the current value to new subscribers (useful for shared auth/user state). ReplaySubject(bufferSize): replays a fixed number of past values to new subscribers (useful for caching chat history). AsyncSubject: emits only the last value and only on completion (useful for one-shot async results).`,examples:[{title:`BehaviorSubject`,code:`import { BehaviorSubject } from 'rxjs';
+shared$.subscribe(...); shared$.subscribe(...);`,explanation:`Cold = per-subscriber producer; hot = shared producer.`}]},{id:`rxjs-3`,category:`rxjs`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is a Subject, how does it differ from a plain Observable, and when would you use BehaviorSubject, ReplaySubject or AsyncSubject?`,answer:`A plain Observable is unicast: each subscriber triggers its own independent execution of the producer, so it cannot share one stream between consumers. A Subject is a special type of Observable that is also an Observer: values are pushed into it with next(), and it multicasts that same stream to every subscriber at once, which is how a single data source is shared across an app. Subject: multicast, no initial value, subscribers only get values emitted after subscribing (useful for event buses). BehaviorSubject: requires an initial value, emits the current value to new subscribers (useful for shared auth/user state). ReplaySubject(bufferSize): replays a fixed number of past values to new subscribers (useful for caching chat history). AsyncSubject: emits only the last value and only on completion (useful for one-shot async results).`,examples:[{title:`BehaviorSubject`,code:`import { BehaviorSubject } from 'rxjs';
 const user$ = new BehaviorSubject<User|null>(null);
 user$.next(u); console.log(user$.value); // current value`,explanation:`BehaviorSubject emits current value to new subscribers.`}]},{id:`rxjs-4`,category:`rxjs`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`When should you use combineLatest, forkJoin, withLatestFrom, and merge?`,answer:`combineLatest: emits when any source emits, after all have emitted at least once — combine related live values (filters + list). forkJoin: emits once, only after all complete with their last value — parallel one-shot requests that all must finish. withLatestFrom: emits only when the source emits, combining the latest values from others (primary stream drives). merge: concurrently emits values from multiple observables as they arrive (union of event streams).`,examples:[{title:`combineLatest vs forkJoin`,code:`import { combineLatest, forkJoin, interval, of } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -1533,7 +1878,17 @@ combineLatest([interval(10).pipe(take(2)), of('x')]).subscribe(v => console.log(
 // emits after both have emitted at least once
 
 forkJoin([of(1), of(2)]).subscribe(v => console.log('forkJoin', v));
-// emits last values when both complete`,explanation:`combineLatest stays live; forkJoin is one-shot on completion.`}]},{id:`rxjs-5`,category:`rxjs`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is switchMap, mergeMap, concatMap, and exhaustMap? Give an example for each.`,answer:`switchMap: cancels the previous inner observable on a new outer emission — typeahead/search (cancel stale requests). mergeMap (flatMap): subscribes to all inner observables in parallel, emits results as they come — independent parallel calls. concatMap: subscribes sequentially, waits for current inner to complete before next — queued operations (saving drafts in order). exhaustMap: ignores new outer emissions while the current inner is active — login/save button mash prevention.`,examples:[{title:`switchMap vs exhaustMap (search vs save)`,code:`import { fromEvent, of } from 'rxjs';
+// emits last values when both complete`,explanation:`combineLatest stays live; forkJoin is one-shot on completion.`},{title:`withLatestFrom and merge`,code:`import { merge, fromEvent, of } from 'rxjs';
+import { withLatestFrom, map } from 'rxjs/operators';
+
+// withLatestFrom: the source drives; sample the latest of the others
+fromEvent(button, 'click').pipe(
+  withLatestFrom(user$, filters$),
+  map(([, user, filters]) => ({ user, filters })), // first value is the source, ignored
+).subscribe(load);
+
+// merge: union of streams, values arrive as each emits, no combination
+merge(saveClicks$, keyboardSaves$).subscribe(save);`,explanation:`withLatestFrom emits only when the source emits (the others must have emitted at least once); merge just forwards everything as it arrives.`}]},{id:`rxjs-5`,category:`rxjs`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is switchMap, mergeMap, concatMap, and exhaustMap? Give an example for each.`,answer:`switchMap: cancels the previous inner observable on a new outer emission — typeahead/search (cancel stale requests). mergeMap (flatMap): subscribes to all inner observables in parallel, emits results as they come — independent parallel calls. concatMap: subscribes sequentially, waits for current inner to complete before next — queued operations (saving drafts in order). exhaustMap: ignores new outer emissions while the current inner is active — login/save button mash prevention.`,examples:[{title:`switchMap vs exhaustMap (search vs save)`,code:`import { fromEvent, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, exhaustMap } from 'rxjs/operators';
 
 // Search: switchMap cancels stale
@@ -1545,7 +1900,7 @@ fromEvent(input, 'input').pipe(
 // Save: exhaustMap ignores extra clicks
 fromEvent(saveBtn, 'click').pipe(
   exhaustMap(() => saveApi())
-).subscribe(res => showToast(res));`,explanation:`switchMap cancels previous inner on new outer; exhaustMap drops outer while inner is active.`}]},{id:`rxjs-6`,category:`rxjs`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is the purpose of share(), shareReplay(), and refCount()?`,answer:`share() turns a cold observable hot and replays the source among subscribers; refCount() keeps it alive only while there is >=1 subscriber (unsubscribes upstream when zero). shareReplay({ bufferSize: 1, refCount: true/false }) caches recent values for late subscribers and controls whether it stays alive when no subscribers exist — often used to cache HTTP responses. Use refCount carefully to avoid re-triggering a cold source unexpectedly.`,examples:[{title:`shareReplay`,code:`data$ = this.http.get<Data>('/api').pipe(
+).subscribe(res => showToast(res));`,explanation:`switchMap cancels previous inner on new outer; exhaustMap drops outer while inner is active.`},{title:`Further reading`,code:`https://blog.angular-university.io/rxjs-higher-order-mapping/`,url:`https://blog.angular-university.io/rxjs-higher-order-mapping/`,explanation:`A detailed walkthrough of the higher-order mapping operators and when each one is the right choice.`}]},{id:`rxjs-6`,category:`rxjs`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is the purpose of share(), shareReplay(), and refCount()?`,answer:`share() turns a cold observable hot and replays the source among subscribers; refCount() keeps it alive only while there is >=1 subscriber (unsubscribes upstream when zero). shareReplay({ bufferSize: 1, refCount: true/false }) caches recent values for late subscribers and controls whether it stays alive when no subscribers exist — often used to cache HTTP responses. Use refCount carefully to avoid re-triggering a cold source unexpectedly.`,examples:[{title:`shareReplay`,code:`data$ = this.http.get<Data>('/api').pipe(
   shareReplay({ bufferSize: 1, refCount: true })
 );`,explanation:`Caches last emission for late subscribers; refCount controls lifecycle.`}]},{id:`rxjs-7`,category:`rxjs`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`How do you prevent memory leaks when subscribing to Observables?`,answer:`Prefer the async pipe in templates (auto-unsubscribes on destroy). For imperative code, unsubscribe() in ngOnDestroy, or use takeUntil() with a destroy Subject, takeUntilDestroyed() (Angular 16+), first(), take(1), or finalize(). Also avoid long-lived global subscriptions without cleanup. For toSignal(), subscriptions are tied to the injection context (DestroyRef) automatically.`,examples:[{title:`takeUntilDestroyed`,code:`import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 fromEvent(window, 'resize').pipe(takeUntilDestroyed()).subscribe(...);`,explanation:`Auto-cleans up when injection context is destroyed.`}]},{id:`rxjs-8`,category:`rxjs`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is the difference between map, tap, switchMap and exhaustMap in terms of what they return?`,answer:`map: transforms values, returns the same stream type (value -> value). tap (do): side effect only, returns the same observable unchanged (use for logging). switchMap: maps outer value to an inner observable and flattens it, emitting values from the latest inner (projects to Observable). exhaustMap: maps to an inner observable but ignores outer emissions while inner is active (projects to Observable).`,examples:[{title:`tap vs map`,code:`source$.pipe(
@@ -1654,7 +2009,73 @@ general.set('html');
 effect(() => {
   const list = options();
   general.set(list[0]); // reads+writes -> loop risk, Angular warns in dev
-});`,explanation:`linkedSignal expresses 'derived but writable' declaratively, with no feedback loop.`}]}],misc:[{id:`misc-2`,category:`misc`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is AOT vs JIT compilation?`,answer:`JIT compiles Angular templates and decorators at runtime in the browser, while AOT compiles them ahead-of-time during the build. AOT is the default today: it catches template errors at build time, runs faster in the browser, and ships less runtime compiler code.`,examples:[{title:`AOT vs JIT at runtime`,code:`// JIT - compiles in the browser (needs the compiler shipped to the client)
+});`,explanation:`linkedSignal expresses 'derived but writable' declaratively, with no feedback loop.`}]},{id:`signals-9`,category:`signals`,difficulty:`medium`,scenarioBased:!1,isRead:!1,isNew:!0,question:`How can you replace BehaviorSubject and Subject with signals?`,answer:`A BehaviorSubject is really two things: it always holds a current value, and it notifies subscribers when that value changes. signal() covers exactly that: signal(0) has an initial value, you read it with count(), and you change it with set() or update(). Because signals are pull-based and synchronous, a template reads them directly, a computed() derives new values from them, and an effect() reacts to changes, all with no subscription to create and therefore no leak to manage. Where the mapping is not exact is a plain Subject, which is a stream of events with no current value. If the thing always has a latest value, use a signal; if it is a stream of many events or you need RxJS operators (debounce, buffer, retry), keep the Subject, because signals are state, not a stream, and cannot be composed with operators. You can also bridge the two: toSignal() wraps an Observable as a signal, and toObservable() turns a signal into an Observable. In practice an injectable service exposes a private writable signal and a public readonly signal, which replaces the BehaviorSubject-in-a-service pattern outright.`,examples:[{title:`BehaviorSubject vs signal`,code:`// Before: a value plus a subscription
+private count$ = new BehaviorSubject(0);
+readonly count$ = this.count$.asObservable();
+increment() { this.count$.next(this.count$.value + 1); }
+// consumer: this.count$.subscribe((c) => (this.c = c)); // must unsubscribe
+
+// After: the value itself notifies
+readonly count = signal(0);
+readonly countView = this.count.asReadonly();
+increment() { this.count.update((c) => c + 1); }
+// template reads count() directly; no unsubscribe, OnPush works`,explanation:`The signal replaces the value-plus-notification pair; the readonly view replaces asObservable(), and derived values come from computed() instead of subscribe().`},{title:`Bridging with toSignal / toObservable`,code:`import { toSignal, toObservable } from '@angular/core/rxjs-interop';
+
+// Observable -> signal (e.g. an existing stream or router events)
+const nav = toSignal(
+  router.events.pipe(filter((e) => e.type === NavigationEnd)),
+  { initialValue: null },
+);
+
+// signal -> Observable when you still need operators
+const search$ = toObservable(query).pipe(
+  debounceTime(300),
+  switchMap((q) => api.search(q)),
+);`,explanation:`Use toSignal when a signal is the right consumer, and toObservable when you still need RxJS operators; the two models interoperate rather than compete.`}]},{id:`signals-10`,category:`signals`,difficulty:`medium`,scenarioBased:!0,isRead:!1,isNew:!0,question:`A filter in a toolbar and a list in a distant component must stay in sync. Show how signals replace the BehaviorSubject service.`,answer:`This is the classic shared-service problem: two components that are not parent and child need to read and write the same state. The old pattern put a BehaviorSubject in an injectable, called next() on change, and had every consumer subscribe and remember to unsubscribe. With signals the same service holds the state as a signal, exposes a readonly copy, and offers a method to change it; components read the signal in their template or derive from it with computed(), so there is no subscription and no initial-value plumbing. Because the signal is the single source of truth, the list can compute its filtered rows from it directly. If a consumer needs to run a side effect rather than derive a value, use an effect(); if it only displays or derives, computed() is enough. The one rule that carries over is ownership: one service owns the state, and the components do not hold their own copies of it.`,examples:[{title:`Before: BehaviorSubject service`,code:`@Injectable({ providedIn: 'root' })
+export class FilterService {
+  private filter$ = new BehaviorSubject('');
+  readonly filter = this.filter$.asObservable();
+  setFilter(v: string) { this.filter$.next(v); }
+}
+
+// toolbar: this.filter.setFilter(value);
+// list: this.filter.filter.subscribe((v) => (this.v = v)); // + unsubscribe`,explanation:`Works, but every consumer subscribes, has to unsubscribe (often on destroy), and the initial value is implicit in the subject's constructor.`},{title:`After: one signal, read directly by both components`,code:`@Injectable({ providedIn: 'root' })
+export class FilterService {
+  private readonly _filter = signal('');
+  readonly filter = this._filter.asReadonly();
+  setFilter(v: string) { this._filter.set(v); }
+}
+
+// toolbar
+setQuery(v: string) { this.filters.setFilter(v); }
+
+// list: derive, no subscribe, no unsubscribe
+readonly rows = computed(() =>
+  this.all().filter((r) =>
+    r.name.toLowerCase().includes(this.filters.filter().toLowerCase()),
+  ),
+);`,explanation:`The toolbar writes and the list derives; computed() re-runs only when the signal it reads changes, so the two components stay in sync with no manual subscription.`}]},{id:`signals-11`,category:`signals`,difficulty:`medium`,scenarioBased:!1,isRead:!1,isNew:!0,question:`What are toSignal and toObservable, and when would you use each?`,answer:`toSignal and toObservable both live in @angular/core/rxjs-interop and are the bridge between the two reactivity models. toSignal() turns an Observable into a signal: it subscribes for you, sinks the latest emission into the signal, and - because creation is tracked in an injection context - unsubscribes automatically via DestroyRef when the consumer is destroyed. Pass initialValue so reads before the first emission are something other than undefined. toObservable() goes the other way: it turns a signal into an Observable that emits the current value immediately to new subscribers (like a BehaviorSubject) and then every change; it also tears down when destroyed. Use toSignal() when templates or a computed() read state, which is the common case of handing an HttpClient or a router/Subject stream to a signal-based template. Use toObservable() when you still need RxJS operators - debounceTime, distinctUntilChanged, switchMap, combineLatest - over a signal's changes, or when a component must consume an Observable. Neither replaces the other, and the signal-first answer reaches for them at boundaries: most state should be signals and computed(), and the bridges exist so RxJS streams can be consumed or fed where the other model is already in play.`,examples:[{title:`Observable -> signal with toSignal`,code:`import { toSignal } from '@angular/core/rxjs-interop';
+
+export class UserService {
+  private http = inject(HttpClient);
+
+  // subscribes for you, exposes the latest emission as a signal
+  readonly user = toSignal(this.http.get<User>('/api/me'), {
+    initialValue: null,
+  });
+
+  // template: @if (user(); as u) { <h1>{{ u.name }}</h1> }
+}`,explanation:`Pass initialValue so the signal is not undefined before the first emission; the subscription and its cleanup are handled by the injection context (DestroyRef).`},{title:`signal -> Observable with toObservable`,code:`import { toObservable } from '@angular/core/rxjs-interop';
+
+export class SearchBox {
+  query = signal('');
+
+  results$ = toObservable(this.query).pipe(
+    debounceTime(300),
+    distinctUntilChanged(),
+    switchMap((q) => this.api.search(q)),
+  );
+}`,explanation:`toObservable emits the current value immediately to new subscribers (like a BehaviorSubject) and every change after that, which is exactly when you want debounce or switchMap over a signal's history.`}]}],misc:[{id:`misc-2`,category:`misc`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is AOT vs JIT compilation?`,answer:`JIT compiles Angular templates and decorators at runtime in the browser, while AOT compiles them ahead-of-time during the build. AOT is the default today: it catches template errors at build time, runs faster in the browser, and ships less runtime compiler code.`,examples:[{title:`AOT vs JIT at runtime`,code:`// JIT - compiles in the browser (needs the compiler shipped to the client)
 import '@angular/compiler';
 
 // AOT - compiled during ng build; template errors fail the BUILD`,explanation:`AOT shifts compilation to the build step: smaller runtime bundle, faster startup, template errors caught in CI.`}]},{id:`misc-6`,category:`misc`,difficulty:`medium`,scenarioBased:!1,isRead:!1,question:`What is a standalone component?`,answer:`A standalone component is one that does not belong to an NgModule: it declares its own imports, services, pipes and directives directly in its imports array. Since Angular 19 standalone is the default for new apps and makes lazy-loading routes with loadComponent straightforward.`,examples:[{title:`Standalone is just an imports array`,code:`@Component({
@@ -1663,7 +2084,32 @@ import '@angular/compiler';
   imports: [MatButton, DatePipe],
   template: \`<button matButton>{{ date | date }}</button>\`,
 })
-export class Card {}`,explanation:`No NgModule to register: dependencies are declared on the component itself, which is what makes loadComponent lazy routes trivial.`}]}],behavioural:[{id:`behavioural-1`,category:`behavioural`,difficulty:`advanced`,scenarioBased:!1,isRead:!1,question:`Which behavioural question framework will you use to answer these questions?`,answer:`This is often the first question of the loop, and it is a free opportunity either
+export class Card {}`,explanation:`No NgModule to register: dependencies are declared on the component itself, which is what makes loadComponent lazy routes trivial.`}]},{id:`misc-7`,category:`misc`,difficulty:`medium`,scenarioBased:!1,isRead:!1,isNew:!0,question:`What is CORS, and why does a browser block cross-origin requests?`,answer:`Cross-Origin Resource Sharing is a browser mechanism that decides whether JavaScript running on one origin (scheme plus host plus port) may read a response from another. It exists because of the same-origin policy: by default a page can send requests to other origins (images, CSS, fonts) but its JavaScript cannot read the responses, so a malicious site cannot silently exfiltrate data from a bank API while the user is logged in. CORS is the negotiated exception. For a simple request (GET/POST/HEAD using default headers) the response headers alone decide; as soon as custom headers, methods like PUT/DELETE, or credentials are involved, the browser first sends a preflight OPTIONS request asking which origins, methods and headers the server allows, and only ships the real request if the server answers with Access-Control-Allow-Origin, -Allow-Methods, -Allow-Headers and -Allow-Credentials. Crucially, CORS is enforced by the browser, not the server: the blocked request still reaches and runs on the server; only the response is withheld from your code. In an Angular app the everyday symptom is the API not sending the right headers, or sending the wrong origin. In development you sidestep it with the CLI's proxy (proxy.conf.json) so the browser only ever talks to the same origin; in production the backend or an API gateway must set the headers instead.`,examples:[{title:`The preflight flow`,code:`// Browser to server, before the real request:
+OPTIONS /api/users HTTP/1.1
+Origin: http://localhost:4200
+Access-Control-Request-Method: DELETE
+Access-Control-Request-Headers: authorization
+
+// Server answers:
+Access-Control-Allow-Origin: http://localhost:4200
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE
+Access-Control-Allow-Headers: authorization
+Access-Control-Allow-Credentials: true
+
+// Only then does the DELETE go out - and the browser is the one
+// enforcing all of this; the server merely advertises the rules.`,explanation:`Custom methods, headers or credentials force a preflight; the real request is sent only if the OPTIONS response approves it. The server still sees the blocked request - CORS never stops it from arriving.`},{title:`Avoid it in dev with the Angular proxy`,code:`// proxy.conf.json
+{
+  "/api": {
+    "target": "http://localhost:3000",
+    "secure": false,
+    "changeOrigin": true
+  }
+}
+
+// angular.json -> serve -> configurations.development
+"proxyConfig": "proxy.conf.json"
+
+// Now /api/... is same-origin in the browser - no CORS at all.`,explanation:`The dev server proxies /api calls server-side, so the browser never performs a cross-origin request; in production the backend or an API gateway must set the CORS headers instead.`},{title:`Further reading`,code:`CORS in 100 Seconds - https://www.youtube.com/watch?v=PNtFSVU-YTI`,url:`https://www.youtube.com/watch?v=PNtFSVU-YTI`,explanation:`A short visual walkthrough of the same-origin policy, preflight and the response headers.`}]}],behavioural:[{id:`behavioural-1`,category:`behavioural`,difficulty:`advanced`,scenarioBased:!1,isRead:!1,question:`Which behavioural question framework will you use to answer these questions?`,answer:`This is often the first question of the loop, and it is a free opportunity either
 way. Weak answers name STAR and stop, or worse, explain that they do not use a
 framework because they answer honestly. Good answers name a small toolkit and match
 the tool to the shape of the question, because the frameworks differ in which
@@ -2887,4 +3333,4 @@ it.
 P - Point
 The thing I watch for is when the ranking was set by a deadline rather than by
 the problem. That is worth revisiting out loud.`,explanation:`Naming what you refuse to trade, and separating binding constraints from
-negotiable ones, is the actual senior answer.`}]}]};var f=`q-read-flags`;var w=`q-flags`;var y=Object.values(p).flat();var b={"angular-7":`performance-21`,"angular-23":`performance-22`,"angular-28":`performance-23`};var v={questionData:[]};function k(n){if(!n)return[];try{let a=JSON.parse(n);return Array.isArray(a)?a:[]}catch{return[]}}function m(n,a){let e=k(n).filter(t=>typeof t?.id==`string`).map(t=>[b[t.id]??t.id,a(t)]).filter(t=>t[1]!==null);return Object.fromEntries(e)}function x(){let n=localStorage.getItem(f);if(n!==null)return m(n,e=>typeof e?.isRead==`boolean`?e.isRead:null);let a=localStorage.getItem(w);return a?m(a,e=>typeof e?.forLater==`boolean`?e.forLater:null):{}}var R=H({providedIn:`root`},J(v),V(n=>({onInit(){let a=x();B(n,{questionData:y.map(e=>U($({},e),{isRead:a[e.id]===!0}))}),tu(()=>{localStorage.setItem(f,JSON.stringify(n.questionData().map(({id:e,isRead:t})=>({id:e,isRead:t})).filter(e=>e.isRead)))})}})),$$1(n=>({toggleRead(a){B(n,e=>({questionData:e.questionData.map(t=>t.id===a?U($({},t),{isRead:!t.isRead}):t)}))},replaceReadFlags(a){let e=new Set(a);B(n,t=>({questionData:t.questionData.map(r=>U($({},r),{isRead:e.has(r.id)}))}))}})));export{R as t};
+negotiable ones, is the actual senior answer.`}]}]};var g=`q-read-flags`;var w=`q-flags`;var y=Object.values(p).flat();var b={"angular-7":`performance-21`,"angular-23":`performance-22`,"angular-28":`performance-23`};var v={questionData:[]};function k(n){if(!n)return[];try{let a=JSON.parse(n);return Array.isArray(a)?a:[]}catch{return[]}}function m(n,a){let e=k(n).filter(t=>typeof t?.id==`string`).map(t=>[b[t.id]??t.id,a(t)]).filter(t=>t[1]!==null);return Object.fromEntries(e)}function x(){let n=localStorage.getItem(g);if(n!==null)return m(n,e=>typeof e?.isRead==`boolean`?e.isRead:null);let a=localStorage.getItem(w);return a?m(a,e=>typeof e?.forLater==`boolean`?e.forLater:null):{}}var R=H({providedIn:`root`},J(v),V(n=>({onInit(){let a=x();B(n,{questionData:y.map(e=>U($({},e),{isRead:a[e.id]===!0}))}),tu(()=>{localStorage.setItem(g,JSON.stringify(n.questionData().map(({id:e,isRead:t})=>({id:e,isRead:t})).filter(e=>e.isRead)))})}})),$$1(n=>({toggleRead(a){B(n,e=>({questionData:e.questionData.map(t=>t.id===a?U($({},t),{isRead:!t.isRead}):t)}))},replaceReadFlags(a){let e=new Set(a);B(n,t=>({questionData:t.questionData.map(r=>U($({},r),{isRead:e.has(r.id)}))}))}})));export{R as t};
