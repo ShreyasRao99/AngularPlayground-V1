@@ -13,6 +13,7 @@ export interface QuestionExample {
   title: string;
   code: string;
   explanation: string;
+  url?: string;
 }
 
 export interface Question {
@@ -21,6 +22,7 @@ export interface Question {
   difficulty: Difficulty;
   scenarioBased: boolean;
   isRead: boolean;
+  isNew?: boolean;
   question: string;
   answer: string;
   examples: QuestionExample[];

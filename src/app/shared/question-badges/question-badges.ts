@@ -9,7 +9,21 @@ import { Difficulty } from '../../../types/questions-type';
 @Component({
   selector: 'app-question-badges',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  styles: `
+    :host {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+  `,
   template: `
+    @if (isNew()) {
+      <span
+        class="rounded-full bg-(--mat-sys-primary) px-2 py-0.5 text-xs font-medium whitespace-nowrap text-(--mat-sys-on-primary)"
+        >new</span
+      >
+    }
+
     <span
       class="rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap"
       [class.bg-(--mat-sys-surface-container-highest)]="difficulty() === 'basic'"
@@ -32,4 +46,5 @@ import { Difficulty } from '../../../types/questions-type';
 export class QuestionBadges {
   readonly difficulty = input.required<Difficulty>();
   readonly scenarioBased = input(false);
+  readonly isNew = input(false);
 }

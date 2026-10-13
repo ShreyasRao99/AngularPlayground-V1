@@ -73,7 +73,11 @@
         <div
           class="flex w-full items-center justify-between gap-2 pl-9 sm:w-auto sm:justify-start sm:pl-0"
         >
-          <app-question-badges [difficulty]="faq.difficulty" [scenarioBased]="faq.scenarioBased" />
+          <app-question-badges
+            [difficulty]="faq.difficulty"
+            [scenarioBased]="faq.scenarioBased"
+            [isNew]="!!faq.isNew"
+          />
 
           <!--
             Notes are written from the index too, because the thing you want to
