@@ -1597,6 +1597,60 @@
           "explanation": "withInMemoryScrolling installs RouterScroller, which subscribes to router events and scrolls through ViewportScroller for you - restoration on history navigation, top on a fresh navigation, and fragments via scrollToAnchor. Reach for the service directly only for changes the router cannot detect, such as a reused parameterised component."
         }
       ]
+    },
+    {
+      "id": "angular-44",
+      "category": "angular",
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isMarked": false,
+      "isNew": true,
+      "question": "What is the NgRx SignalStore, and which features do you compose to build one?",
+      "answer": "SignalStore is NgRx's signal-native state container, shipped in @ngrx/signals. You declare a store by calling signalStore(...) with an optional config followed by a sequence of features; it returns an injectable service that you register with { providedIn: 'root' } for global state, or in a providers array for component/route-scoped state where it is disposed with that injector. State is added with withState(initialState) - the type must be a record/object literal - and every slice becomes a signal on the store, with nested properties exposed lazily as DeepSignals such as store.filter.query(). Derived values are declared with withComputed(({ books, filter }) => ({ booksCount: computed(() => books().length) })); its factory runs in an injection context and any plain function it returns is wrapped in computed() for you. Behaviour lives in withMethods((store, service = inject(Service)) => ({ ... })), and state is written only through patchState(store, patch) or patchState(store, (state) => patch), which shallow-merges the patch and keeps updates immutable. withHooks({ onInit, onDestroy }) adds store-level lifecycle logic, withProps adds static values, observables or injected dependencies, signalStoreFeature builds reusable custom features, and withEntities manages collections. State is protected by default - calling patchState on the store from outside one of its methods throws unless you opt out with { protectedState: false } - which keeps every change flowing through the store's own methods. For async work you either write a plain async method or reach for rxMethod from @ngrx/signals/rxjs-interop, which turns an RxJS pipeline into a method you call with a signal, a value or an observable. SignalStore is the recommended choice for feature and local state, while @ngrx/store remains the tool for large global state.",
+      "examples": [
+        {
+          "title": "State, computed signals and methods in one store",
+          "code": "import { computed, inject } from '@angular/core';\nimport {\n  patchState,\n  signalStore,\n  withComputed,\n  withMethods,\n  withState,\n} from '@ngrx/signals';\nimport { BooksService } from './books.service';\n\ntype Book = { title: string };\n\ntype BookSearchState = {\n  books: Book[];\n  isLoading: boolean;\n  filter: { query: string };\n};\n\nconst initialState: BookSearchState = {\n  books: [],\n  isLoading: false,\n  filter: { query: '' },\n};\n\nexport const BookSearchStore = signalStore(\n  { providedIn: 'root' },\n  withState(initialState),\n  withComputed(({ books, filter }) => ({\n    booksCount: computed(() => books().length),\n    visibleBooks: computed(() =>\n      books().filter((book) => book.title.includes(filter.query())),\n    ),\n  })),\n  withMethods((store, booksService = inject(BooksService)) => ({\n    updateQuery(query: string): void {\n      patchState(store, (state) => ({ filter: { ...state.filter, query } }));\n    },\n    async loadAll(): Promise<void> {\n      patchState(store, { isLoading: true });\n      const books = await booksService.getAll();\n      patchState(store, { books, isLoading: false });\n    },\n  })),\n);",
+          "explanation": "Each withState slice becomes a signal (filter and its nested query() too); withComputed derives read-only signals; withMethods is the only place patchState is called, so state changes through named, testable operations.",
+          "url": "https://ngrx.io/guide/signals/signal-store"
+        },
+        {
+          "title": "Reactive async work with rxMethod",
+          "code": "import { inject } from '@angular/core';\nimport { debounceTime, distinctUntilChanged, pipe, switchMap, tap } from 'rxjs';\nimport { patchState, signalStore, withMethods, withState } from '@ngrx/signals';\nimport { rxMethod } from '@ngrx/signals/rxjs-interop';\nimport { tapResponse } from '@ngrx/operators';\nimport { BooksService } from './books.service';\n\ntype Book = { title: string };\n\nexport const BookSearchStore = signalStore(\n  withState({ books: [] as Book[], isLoading: false }),\n  withMethods((store, booksService = inject(BooksService)) => ({\n    loadByQuery: rxMethod<string>(\n      pipe(\n        debounceTime(300),\n        distinctUntilChanged(),\n        tap(() => patchState(store, { isLoading: true })),\n        switchMap((query) =>\n          booksService.getByQuery(query).pipe(\n            tapResponse({\n              next: (books) => patchState(store, { books }),\n              error: console.error,\n              finalize: () => patchState(store, { isLoading: false }),\n            }),\n          ),\n        ),\n      ),\n    ),\n  })),\n);",
+          "explanation": "rxMethod wraps an RxJS pipeline in a store method; hand it a signal, a value or an observable and each emission is debounced and switched, while tapResponse keeps the loading and error state in sync.",
+          "url": "https://ngrx.io/guide/signals/rxjs-integration"
+        }
+      ]
+    },
+    {
+      "id": "angular-45",
+      "category": "angular",
+      "difficulty": "advanced",
+      "scenarioBased": false,
+      "isMarked": false,
+      "isNew": true,
+      "question": "How does the NgRx Store work - actions, reducers, selectors and effects?",
+      "answer": "@ngrx/store is RxJS-powered global state management inspired by Redux, built around a single immutable state tree held by the Store service. Store is both an observer of state, via store.select(selector), and an observer of actions, via store.dispatch(action). There are four moving parts. Actions are plain objects that describe unique events; createAction('[Source] Event') creates one and props<{...}>() attaches a typed payload. Reducers are pure, synchronous functions that take the current state and the latest action and return a new state - never a mutation - using createReducer(initialState, on(action, handler)) (or a switch statement in older code); every registered reducer receives every action, and each on() decides whether it cares. Selectors are pure, memoized functions that select, derive and compose slices: createFeatureSelector<T>('key') reads a feature slice and createSelector(...) composes it into a read model, returning the cached value while its inputs are unchanged. Effects are injectable RxJS streams (createEffect + ofType) that listen for actions and perform side effects such as HTTP or storage, then dispatch new actions on success or failure - reducers must stay pure, so impure work belongs here, not in a reducer. The flow is strictly one-directional: a component dispatches an action, reducers compute the next state, selectors emit the new slice to subscribers, and effects react to the same action stream and dispatch follow-up actions. When an action is dispatched it is always processed by the reducers first and then by the effects. State is registered with provideStore(reducers) and provideState('feature', reducer) in standalone apps, or StoreModule.forRoot / StoreModule.forFeature in NgModules, together with provideEffects / EffectsModule; because updates are immutable, a new reference signals change, which pairs well with OnPush and memoized selectors. In CQRS terms the reducers are the write model and the selectors the read model. For local or component state, prefer NgRx SignalStore and keep the global Store for app-wide state.",
+      "examples": [
+        {
+          "title": "Actions and a reducer",
+          "code": "import { createAction, createReducer, on, props } from '@ngrx/store';\n\nexport const loadBooks = createAction('[Books Page] Load Books');\nexport const loadBooksSuccess = createAction(\n  '[Books API] Load Books Success',\n  props<{ books: Book[] }>(),\n);\nexport const loadBooksFailure = createAction(\n  '[Books API] Load Books Failure',\n  props<{ error: string }>(),\n);\n\nexport interface BooksState {\n  books: Book[];\n  loading: boolean;\n  error: string | null;\n}\n\nexport const initialState: BooksState = {\n  books: [],\n  loading: false,\n  error: null,\n};\n\nexport const booksReducer = createReducer(\n  initialState,\n  on(loadBooks, (state) => ({ ...state, loading: true, error: null })),\n  on(loadBooksSuccess, (state, { books }) => ({ ...state, books, loading: false })),\n  on(loadBooksFailure, (state, { error }) => ({ ...state, error, loading: false })),\n);",
+          "explanation": "createAction names each event and props() types its payload; createReducer pairs the initial state with on() handlers that return a new state via the spread operator, so the previous reference is never mutated.",
+          "url": "https://ngrx.io/guide/store/reducers"
+        },
+        {
+          "title": "Effects run the side effects",
+          "code": "import { inject, Injectable } from '@angular/core';\nimport { Actions, createEffect, ofType } from '@ngrx/effects';\nimport { catchError, map, of, switchMap } from 'rxjs';\nimport { BooksService } from './books.service';\nimport { loadBooks, loadBooksFailure, loadBooksSuccess } from './books.actions';\n\n@Injectable()\nexport class BooksEffects {\n  private readonly actions$ = inject(Actions);\n  private readonly booksService = inject(BooksService);\n\n  readonly loadBooks$ = createEffect(() =>\n    this.actions$.pipe(\n      ofType(loadBooks),\n      switchMap(() =>\n        this.booksService.getAll().pipe(\n          map((books) => loadBooksSuccess({ books })),\n          catchError((error) => of(loadBooksFailure({ error: error.message }))),\n        ),\n      ),\n    ),\n  );\n}",
+          "explanation": "An effect filters the action stream with ofType, performs the HTTP call, and maps the result back to success or failure actions; the reducers stay pure because the impure work lives here.",
+          "url": "https://ngrx.io/guide/store/effects"
+        },
+        {
+          "title": "Selectors feed the component; it only dispatches",
+          "code": "import { createFeatureSelector, createSelector, Store } from '@ngrx/store';\n\nexport const selectBooksState = createFeatureSelector<BooksState>('books');\nexport const selectAllBooks = createSelector(selectBooksState, (state) => state.books);\nexport const selectLoading = createSelector(selectBooksState, (state) => state.loading);\n\n@Component({\n  imports: [AsyncPipe, NgFor, NgIf],\n  changeDetection: ChangeDetectionStrategy.OnPush,\n  template: `\n    <button (click)=\"reload()\">Reload</button>\n    <p *ngIf=\"loading$ | async\">Loading...</p>\n    <ul>\n      <li *ngFor=\"let book of books$ | async\">{{ book.title }}</li>\n    </ul>\n  `,\n})\nexport class BooksPage {\n  private readonly store = inject(Store);\n  readonly books$ = this.store.select(selectAllBooks);\n  readonly loading$ = this.store.select(selectLoading);\n\n  reload(): void {\n    this.store.dispatch(loadBooks());\n  }\n}",
+          "explanation": "createFeatureSelector reads the 'books' slice and createSelector composes memoized read models. Register the slice with provideStore({ books: booksReducer }) and the effect with provideEffects(BooksEffects); the component then only dispatches actions and selects slices, never touching the state object.",
+          "url": "https://ngrx.io/guide/store/selectors"
+        }
+      ]
     }
   ],
   "performance": [
