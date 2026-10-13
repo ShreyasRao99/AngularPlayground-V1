@@ -73,6 +73,28 @@ describe('QuestionDetail', () => {
     expect(root(fixture).querySelectorAll('pre code').length).toBeGreaterThan(0);
   });
 
+  it('should embed a YouTube url example as an iframe', async () => {
+    const fixture = await createDetail('misc', 'misc-7');
+    const frame = root(fixture).querySelector('iframe');
+
+    expect(frame?.getAttribute('src')).toContain('youtube.com/embed/');
+    expect(frame?.getAttribute('allowfullscreen')).not.toBeNull();
+  });
+
+  it('should keep a non-YouTube url example as a plain link', async () => {
+    const fixture = await createDetail('rxjs', 'rxjs-5');
+
+    expect(root(fixture).querySelector('iframe')).toBeNull();
+
+    const link = links(fixture).find((anchor) =>
+      anchor.textContent?.includes('angular-university.io'),
+    );
+    expect(link?.getAttribute('href')).toBe(
+      'https://blog.angular-university.io/rxjs-higher-order-mapping/',
+    );
+    expect(link?.getAttribute('target')).toBe('_blank');
+  });
+
   it('should link back to the category index', async () => {
     const fixture = await createDetail('rxjs', 'rxjs-1');
     const back = links(fixture).find((link) => link.textContent?.includes('All RxJS questions'));
@@ -114,7 +136,7 @@ describe('QuestionDetail', () => {
     const first = authored('misc-2');
     const fixture = await createDetail('misc', first.id);
 
-    // misc holds two questions, so the first one can only link forwards
+    // misc-2 is the first of three, so the first question can only link forwards
     expect(navHrefs(fixture, 0)).toEqual(['/misc/misc-6']);
     expect(navHrefs(fixture, 1)).toEqual(['/misc/misc-6']);
   });

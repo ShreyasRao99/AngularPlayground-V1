@@ -10,9 +10,9 @@ import {
 import { ViewportScroller } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { Title } from '@angular/platform-browser';
+import { DomSanitizer, SafeResourceUrl, Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
-import { Question } from '../../../types/questions-type';
+import { Question, QuestionExample } from '../../../types/questions-type';
 import { categoryLabel } from '../categories';
 import { NavTarget, QuestionNav } from '../question-nav/question-nav';
 import { QuestionBadges } from '../question-badges/question-badges';
@@ -34,6 +34,7 @@ export class QuestionDetail {
   private readonly store = inject(QuestionStore);
   private readonly title = inject(Title);
   private readonly scroller = inject(ViewportScroller);
+  private readonly sanitizer = inject(DomSanitizer);
 
   // Bound from the route by withComponentInputBinding(), so it is whatever the
   // URL said rather than a trusted Category - an unknown segment has to render
@@ -97,6 +98,18 @@ export class QuestionDetail {
     this.store.toggleRead(this.questionId());
   }
 
+  /**
+   * A YouTube url on an example becomes an embedded player; anything else just
+   * stays a link. The src is marked trusted because the id is matched against a
+   * fixed allow-list of hosts rather than echoed from the data verbatim.
+   */
+  protected embedUrl(example: QuestionExample): SafeResourceUrl | null {
+    const id = youtubeVideoId(example.url);
+    return id
+      ? this.sanitizer.bypassSecurityTrustResourceUrl(`https://www.youtube.com/embed/${id}`)
+      : null;
+  }
+
   private neighbour(offset: number): Question | undefined {
     const position = this.position();
     const siblings = this.siblings();
@@ -110,4 +123,12 @@ export class QuestionDetail {
       ? { link: ['/', question.category, question.id], label: question.question }
       : undefined;
   }
+}
+
+/** Pulls a 5+ char video id out of the url forms YouTube actually issues. */
+function youtubeVideoId(url?: string): string | null {
+  const match = url?.match(
+    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{5,})/,
+  );
+  return match ? match[1] : null;
 }

@@ -27,7 +27,11 @@
         <span class="text-sm tabular-nums text-(--mat-sys-on-surface-variant)"
           >Question {{ position() + 1 }} of {{ total() }}</span
         >
-        <app-question-badges [difficulty]="faq.difficulty" [scenarioBased]="faq.scenarioBased" />
+        <app-question-badges
+          [difficulty]="faq.difficulty"
+          [scenarioBased]="faq.scenarioBased"
+          [isNew]="!!faq.isNew"
+        />
 
         <!--
           In the sticky header rather than the foot of the answer: it is written
@@ -89,9 +93,29 @@
     @for (example of faq.examples; track example.title) {
       <section class="flex flex-col gap-2">
         <h2 class="m-0 text-sm font-semibold">{{ example.title }}</h2>
-        <pre
-          class="m-0 overflow-x-auto rounded-lg bg-(--mat-sys-surface-container-high) p-3 font-mono text-[0.8rem] leading-relaxed"
-        ><code>{{ example.code }}</code></pre>
+        @if (example.url) {
+          @if (embedUrl(example); as src) {
+            <iframe
+              class="aspect-video w-full rounded-lg border-0"
+              [src]="src"
+              [title]="example.title"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+            ></iframe>
+          }
+          <a
+            class="font-medium break-all text-(--mat-sys-primary) underline"
+            [href]="example.url"
+            target="_blank"
+            rel="noreferrer"
+            >{{ example.code }}</a
+          >
+        } @else {
+          <pre
+            class="m-0 overflow-x-auto rounded-lg bg-(--mat-sys-surface-container-high) p-3 font-mono text-[0.8rem] leading-relaxed"
+          ><code>{{ example.code }}</code></pre>
+        }
         <p class="m-0 text-sm leading-relaxed text-(--mat-sys-on-surface-variant)">
           {{ example.explanation }}
         </p>

@@ -41,4 +41,15 @@ describe('QuestionBadges', () => {
 
     expect(badges(fixture)).toEqual(['medium', 'scenario']);
   });
+
+  it('should only show the new pill when the question was just added', async () => {
+    const fixture = await createBadges('medium');
+
+    expect(badges(fixture)).toEqual(['medium']);
+
+    fixture.componentRef.setInput('isNew', true);
+    await fixture.whenStable();
+
+    expect(badges(fixture)).toEqual(['new', 'medium']);
+  });
 });

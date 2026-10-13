@@ -66,7 +66,7 @@ describe('QuestionList', () => {
 
   it('should show every question in the category by default', async () => {
     const fixture = await createList();
-    expect(rows(fixture).length).toBe(23);
+    expect(rows(fixture).length).toBe(24);
     expect(fixture.componentInstance['hasActiveFilters']()).toBe(false);
   });
 
@@ -80,7 +80,7 @@ describe('QuestionList', () => {
     expect(rows(fixture).length).toBe(12);
 
     selectDifficulties(fixture, ['basic', 'advanced']);
-    expect(rows(fixture).length).toBe(11);
+    expect(rows(fixture).length).toBe(12);
   });
 
   it('should filter to scenario based questions only', async () => {
@@ -95,7 +95,7 @@ describe('QuestionList', () => {
   it('should toggle read state and filter on it', async () => {
     const fixture = await createList();
     const buttons = readButtons(fixture);
-    expect(buttons.length).toBe(23);
+    expect(buttons.length).toBe(24);
 
     buttons[0].click();
     fixture.detectChanges();
@@ -105,7 +105,7 @@ describe('QuestionList', () => {
 
     fixture.componentInstance['readFilter'].set('unread');
     fixture.detectChanges();
-    expect(rows(fixture).length).toBe(22);
+    expect(rows(fixture).length).toBe(23);
 
     fixture.componentInstance['readFilter'].set('read');
     fixture.detectChanges();
@@ -223,7 +223,7 @@ describe('QuestionList', () => {
     fixture.detectChanges();
 
     expect(fixture.componentInstance['readFilter']()).toBe('unread');
-    expect(rows(fixture).length).toBe(22);
+    expect(rows(fixture).length).toBe(23);
 
     // the token override is scoped to `.read-filter .mat-button-toggle-checked`,
     // so the checked class has to sit on a descendant of the group
@@ -338,7 +338,7 @@ describe('QuestionList', () => {
     fixture.detectChanges();
 
     expect(fixture.componentInstance['difficultyFilter']()).toEqual(['advanced']);
-    expect(rows(fixture).length).toBe(6);
+    expect(rows(fixture).length).toBe(7);
   });
 
   it('should filter when the scenario checkbox is clicked', async () => {
