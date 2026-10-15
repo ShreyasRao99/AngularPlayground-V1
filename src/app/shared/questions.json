@@ -7,7 +7,7 @@
       "scenarioBased": false,
       "isMarked": false,
       "question": "What is semantic HTML?",
-      "answer": "Semantic HTML uses tags that describe their meaning rather than only their appearance — header, nav, main, article, section, aside and footer. It improves accessibility for screen readers and helps search engines understand the page structure, while also making the code easier to read for other developers. Semantic tags are not a display mode: some are block-level (e.g. <header>, <main>, <section>) and some are inline (e.g. <strong>, <em>), so \"semantic\" says what the element means, never how it is displayed.",
+      "answer": "Semantic HTML uses tags that describe their meaning rather than only their appearance — header, nav, main, article, section, aside and footer. It improves accessibility for screen readers and helps search engines understand the page structure, while also making the code easier to read for other developers. Semantic tags are not a display mode: some are block-level (e.g. <header>, <main>, <section>) and some are inline (e.g. <strong>, <em>), so \"semantic\" says what the element means, never how it is displayed. The accessibility payoff is concrete rather than general: assistive technology exposes header, nav and main as landmarks, so a user can jump between regions and straight to the content instead of tabbing through everything - and a skip link works for the same reason, because it can target main. Headings build an outline that can be navigated by level, and a native element such as button, label or table already carries its role, keyboard behaviour and state. The trap is replacing those with divs and spans: the browser then announces generic text with no role, no keyboard support and no state, and rebuilding that by hand with roles and tabindex is more work and usually less correct than having used the right element in the first place.",
       "examples": [
         {
           "title": "Semantic structure of a page",
@@ -18,7 +18,15 @@
           "title": "Semantic tags come in block-level and inline flavours",
           "code": "<header>...</header>   <!-- block-level semantic element: starts on its own line -->\n\n<p>This word is <strong>important</strong> but stays inline.</p>\n<!-- <strong>/<em> are inline semantic elements: they carry meaning without breaking the line -->",
           "explanation": "Semantics and display are independent: <header> is a block-level semantic element, while <strong> is an inline one."
+        },
+        {
+          "title": "What a screen reader gets from each version",
+          "code": "<!-- no landmarks, no outline, no keyboard support -->\n<div class=\"nav\"><div (click)=\"save()\">Save</div></div>\n\n<!-- landmarks, a heading outline, a real control -->\n<header><nav aria-label=\"Main\">...</nav></header>\n<main>\n  <h1>Checkout</h1>\n  <button type=\"button\" (click)=\"save()\">Save</button>\n</main>",
+          "explanation": "The first version is a flat list of text with nothing to navigate by; the second lets a screen-reader user jump by landmark or heading, and the button arrives with role, focus and Enter/Space handling included."
         }
+      ],
+      "tags": [
+        "MS"
       ]
     },
     {
@@ -200,6 +208,111 @@
           "code": "<form novalidate (ngSubmit)=\"submit()\">\n  <input required type=\"email\">\n  <button>Submit</button>\n</form>",
           "explanation": "novalidate disables native validation for custom error handling."
         }
+      ]
+    },
+    {
+      "id": "html-13",
+      "category": "html",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "How do you put audio and video on a page, and what do you have to get right?",
+      "answer": "The browser gives you this natively: video and audio elements take one or more source children with a type, plus fallback content for anything that cannot play them - no plugins, no player library required for the basics. What separates a working embed from a correct one is the list around the media itself. Accessibility first: captions for pre-recorded speech (a track with kind=captions), a transcript for audio, and controls left on so keyboard users have play, seek and volume without hunting for a custom widget; autoplay only ever with muted and playsinline, and even then only when it cannot be avoided. Performance next: poster for the first frame, preload=none when the video is below the fold, and lazy-load it like any other heavy asset rather than letting the page fetch a 20 MB file it may never show. Then the practicalities - MP4/H.264 is still the safe default, WebM where you want open codecs and smaller files, know that codecs differ by browser, and long or adaptive content wants streaming (HLS with a player or native support) rather than a giant file. Responsive is the least of it: width:100% plus an aspect-ratio box handles layout.",
+      "examples": [
+        {
+          "title": "A captioned, non-blocking video",
+          "code": "<video\n  controls\n  width=\"640\"\n  preload=\"none\"\n  poster=\"/assets/lesson-poster.jpg\"\n  (timeupdate)=\"onProgress($event)\">\n\n  <source src=\"/assets/lesson.mp4\" type=\"video/mp4\" />\n  <source src=\"/assets/lesson.webm\" type=\"video/webm\" />\n  <track kind=\"captions\" src=\"/assets/lesson.en.vtt\" srclang=\"en\" label=\"English\" default />\n\n  Your browser cannot play this video.\n  <a href=\"/assets/lesson.mp4\">Download it instead</a>.\n</video>",
+          "explanation": "preload=none and the poster keep it off the critical path until the user acts, the captions track makes it usable without sound, and the fallback link covers both an unsupported browser and a failed download."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
+    },
+    {
+      "id": "html-14",
+      "category": "html",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "How does native drag and drop work in HTML, and how would you build it in Angular?",
+      "answer": "HTML gives you drag and drop natively. Mark the source draggable=\"true\" and handle dragstart on it, then handle dragover and drop on the target. Only one detail trips people up: the target must call preventDefault() in dragover, otherwise the browser assumes the default action and drop never fires. The payload travels through event.dataTransfer - setData in dragstart, getData in drop. In Angular those are just event bindings, and for a real feature such as reordering a list, moving cards between Kanban columns or a file drop zone, I would use the Angular CDK's cdkDrag and cdkDropList instead of hand-rolling the index maths. The part not to skip is accessibility: native drag and drop does not work for keyboard or screen-reader users, so every drag action needs an equivalent - Move up/down buttons or a menu action - with clear labels and an announcement when the order changes.",
+      "examples": [
+        {
+          "title": "The template",
+          "code": "<div draggable=\"true\" (dragstart)=\"onDragStart($event)\">\n  Drag me\n</div>\n\n<div\n  (dragover)=\"$event.preventDefault()\"\n  (drop)=\"onDrop($event)\"\n>\n  Drop here\n</div>",
+          "explanation": "draggable on the source, and the inline preventDefault in dragover is what allows the drop - remove that one call and drop never fires."
+        },
+        {
+          "title": "The handlers",
+          "code": "onDragStart(event: DragEvent): void {\n  event.dataTransfer?.setData('text/plain', 'Hello');\n}\n\nonDrop(event: DragEvent): void {\n  event.preventDefault();\n  const data = event.dataTransfer?.getData('text/plain');\n  console.log(data); // 'Hello'\n}",
+          "explanation": "setData in dragstart and getData in drop: the payload is carried as text/plain data, so you move an identifier rather than markup."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
+    },
+    {
+      "id": "html-15",
+      "category": "html",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "What is the difference between SVG and Canvas, and when would you use each?",
+      "answer": "SVG and Canvas mostly differ in what they are made of. SVG is a document: every shape is a real DOM element you can style with CSS, select, focus, animate and attach a listener to, it stays sharp at any zoom or print size, and it sits in the accessibility tree, where you can give it a role, a title and a description. Its limit is node count - a chart drawn as ten thousand SVG paths is ten thousand objects for the browser to lay out and for Angular to track. Canvas is the opposite: a single element and a bitmap surface you paint yourself. You ask for a context (2d, or webgl when you want the GPU), issue imperative drawing commands such as fillRect, arc, lineTo and drawImage, and then clear and redraw whenever something changes, usually inside a requestAnimationFrame loop. That makes it the right tool at volume and for pixel work: tens of thousands of moving points, games and animation loops, image filters and cropping, heatmaps, signature pads. The trade-offs are the point of the answer: because there are no elements, CSS styling and per-shape events do not exist - hover and click are hit-testing maths you write yourself with isPointInPath or a distance check; nothing on the surface is in the accessibility tree, so give the canvas role=img and an accessible name, or publish the same data as text or a table next to it; you handle devicePixelRatio yourself or it looks blurry on a retina display; and exporting means toDataURL rather than reading the DOM. My rule: choose by interaction and accessibility first, then by volume - anything the user inspects, selects, hovers or reads should be SVG, and anything with thousands of repainted objects or pixel-level manipulation should be Canvas. In Angular that is inline SVG in the template, and Canvas behind a ViewChild with its drawing loop stopped in ngOnDestroy.",
+      "examples": [
+        {
+          "title": "The accessibility difference in five lines",
+          "code": "<svg viewBox=\"0 0 100 40\" role=\"img\" aria-labelledby=\"title\">\n  <title id=\"title\">Revenue up 18% this quarter</title>\n  <path d=\"M0 35 L40 28 L70 15 L100 5\" fill=\"none\" stroke=\"currentColor\" />\n</svg>\n\n<canvas width=\"400\" height=\"160\" role=\"img\"\n  aria-label=\"Revenue up 18% this quarter\"></canvas>",
+          "explanation": "The SVG carries a real title element and a stroke the browser renders crisply at any zoom; the canvas carries only the label you give it, because everything drawn into it is invisible to the accessibility tree."
+        },
+        {
+          "title": "What a canvas actually is",
+          "code": "const ctx = canvas.getContext('2d')!;\n\nfunction draw(points: Point[]) {\n  ctx.clearRect(0, 0, canvas.width, canvas.height); // you own the repaint\n  ctx.beginPath();\n  for (const p of points) ctx.lineTo(p.x, p.y);\n  ctx.stroke();\n}\n\n// none of those points is a DOM node, so a click has to be matched by hand\nconst hit = points.find((p) => Math.hypot(p.x - x, p.y - y) < 6);",
+          "explanation": "One element, one surface: repainting everything each frame is cheap at tens of thousands of points, but hover, focus and clicks are maths you write, and the DOM has no idea what is on screen."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
+    },
+    {
+      "id": "html-16",
+      "category": "html",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "What are the different ways to hide an element, and what does each mean for layout and accessibility?",
+      "answer": "There are several, and they are not interchangeable - the right one depends on whether you care about layout space, focusability or what assistive technology announces. display:none (or the hidden attribute, which is a UA rule for exactly that) removes the element from layout and from the accessibility tree entirely: nothing is painted, nothing takes space, nothing is announced, and on Angular it is what @if produces when the branch is removed from the DOM. visibility:hidden keeps the box and its space but hides the painting and still removes it from the accessibility tree, which is what you want for a reserved placeholder that must not be read. opacity:0 is the trap: the element is invisible but still there - it can still be clicked, still be tabbed to, and screen readers may still reach it - so pairing it with inert or pointer-events:none is mandatory if it is meant to be inactive. aria-hidden only hides it from assistive technology while leaving it visible and, dangerously, still focusable, which creates the classic focus-into-invisible-content bug. The modern, honest option is the inert attribute: it removes the subtree from focus, from interaction and from the accessibility tree at once. In Angular I reach for @if when losing and recreating the DOM is fine, and a binding to [hidden] or [inert] when the component must keep its state - and I always check the tab order afterwards.",
+      "examples": [
+        {
+          "title": "Three toggles, three different meanings",
+          "code": "<button type=\"button\" (click)=\"open.set(!open())\">Toggle panel</button>\n\n<!-- 1. gone from the DOM: state is lost when it comes back -->\n@if (open()) { <app-expensive-editor /> }\n\n<!-- 2. still mounted and still focusable, just not painted -->\n<div [hidden]=\"!open()\">Draft: {{ draft() }}</div>\n\n<!-- 3. mounted, but removed from focus, interaction and the a11y tree -->\n<section [inert]=\"!open()\">{{ panelContent() }}</section>",
+          "explanation": "@if trades state for absence, [hidden] keeps state but not focusability, [inert] keeps state and blocks focus - and opacity:0 would do none of these, which is why it is the one to avoid as a visibility toggle."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
+    },
+    {
+      "id": "html-17",
+      "category": "html",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "What values can the type attribute of an input take, and what do they actually give you?",
+      "answer": "The type attribute chooses which control the browser renders, and with it the keyboard a mobile user gets, the browser's own validation and the shape of the value you read back. The practical set falls into groups. Text-shaped: text (the default), password, email, url, search, and tel - which has no format rule of its own, because phone numbers differ by country. Numeric: number, which brings a spinner, arrow-key stepping and native min/max/step validation, with the caveat that it also refuses non-numeric characters and handles locale decimal separators inconsistently, so for an id-like or phone-like field inputmode is the better tool; and range for a slider. Temporal: date, time, datetime-local, month and week, which give a native picker where the browser supports it. Choice and binary: checkbox, radio (grouped by name), and file with accept and multiple. Submitter plumbing: submit, reset, button, image and hidden. Two details worth stating out loud: an unrecognised type degrades to text rather than breaking the page, which is what makes the attribute safe to use, and type is only part of the decision - inputmode picks the keyboard, autocomplete lets the browser fill the field, and enterkeyhint labels the key. Choose by the intent of the data and let the browser do work you would otherwise write by hand.",
+      "examples": [
+        {
+          "title": "The same form, letting the browser carry the semantics",
+          "code": "<form (ngSubmit)=\"save()\">\n  <label for=\"email\">Email</label>\n  <input id=\"email\" name=\"email\" type=\"email\" autocomplete=\"email\" required />\n\n  <label for=\"phone\">Phone</label>\n  <!-- tel has no format rule; inputmode gets the numeric keypad anyway -->\n  <input id=\"phone\" name=\"phone\" type=\"tel\" inputmode=\"tel\" autocomplete=\"tel\" />\n\n  <label for=\"salary\">Expected salary</label>\n  <input id=\"salary\" name=\"salary\" type=\"number\" min=\"0\" step=\"1000\" />\n\n  <label for=\"start\">Start date</label>\n  <input id=\"start\" name=\"start\" type=\"date\" />\n\n  <label for=\"cv\">CV</label>\n  <input id=\"cv\" name=\"cv\" type=\"file\" accept=\".pdf,.docx\" />\n\n  <button type=\"submit\">Send</button>\n</form>",
+          "explanation": "email and date are validated and rendered by the browser, tel borrows the numeric keypad without pretending to validate, and type=submit is what makes Enter work as the user expects. In Angular the value is bound like any attribute, so [type] works - but these give you validation and keyboard for free that no amount of TypeScript can."
+        }
+      ],
+      "tags": [
+        "MS"
       ]
     }
   ],
@@ -404,6 +517,25 @@
           "explanation": "Grid 2D layout skeleton; Flexbox 1D alignment."
         }
       ]
+    },
+    {
+      "id": "css-12",
+      "category": "css",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "What problems do global styles cause, and how do you keep styles contained?",
+      "answer": "Global styles fail quietly: a rule written for one screen silently restyles every element that matches it in another screen, and the symptom appears three features later as a button that is the wrong height. The usual categories are selector collisions, specificity fights between files loaded in an order nobody controls, inherited properties leaking somewhere they were not wanted, third-party styles overriding yours (or yours breaking a library), and design drift, where spacing and colour are re-decided per screen because nothing forces them to be shared. Angular's default emulated view encapsulation scopes component styles to that component - they are rewritten with content attributes so they cannot match anything else - which is the containment mechanism I lean on, so the global file stays small. My rules: globals hold only the reset, design tokens as CSS custom properties, base typography and genuinely shared primitives; feature styling lives with the component; avoid bare element selectors and generic classes like .container in globals; use cascade layers when a library and your own styles need an explicit order; use !important only as a last resort with a comment; and reach for ViewEncapsulation.None deliberately, for something like a third-party theme, rather than by accident. The test is simple - if a change in one component's styles alters another component's pixels, containment has failed.",
+      "examples": [
+        {
+          "title": "What belongs in globals versus with the component",
+          "code": "/* styles.css - tokens and reset only, nothing feature-specific */\n:root {\n  --app-gap: 1rem;\n  --app-surface: #ffffff;\n  --app-on-surface: #16161d;\n}\n* { box-sizing: border-box; }\nbody { margin: 0; font-family: system-ui, sans-serif; }\n\n/* card.component.css - everything else travels with the component */\n:host { display: block; padding: var(--app-gap); background: var(--app-surface); }",
+          "explanation": "The global file defines the vocabulary once; components spend it through var(). A rule that only one component needs is scoped to that component, so it cannot be inherited by accident anywhere else."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
     }
   ],
   "javascript": [
@@ -442,6 +574,9 @@
           "code": "const user = { name: 'Ada' };\nuser.name = 'Grace'; // fine\nuser = { name: 'Lin' }; // TypeError: Assignment to constant variable",
           "explanation": "const freezes the binding, not the value inside it."
         }
+      ],
+      "tags": [
+        "MS"
       ]
     },
     {
@@ -458,6 +593,9 @@
           "code": "function createCounter() {\n  let count = 0;\n  return {\n    inc: () => ++count,\n    get: () => count,\n  };\n}\nconst c = createCounter();\nc.inc(); c.inc();\nconsole.log(c.get()); // 2  (count is unreachable from outside)",
           "explanation": "count survives after createCounter returned because the returned functions captured its scope."
         }
+      ],
+      "tags": [
+        "MS"
       ]
     },
     {
@@ -483,18 +621,26 @@
       "scenarioBased": false,
       "isMarked": false,
       "question": "What are arrow functions and how do they differ from function declarations?",
-      "answer": "An arrow function is a compact anonymous function expression. Two differences matter: it has no own this (this is inherited lexically from where it was defined, so it cannot be used as a method or constructor) and no own arguments or new.target. It also cannot be hoisted as a declaration, and it has no prototype. Use arrows for callbacks; use function expressions when you need dynamic this or arguments.",
+      "answer": "An arrow function is the shorter way to write a function that arrived in ES6: const add = (a, b) => a + b, with the parentheses around a single parameter optional and the return keyword dropped when the body is one expression. The difference that matters in interviews is this: an arrow function has no this of its own. A normal function gets this from how it is called - user.greetRegular() makes this the user object - while an arrow function inherits this from the scope it was written in, so calling it as a method cannot change it. That is why arrows are the right choice for map, filter and callbacks, and the wrong choice for an object method that needs this to be the object. Two smaller differences come from the same place: an arrow has no arguments object, so use rest parameters instead, and it cannot be used with new because it has no prototype, so it is never a constructor. Because an arrow is usually assigned to a const, it cannot be hoisted and called before that line the way a function declaration can.",
       "examples": [
         {
-          "title": "this in arrows vs methods",
-          "code": "const obj = {\n  name: 'app',\n  regular: function () { return typeof this; }, // 'object' (this = obj)\n  arrow: () => typeof this,                    // whatever this was where obj was created\n};\n\nconst detached = obj.regular; // this = undefined in strict mode",
-          "explanation": "Arrows capture this lexically, so detaching them changes nothing."
+          "title": "this in a regular function vs an arrow function",
+          "code": "const user = {\n  name: 'Shreyas',\n\n  greetRegular() {\n    console.log(this.name);   // called as user.greetRegular(), so this is user\n  },\n\n  greetArrow: () => {\n    console.log(this.name);   // arrow has no this of its own\n  },\n};\n\nuser.greetRegular(); // 'Shreyas'\nuser.greetArrow();   // undefined",
+          "explanation": "A regular method reads this from the call site, so user.greetRegular() hands it the object. An arrow ignores the call site and keeps the this of the surrounding scope, which here is the module scope - so this.name is undefined even though it was called on user."
         },
         {
-          "title": "No own arguments and not constructable",
-          "code": "const counter = {\n  count: 0,\n  tick() {\n    [1, 2, 3].forEach(() => {\n      this.count++;              // arrow inherits this = counter\n    });\n  },\n};\n\nfunction Sum(a, b) { return arguments.length; }  // own arguments\nnew Sum(1, 2);                                    // works as a constructor\n\nconst ArrowSum = (a, b) => arguments.length;      // ReferenceError: arguments is not defined\n// new ArrowSum(1, 2);                            // TypeError: ArrowSum is not a constructor",
-          "explanation": "An arrow has no this, arguments or prototype of its own, so it cannot receive a dynamic this, cannot be newed, and must use ...rest instead of arguments."
+          "title": "An arrow defined inside a method keeps that method's this",
+          "code": "const user = {\n  name: 'Shreyas',\n\n  greet() {\n    const arrow = () => console.log(this.name);        // inherits greet's this\n    const regular = function () {\n      console.log(this.name);                         // gets its own this\n    };\n\n    arrow();    // 'Shreyas'\n    regular();  // undefined - called as regular(), not user.regular()\n  },\n};\n\nuser.greet();",
+          "explanation": "The arrow is written inside greet, so it takes greet's this, and greet's this is user because the method was called on user. The inner regular function is a new function with a fresh this from its own call, and regular() is not user.regular(), so in strict mode it is undefined."
+        },
+        {
+          "title": "No arguments object, and not a constructor",
+          "code": "function sum() {\n  return arguments.length;   // regular functions have their own arguments\n}\n\nconst sumArrow = (...numbers) => numbers.length; // arrow: rest parameters instead\n\nnew sum(1, 2);           // works - a regular function can be a constructor\n// new sumArrow(1, 2);   // TypeError: sumArrow is not a constructor",
+          "explanation": "Arrows have no arguments object and no prototype, so they cannot be newed and cannot be constructors - a rest parameter and a normal function replace both."
         }
+      ],
+      "tags": [
+        "MS"
       ]
     },
     {
@@ -663,7 +809,16 @@
           "title": "Invocation styles",
           "code": "function intro(greeting, mark) { return `${greeting} ${this.name}${mark}`; }\nconst user = { name: 'Ada' };\n\nintro.call(user, 'Hi', '!');      // 'Hi Ada!'\nintro.apply(user, ['Hi', '!']);   // 'Hi Ada!'\nconst bound = intro.bind(user, 'Hi');\nbound('?');                        // 'Hi Ada?'",
           "explanation": "call/apply run now; bind produces a reusable function with this fixed."
+        },
+        {
+          "title": "Video walkthrough",
+          "code": "call, apply and bind - https://www.youtube.com/watch?v=75W8UPQ5l7k",
+          "url": "https://www.youtube.com/watch?v=75W8UPQ5l7k",
+          "explanation": "A short visual run through setting this with call, apply and bind, and why bind is the one that returns a new function instead of calling immediately."
         }
+      ],
+      "tags": [
+        "MS"
       ]
     },
     {
@@ -783,6 +938,68 @@
           "explanation": "The microtask queue empties fully after each task; the macrotask queue runs one task at a time. Callbacks never interrupt running code, so the page stays interactive for async-heavy work."
         }
       ]
+    },
+    {
+      "id": "js-22",
+      "category": "javascript",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "How do you find the second highest number in an array?",
+      "answer": "I would clarify first whether duplicates count, because [10, 10, 8] is either 8 or nothing depending on what they meant, and what to return for an array with fewer than two distinct values. With that settled, one pass with two variables is the answer: walk the array once, when a value beats the current highest shift the old highest down into second place, and when it does not beat the highest but beats second, update second. Guarding the second branch with 'less than highest' is what keeps a duplicate of the winner from becoming the runner-up. That is O(n) time and O(1) extra space, versus sorting first at O(n log n) and O(n) space, and the single pass also short-circuits nothing in the worst case, so the honest comparison is about clarity rather than a big win - though on a large input it is still measurably cheaper. Edge cases I would mention rather than let them find them: empty arrays, one distinct value, NaN, and unsorted input, which the one-pass version handles by construction.",
+      "examples": [
+        {
+          "title": "One pass, duplicates handled explicitly",
+          "code": "function secondHighest(numbers: number[]): number | undefined {\n  let highest = -Infinity;\n  let second = -Infinity;\n\n  for (const n of numbers) {\n    if (n > highest) {\n      second = highest;\n      highest = n;\n    } else if (n < highest && n > second) {\n      second = n;\n    }\n  }\n\n  return second === -Infinity ? undefined : second;\n}\n\nsecondHighest([10, 5, 8, 10, 7]); // 8  - the second DISTINCT value\nsecondHighest([4, 4, 4]);          // undefined",
+          "explanation": "The n < highest test is the whole trick: without it the repeated 10 would overwrite second and you would report 10 as the answer."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
+    },
+    {
+      "id": "js-23",
+      "category": "javascript",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "What is the difference between a shallow copy and a deep copy?",
+      "answer": "A shallow copy duplicates the outermost container and copies the references inside it, so the new object is independent at the top level only - spread, Object.assign and array slice all behave this way. Mutate a nested object on the copy and you have mutated the original, which is exactly the bug that produces a UI that will not re-render or a store entry that changed without an action. A deep copy duplicates the nested structure too, so nothing is shared. The standard tool is structuredClone(), which handles cycles, Dates, Maps, Sets, RegExps and typed arrays; it refuses functions, DOM nodes and class instances that are not cloneable, which is the failure people meet first. The old alternative, JSON.parse(JSON.stringify(obj)), silently drops undefined values, Dates become strings, functions disappear, and it throws on circular references - acceptable only for data that is genuinely JSON. The practical rule in Angular is to avoid needing a deep copy at all: update immutably at every level (spread the object and the branch you touched), because signals, OnPush and NgRx all rely on reference changes meaning something.",
+      "examples": [
+        {
+          "title": "Shared by reference, then properly cloned",
+          "code": "const original = { name: 'Alice', address: { city: 'Pune' } };\n\nconst shallow = { ...original };\nshallow.address.city = 'Mumbai';\noriginal.address.city; // 'Mumbai' - address is the SAME object\n\nconst deep = structuredClone(original);\ndeep.address.city = 'Delhi';\noriginal.address.city; // 'Mumbai' - nothing shared\n\nstructuredClone(() => {}); // TypeError: functions are not cloneable",
+          "explanation": "Spread copies one level, so every nested reference is still the original's; structuredClone copies the whole graph, and tells you where it stops."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
+    },
+    {
+      "id": "js-24",
+      "category": "javascript",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "What is a Promise, and how do you work with one?",
+      "answer": "A Promise is an object that represents the eventual result of an asynchronous operation, and the part worth saying precisely is that it is in one of three states - pending, fulfilled or rejected - and it settles exactly once. After it has fulfilled or rejected it never changes again, which is what separates it from a callback that can fire any number of times. You create one with new Promise((resolve, reject) => ...), but in practice you consume the promises APIs hand back, either with .then/.catch/.finally or with async/await, which is cleaner syntax over the same chain - an await pauses that function, not the thread. Composition is where promises earn their place: Promise.all runs calls in parallel and rejects as soon as one fails, allSettled waits for all of them and reports each outcome, race takes the first to settle and any takes the first to succeed. The pitfalls interviewers listen for are forgetting to return a promise inside a then, which lets the chain resolve before the inner work finishes; floating promises that nobody awaits or catches, because an unhandled rejection surfaces late and somewhere else; and awaiting in a loop when the calls are independent, which turns the total time from the slowest call into the sum of them. Angular's HttpClient returns Observables rather than promises on purpose, since an Observable can emit more than once and be cancelled, and firstValueFrom or lastValueFrom convert one when a promise really is simpler.",
+      "examples": [
+        {
+          "title": "States, then/catch, and the same thing with async/await",
+          "code": "const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));\n\n// then / catch / finally\nwait(500)\n  .then(() => fetchUser())\n  .catch((error) => console.error('failed', error))   // handles any rejection above\n  .finally(() => (loading = false));                  // always runs\n\n// the same chain with async/await\nasync function load() {\n  try {\n    await wait(500);\n    return await fetchUser();   // the return keeps the caller waiting too\n  } catch (error) {\n    console.error('failed', error);\n  } finally {\n    loading = false;\n  }\n}",
+          "explanation": "The promise is pending until it settles, and it settles once - the catch covers a rejection from anywhere above it in the chain. async/await changes the look of this, not the behaviour; await only pauses the function it is written in."
+        },
+        {
+          "title": "Parallel beats sequential, and the combinators",
+          "code": "// ~2s: the second call waits for the first for no reason\nconst user = await getUser();\nconst orders = await getOrders();\n\n// ~1s: both run at the same time\nconst [u, o] = await Promise.all([getUser(), getOrders()]);\n\nawait Promise.allSettled([getUser(), getOrders()]); // waits for every outcome, never rejects\nawait Promise.race([getUser(), timeout(5000)]);     // first to settle wins (timeouts)\nawait Promise.any([primary(), fallback()]);         // first to fulfil wins",
+          "explanation": "Promise.all is all-or-nothing and fails fast; allSettled always waits and tells you which ones failed; race takes the first settlement, which is how a timeout is built; any takes the first success."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
     }
   ],
   "angular": [
@@ -840,7 +1057,7 @@
       "scenarioBased": false,
       "isMarked": false,
       "question": "What is an Angular directive?",
-      "answer": "A directive is a class that extends HTML behaviour — structure or presentation — without an associated template. Attribute directives change an element's appearance or behaviour, while structural directives add, remove or repeat elements in the DOM - *ngIf and *ngFor are the classic ones, replaced in modern templates by the built-in @if / @for control-flow blocks.",
+      "answer": "A directive is a class that extends HTML behaviour — structure or presentation — without an associated template. Attribute directives change an element's appearance or behaviour, while structural directives add, remove or repeat elements in the DOM - *ngIf and *ngFor are the classic ones, replaced in modern templates by the built-in @if / @for control-flow blocks. To write one: a class with a selector that matches an attribute, element or modifier, marked standalone so templates import it directly; host bindings and host listeners expose its state, and the DOM goes through ElementRef and Renderer2 rather than nativeElement.style, because Renderer2 stays platform-safe and testable. If CSS alone can express the behaviour, CSS alone should.",
       "examples": [
         {
           "title": "Component directive",
@@ -856,7 +1073,15 @@
           "title": "Attribute directive",
           "code": "<button matButton appAutofocus>Go</button>",
           "explanation": "Attribute directives change behaviour or appearance of the host element without adding markup."
+        },
+        {
+          "title": "A directive you can actually write",
+          "code": "@Directive({\n  selector: '[appHighlight]',\n  standalone: true,\n})\nexport class HighlightDirective {\n  private readonly el = inject(ElementRef);\n  private readonly renderer = inject(Renderer2);\n  readonly highlight = input('#fff59d');\n\n  @HostListener('mouseenter')\n  enter() {\n    this.renderer.setStyle(this.el.nativeElement, 'backgroundColor', this.highlight());\n  }\n\n  @HostListener('mouseleave')\n  leave() {\n    this.renderer.removeStyle(this.el.nativeElement, 'backgroundColor');\n  }\n}\n\n<p appHighlight>Hover me</p>",
+          "explanation": "Attribute directive: it matches an attribute, adds no markup of its own, and changes the host element - the reusable version of an inline (mouseenter) handler copied into five templates."
         }
+      ],
+      "tags": [
+        "MS"
       ]
     },
     {
@@ -1101,6 +1326,9 @@
           "code": "export const adminGuard: CanActivateFn = () => {\n  const auth = inject(AuthService);\n  return auth.role() === 'admin' ? true : inject(Router).createUrlTree(['/']);\n};",
           "explanation": "canActivateFn/canMatch gate navigation/loads."
         }
+      ],
+      "tags": [
+        "MS"
       ]
     },
     {
@@ -1117,6 +1345,9 @@
           "code": "import { HttpInterceptorFn } from '@angular/common/http';\n\nexport const authInterceptor: HttpInterceptorFn = (req, next) => {\n  const authReq = req.clone({ setHeaders: { Authorization: 'Bearer token' } });\n  return next(authReq);\n};",
           "explanation": "Modern functional interceptor: clone and chain with next."
         }
+      ],
+      "tags": [
+        "MS"
       ]
     },
     {
@@ -1386,7 +1617,7 @@
       "isMarked": false,
       "isNew": true,
       "question": "How does JWT authentication work in the UI, what is sent to the backend, and what does the backend do with it?",
-      "answer": "The UI posts credentials (username and password) once; the backend checks them and returns a signed token, usually with a short expiry, plus often a longer-lived refresh token. A JWT is three base64url parts: header.payload.signature. Where you store it matters. The safest option is an httpOnly, Secure, SameSite cookie that the server sets, because JavaScript and therefore an XSS attack cannot read it; if you keep it in JavaScript, prefer memory for the access token and treat localStorage as XSS-exposed. The important division of responsibility is that the UI never verifies the signature and never trusts claims for security. It may decode the payload to read exp or a display name, but that is cosmetic only: decoding is not verifying. On every call the client sends the token, typically Authorization: Bearer <token> (with withCredentials: true when it lives in a cookie). The backend verifies the signature with the secret or public key, checks exp/nbf, issuer and audience, then reads the claims (sub, roles) to authorise the request. In Angular an HTTP interceptor attaches the header and handles a 401 by refreshing the token and retrying once. A token is a credential, so never log it or put it in a URL.",
+      "answer": "The UI posts credentials (username and password) once; the backend checks them and returns a signed token, usually with a short expiry, plus often a longer-lived refresh token. A JWT is three base64url parts: header.payload.signature. Where you store it matters. The safest option is an httpOnly, Secure, SameSite cookie that the server sets, because JavaScript and therefore an XSS attack cannot read it; if you keep it in JavaScript, prefer memory for the access token and treat localStorage as XSS-exposed. The important division of responsibility is that the UI never verifies the signature and never trusts claims for security. It may decode the payload to read exp or a display name, but that is cosmetic only: decoding is not verifying. On every call the client sends the token, typically Authorization: Bearer <token> (with withCredentials: true when it lives in a cookie). The backend verifies the signature with the secret or public key, checks exp/nbf, issuer and audience, then reads the claims (sub, roles) to authorise the request. In Angular an HTTP interceptor attaches the header and handles a 401 by refreshing the token and retrying once. A token is a credential, so never log it or put it in a URL. One more line interviewers listen for: route guards and role-hidden buttons are user experience, not enforcement - they stop an honest user, not anyone with curl - so the backend authorises every protected call again, and the UI renders a 403 from the API as a state to handle rather than a path that cannot happen.",
       "examples": [
         {
           "title": "Attach the token and refresh on 401",
@@ -1398,6 +1629,9 @@
           "code": "// JWT = base64url(header).base64url(payload).signature\n// The UI may read the payload for display only:\nconst claims = JSON.parse(atob(token.split('.')[1]));\nconst expired = claims.exp * 1000 < Date.now();\n\n// The backend, on every request:\n// 1. verify the signature (secret or public key)\n// 2. check exp / nbf / iss / aud\n// 3. trust sub + roles for authorisation\n// Never make an access decision from a client-decoded token.",
           "explanation": "Decoding is not verifying: the payload is attacker-visible and attacker-editable, so it is fine for display and useless for a security decision."
         }
+      ],
+      "tags": [
+        "MS"
       ]
     },
     {
@@ -1540,7 +1774,7 @@
       "isMarked": false,
       "isNew": true,
       "question": "What are the Angular route guards, with a small example of each?",
-      "answer": "Route guards are functions the router runs while resolving a navigation to decide whether it proceeds. The current API is functional: canActivate (may this route be entered - auth/access control), canActivateChild (same check for every child of a route, protecting a whole section), canMatch (participates in route matching, picking between several route objects for the same URL - feature flag or user type), canDeactivate (may we leave - unsaved changes), and resolve (prefetch data before the component renders; generally discouraged today, prefer loading after navigation with a loading state). Each guard returns boolean, a UrlTree to redirect, or an Observable/Promise of those. You can list several guards on a route; they run in order and the first false or UrlTree stops navigation. The old class-based guards (CanActivate, CanActivateChild, CanDeactivate, Resolve - and CanLoad, removed in v15) still appear in legacy code; functional guards run inside the injection context, so inject() works directly and testing one is just calling a function.",
+      "answer": "Route guards are functions the router runs while resolving a navigation to decide whether it proceeds. The current API is functional: canActivate (may this route be entered - auth/access control), canActivateChild (same check for every child of a route, protecting a whole section), canMatch (participates in route matching, picking between several route objects for the same URL - feature flag or user type), canDeactivate (may we leave - unsaved changes), and resolve (prefetch data before the component renders; generally discouraged today, prefer loading after navigation with a loading state). Each guard returns boolean, a UrlTree to redirect, or an Observable/Promise of those. You can list several guards on a route; they run in order and the first false or UrlTree stops navigation. The old class-based guards (CanActivate, CanActivateChild, CanDeactivate, Resolve - and CanLoad, removed in v15) still appear in legacy code; functional guards run inside the injection context, so inject() works directly and testing one is just calling a function. Two things separate a senior answer from a list: guards are not a security boundary - they shape what the UI lets you do, while the server authorises every request regardless - and each piece owns one job. Guards decide whether navigation proceeds, resolvers (used sparingly, because they delay navigation) prepare data before activation, HTTP services own the calls, and interceptors own what is cross-cutting about them, such as the auth header and a standard error shape.",
       "examples": [
         {
           "title": "canActivate, canMatch and canDeactivate",
@@ -1552,6 +1786,9 @@
           "code": "export const adminOnly = (): boolean | UrlTree =>\n  inject(AuthStore).isAdmin()\n    ? true\n    : inject(Router).createUrlTree(['/forbidden']);\n\nconst routes: Routes = [{\n  path: 'admin',\n  canActivateChild: [adminOnly],\n  children: [\n    { path: 'users', component: UsersComponent },\n    { path: 'settings', component: SettingsComponent },\n  ],\n}];",
           "explanation": "One guard covers every child, so a newly added admin sub-page cannot be forgotten; a UrlTree gracefully redirects instead of failing the navigation."
         }
+      ],
+      "tags": [
+        "MS"
       ]
     },
     {
@@ -1620,6 +1857,9 @@
           "explanation": "rxMethod wraps an RxJS pipeline in a store method; hand it a signal, a value or an observable and each emission is debounced and switched, while tapResponse keeps the loading and error state in sync.",
           "url": "https://ngrx.io/guide/signals/rxjs-integration"
         }
+      ],
+      "tags": [
+        "MS"
       ]
     },
     {
@@ -1650,6 +1890,218 @@
           "explanation": "createFeatureSelector reads the 'books' slice and createSelector composes memoized read models. Register the slice with provideStore({ books: booksReducer }) and the effect with provideEffects(BooksEffects); the component then only dispatches actions and selects slices, never touching the state object.",
           "url": "https://ngrx.io/guide/store/selectors"
         }
+      ],
+      "tags": [
+        "MS"
+      ]
+    },
+    {
+      "id": "angular-46",
+      "category": "angular",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "How do you make an Angular application accessible?",
+      "answer": "Accessibility is mostly HTML discipline, then focus management, then testing. Start with real elements: button, a, label, fieldset, nav, main and heading levels give you keyboard behaviour, roles and announced names for free, whereas a div with a click handler gives you none of it. Associate every control with a label, keep a logical heading order, and give images and icon-only controls an accessible name. Keyboard is the floor: everything reachable, visible focus, no traps, and focus moved deliberately when a dialog opens or a route changes. Then the dynamic parts - announce results and validation through aria-live or role=status, and use ARIA only where native semantics cannot express it, because a wrong attribute is worse than none. Angular's CDK gives me focus trapping and overlays, and Material components ship with the semantics built in, but they cannot invent the labels or the structure; that stays my job. In practice I target WCAG 2.2 AA, run axe and the angular-eslint accessibility rules in CI so regressions fail the build, and finish with a manual pass - keyboard first, then a screen reader on the main journeys - because automation catches maybe a third of the real problems.",
+      "examples": [
+        {
+          "title": "Semantics plus a live announcement",
+          "code": "<button type=\"button\" (click)=\"save()\">Save</button>\n\n<p role=\"status\">{{ status() }}</p>\n\n@if (errors().length) {\n  <ul aria-labelledby=\"form-errors\">\n    @for (e of errors(); track e) { <li>{{ e }}</li> }\n  </ul>\n}",
+          "explanation": "A real button gives the keyboard handler, the role and the focus ring; role=status lets the screen reader announce the async result without the user hunting for it."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
+    },
+    {
+      "id": "angular-47",
+      "category": "angular",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "How would you produce an accessibility report for an application?",
+      "answer": "The report has to be evidence a team can act on, so I scope it before I test: the key journeys first - sign in, search, the main form, the main dialog - rather than every screen. Three passes feed it. Automated: axe-core in the browser or wired into the component tests, Lighthouse, and the angular-eslint accessibility rules in CI, which give repeatable numbers and catch regressions. Manual keyboard pass: tab order, visible focus, no keyboard traps, Escape closing overlays, and every action reachable without a mouse. Screen-reader pass on the journeys, checking names, roles, headings, form errors and live announcements, because a green automated run only proves a fraction of conformance. Then I write each issue up with the page, the WCAG 2.2 criterion, the severity and user impact, the reproduction, evidence, the suggested fix, an owner and a retest status - a missing label on the payment field is not the same severity as a slightly low contrast ratio on a caption. I track it against the agreed target, usually AA, and I state plainly in the report that automated checks passing is not a claim of accessibility; it is a floor.",
+      "examples": [
+        {
+          "title": "One row of the report",
+          "code": "Page:     /employees/new (step 2)\nIssue:    Amount input has no accessible name (screen reader reads 'edit text')\nCriterion: WCAG 2.2 - 4.1.2 Name, Role, Value\nSeverity: High - blocks a primary task for screen-reader users\nRepro:    Tab to the field, inspect accessible name in the a11y tree\nFix:      <label for=\"amount\">Amount</label> + id on the input\nOwner:    FE squad 2      Status: Open -> Fixed, retested 14 Mar",
+          "explanation": "Severity is argued from user impact, not from how easy the fix is, and every row carries enough detail to be verified by someone who was not in the room."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
+    },
+    {
+      "id": "angular-48",
+      "category": "angular",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "Walk me through routing in Angular - how is it configured, and what does the router actually do?",
+      "answer": "Routing is a URL-to-view mapping. You declare a Routes array where each route points a path at a component, usually through loadComponent so the code is not in the initial bundle, and register it with provideRouter(routes) in the application config. A router-outlet in the root template is the slot the active component renders into, and RouterLink or Router.navigate moves between routes without a full page load. Around that sit the pieces you are asked about: path parameters for identity (/employees/123), query parameters for optional state (?page=2), child routes for nesting, guards to decide whether navigation proceeds, resolvers to prepare data first, router events such as NavigationEnd for analytics or scroll resets, and a wildcard route for anything unmatched. Deep linking only works if the server falls back to index.html for unknown paths, otherwise a refresh on a nested URL 404s. In practice I also add withComponentInputBinding() so route and query parameters arrive as inputs, a custom route reuse strategy or scroll handling only when needed, and a preloading strategy so important lazy routes are fetched while the user is still reading the first page.",
+      "examples": [
+        {
+          "title": "A route config with parameters, children and a wildcard",
+          "code": "export const routes: Routes = [\n  { path: '', pathMatch: 'full', redirectTo: 'employees' },\n  {\n    path: 'employees',\n    loadComponent: () => import('./employees/list').then((m) => m.EmployeeList),\n    children: [\n      { path: ':id', loadComponent: () => import('./employees/detail').then((m) => m.EmployeeDetail) },\n    ],\n  },\n  { path: '**', loadComponent: () => import('./not-found').then((m) => m.NotFound) },\n];\n\nbootstrapApplication(AppComponent, { providers: [provideRouter(routes)] });",
+          "explanation": "Each lazy entry is a separate chunk fetched on first navigation; the wildcard must be last or it swallows every path."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
+    },
+    {
+      "id": "angular-49",
+      "category": "angular",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "How do you handle errors in an Angular application, including API errors?",
+      "answer": "I handle errors at the layer that can do something useful about them, and I distinguish expected failures from bugs. At the source - the service - catchError classifies the failure (status 0 is network or CORS, 401 means re-authenticate, 403 means authenticated but not allowed, 404 is a contract problem, 5xx is upstream) and then either hands back fallback data such as of([]) when the screen can degrade gracefully, or rethrows with throwError so the caller decides. At the component level the error becomes state: a signal the template renders as a message with a retry, loading cleared in finalize() so the UI cannot get stuck half-finished, and technical detail kept out of the user-facing text. Interceptors own what is genuinely cross-cutting - a standard error envelope, logging, refresh-and-retry-once on 401 - but I do not swallow every failure there, because a 404 on one endpoint usually needs its own response. Angular's ErrorHandler catches what nothing else did and ships it to monitoring, and the router gives a separate path for a lazy chunk that fails to download. The rule I keep: every error either reaches a human who can act or reaches a log that someone reads.",
+      "examples": [
+        {
+          "title": "Classify, then rethrow or degrade",
+          "code": "getEmployees(): Observable<Employee[]> {\n  return this.http.get<Employee[]>('/api/employees').pipe(\n    catchError((error: HttpErrorResponse) => {\n      if (error.status === 0) this.log.warn('network/CORS', error);\n      else if (error.status === 401) this.auth.reauthenticate();\n      else if (error.status === 403) this.log.warn('not authorised', error);\n      else if (error.status >= 500) this.monitor.report(error);\n\n      return this.fallback\n        ? of([])                  // the screen can render an empty state\n        : throwError(() => error); // the caller decides what the user sees\n    }),\n  );\n}",
+          "explanation": "catchError must return an Observable, so you choose: a fallback keeps the stream alive, throwError keeps the failure visible upstream. Splitting those two is the whole decision."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
+    },
+    {
+      "id": "angular-50",
+      "category": "angular",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "What is zone.js, and why does Angular use it?",
+      "answer": "zone.js is a library that gives JavaScript execution contexts called zones, and it gets there by patching the asynchronous APIs the browser exposes - timers, event listeners, promises, XHR/fetch callbacks - so that it knows when a scheduled piece of async work starts and finishes. Angular used it as its change-detection trigger: because the zone can see every callback settle, the framework no longer had to be told that state might have changed. The developer experience effect was real - you could update a field inside a setTimeout or an event handler and the view refreshed - and the cost was that Angular had to assume any async completion might have changed anything and re-check the tree. Two things are worth being precise about. First, zone.js is not change detection: it reports that asynchronous work settled, and Angular's change detection decides what to inspect. Second, it is no longer required - the zoneless model, the default for new applications since Angular 21, drops the patching entirely and schedules checks from explicit triggers such as a signal a template reads being written, a listener firing, or markForCheck(). So I would describe it as the mechanism Angular needed before signals made the framework aware of changes at the source.",
+      "examples": [
+        {
+          "title": "What the zone was standing in for",
+          "code": "// zoneful: the zone sees the callback finish and schedules a check\nsetTimeout(() => {\n  this.label = 'Done';   // view updates without being told\n}, 500);\n\n// zoneless: the notification comes from the state itself\nthis.label = signal('');\nsetTimeout(() => {\n  this.label.set('Done'); // the written signal schedules the check\n}, 500);",
+          "explanation": "Same behaviour, different source of truth about when to render: an intercepted callback versus an explicit signal write."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
+    },
+    {
+      "id": "angular-51",
+      "category": "angular",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "What does cross-browser compatibility mean for an Angular app, and what has zone.js got to do with it?",
+      "answer": "Cross-browser compatibility means the application behaves acceptably on every browser you have promised to support, and it is a testing and tooling problem, not a framework feature. My approach: agree the support matrix first, because that decides everything else; write standards-based HTML, CSS and JavaScript rather than vendor-specific behaviour; let the TypeScript target and the browserslist configuration downlevel syntax and styles for that matrix; add a polyfill only where a supported browser is genuinely missing a runtime API, which in a modern matrix is rare and always costs bytes; use feature detection at the edges rather than sniffing user agents; and actually run the key journeys in the supported browsers, real devices for the mobile ones or a service such as BrowserStack, with Playwright projects per browser where it is worth automating. Responsive layout, font rendering and input differences (touch versus hover, focus behaviour) are part of it too. zone.js belongs to a completely different category: it is Angular's mechanism for noticing that asynchronous work finished so change detection can run. It has no bearing on whether a browser supports a CSS feature or a JavaScript API, and it is not a compatibility layer - a very common mix-up worth correcting in the answer.",
+      "examples": [
+        {
+          "title": "The three places compatibility is actually configured",
+          "code": "// tsconfig.json - how far syntax is downlevelled\n{ \"compilerOptions\": { \"target\": \"ES2022\", \"module\": \"preserve\" } }\n\n// browserslist (package.json or .browserslistrc) - the promise you make\n[\"last 2 Chrome versions\", \"last 2 Firefox versions\", \"Safari >= 15\", \"iOS >= 15\"]\n\n// angular.json - runtime APIs a supported browser lacks (zoneless apps omit it)\n\"polyfills\": [\"zone.js\"]",
+          "explanation": "Syntax, styles and missing APIs are three different problems with three different settings. zone.js is none of them - it is a change-detection dependency you either load or do not."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
+    },
+    {
+      "id": "angular-52",
+      "category": "angular",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "What are polyfills in Angular, and how do you decide which ones you need?",
+      "answer": "A polyfill supplies at runtime an API a browser does not implement, which is different from transpilation: a transpiler rewrites newer syntax into older syntax, while a polyfill fills in a missing function or behaviour such as a missing navigator or a missing string method. In Angular, polyfills are declared as a build option - angular.json's build.options.polyfills array, where an application running with zones lists 'zone.js' - rather than imported from a hand-maintained polyfills.ts file, which older projects still have. The decision process is short: look at the support matrix, check each candidate feature against it, and add a polyfill only if a browser you must support is actually missing it. I verify with a tool such as caniuse or MDN rather than habit, because the common failure is a copied polyfill list from a project that supported IE11 years ago, silently costing critical-path bytes on every load. I also keep transpilation and polyfills separate in the answer: if the build fails or the syntax breaks it is a target problem, if a function is undefined at runtime it is a polyfill problem. This application needs none of its own, because it is zoneless and targets ES2022 browsers.",
+      "examples": [
+        {
+          "title": "Where a polyfill lives today",
+          "code": "// angular.json\n\"build\": {\n  \"options\": {\n    \"polyfills\": [\"zone.js\"],   // omitted entirely in a zoneless app\n    \"styles\": [\"src/styles.css\"]\n  }\n}\n\n// an older project still reads from a file the CLI generated\n// src/polyfills.ts\nimport 'core-js/actual/structured-clone';",
+          "explanation": "The array is the whole mechanism now: each entry is a module bundled into the app, so every entry is a kilobyte you have justified."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
+    },
+    {
+      "id": "angular-53",
+      "category": "angular",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "What testing setup does an Angular project get by default?",
+      "answer": "Historically the CLI scaffolded Karma as the runner and Jasmine as the assertion library: Karma launched a browser, reported results back, and specs used describe/it/expect with spies. Karma was deprecated in 2023 and from Angular 21 the default ng test runs Vitest through the builder, which keeps the familiar Jasmine-style API but runs fast in a DOM environment instead of driving a browser, and it is what this project uses. End-to-end is deliberately not chosen for you: Protractor reached end of life in 2023 and the CLI now asks you to pick from Playwright, Cypress, WebdriverIO, Puppeteer or Nightwatch. Beyond the tooling, the part of the answer that matters is how I write tests: exercise behaviour rather than implementation - create the fixture, set inputs with setInput, drive an event, then assert on what the user can see; fake services instead of hitting HTTP, using provideHttpClientTesting and the testing controller to verify the method, URL and body; and assert the failure path as well as the happy one, because the empty and error states are where the bugs hide. I would rather have ten tests that would fail if behaviour changed than fifty that only prove the framework works.",
+      "examples": [
+        {
+          "title": "A component test in the current default setup",
+          "code": "it('should render the employees the service returned', async () => {\n  api.getEmployees.and.returnValue(of([{ id: 1, name: 'Ada' }]));\n\n  const fixture = TestBed.createComponent(EmployeeList);\n  await fixture.whenStable();\n  fixture.detectChanges();\n\n  expect(api.getEmployees).toHaveBeenCalled();\n  expect(fixture.nativeElement.textContent).toContain('Ada');\n});",
+          "explanation": "describe/it/expect come from the runner (Vitest here), the service is a spy so nothing hits the network, and the assertion is on the rendered DOM rather than on component fields."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
+    },
+    {
+      "id": "angular-54",
+      "category": "angular",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "What happens when a component is destroyed, and what do you have to clean up?",
+      "answer": "Angular calls ngOnDestroy once when the component instance is being torn down, and it is the last place you can undo everything the component started. The checklist I run through: long-lived subscriptions (the modern answer is takeUntilDestroyed() in the injection context, or the async pipe in the template, so there is nothing to unsubscribe by hand), intervals and timeouts, event listeners you added yourself, anything you appended to the DOM outside Angular's knowledge, third-party widgets you instantiated, and native resources such as a WebSocket or an observer. Signals blur the line usefully: an effect() created in the component's injection context disposes itself with the component, toSignal() is tied to DestroyRef, and a finite HTTP observable completes on its own so it needs no cleanup at all - the mistake is treating every observable as if it needs an unsubscribe. In tests I prove teardown rather than assume it: assert that ngOnDestroy ran, or that a stopped interval no longer ticks. Worth knowing if you touch a legacy AngularJS codebase: the equivalent is the scope's $destroy event, and AngularJS fires it twice - once broadcast to descendant scopes, once on the element itself when it is removed - so those handlers have to be idempotent.",
+      "examples": [
+        {
+          "title": "Tear down what the framework cannot",
+          "code": "export class OrderPoller {\n  private readonly destroyRef = inject(DestroyRef);\n  private readonly api = inject(OrderApi);\n  private handle?: number;\n\n  constructor() {\n    // subscription: tied to the component, nothing to unsubscribe manually\n    interval(10_000)\n      .pipe(takeUntilDestroyed(this.destroyRef))\n      .subscribe(() => this.api.refresh());\n\n    // a resource outside Angular's control needs an explicit undo\n    this.destroyRef.onDestroy(() => clearInterval(this.handle));\n    this.handle = window.setInterval(() => this.tick(), 1_000);\n  }\n}",
+          "explanation": "Angular owns its own subscriptions now; anything it did not create - a raw interval, a listener, a widget - still has to be released in onDestroy, exactly once."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
+    },
+    {
+      "id": "angular-55",
+      "category": "angular",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "How do you integrate a REST API into an Angular application?",
+      "answer": "I keep HTTP in a typed service per resource and never in a component: register provideHttpClient() once in the application config, then a service injects HttpClient and exposes methods that return an Observable typed to the response shape. The component owns state - loading, data, error as signals - and the service owns the wire. Around that I do four things consistently. Interceptors attach what is cross-cutting: the Authorization header, a correlation id, a consistent error envelope. Unsubscribing matters: because an HttpClient observable cancels on unsubscribe, search-style calls go through switchMap and everything else is tied to the component with takeUntilDestroyed. Validation happens at the boundary, because a TypeScript interface disappears at runtime and does not check the JSON that actually arrived - for anything that drives logic I narrow the payload before trusting it. And where two screens ask for the same collection, I deduplicate with shareReplay rather than firing the request twice. For testing I swap in provideHttpClientTesting, assert the method, URL and body with the testing controller, and drive success, 404 and 500 through the same spec, so the loading and error states are proven rather than hoped for.",
+      "examples": [
+        {
+          "title": "A resource service and the test that pins its contract",
+          "code": "// employee.service.ts\n@Injectable({ providedIn: 'root' })\nexport class EmployeeService {\n  private readonly http = inject(HttpClient);\n  private readonly base = '/api/employees';\n\n  list(): Observable<Employee[]> {\n    return this.http.get<Employee[]>(this.base).pipe(shareReplay({ bufferSize: 1, refCount: true }));\n  }\n  update(id: string, patch: Partial<Employee>): Observable<Employee> {\n    return this.http.patch<Employee>(`${this.base}/${id}`, patch);\n  }\n}\n\n// employee.service.spec.ts\nTestBed.configureTestingModule({\n  providers: [provideHttpClient(), provideHttpClientTesting()],\n});\nconst req = httpMock.expectOne('/api/employees');\nexpect(req.request.method).toBe('GET');\nreq.flush([{ id: '1', name: 'Ada' }]);",
+          "explanation": "The spec is a contract test: if someone changes the URL or the method, the test fails before any screen does."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
+    },
+    {
+      "id": "angular-56",
+      "category": "angular",
+      "difficulty": "advanced",
+      "scenarioBased": true,
+      "isMarked": false,
+      "question": "A feature runs on the traditional NgRx Store and the team wants to move it to SignalStore. How do you decide whether to do it, and how would you run the migration?",
+      "answer": "I would decide before I design, because the honest first answer is often 'not yet'. The Store earns its boilerplate when state is shared widely, when you need effects as a visible side-effect stream, devtools time-trace debugging, or rules about what may write. SignalStore wins when the state belongs to one feature, the consumers are already signal-based, and the cost of dispatching actions through reducers is buying nothing. So the first task is to write down the pain - is it boilerplate, test setup, or the indirection of dispatch-then-select - and check how much of the ecosystem the feature actually relies on. If it is app-wide state with ten consumers and middleware, I would keep the Store and improve it instead. If it is a feature slice, I migrate in a way that keeps a working application at every step: characterise the current behaviour with tests first, so the reducer and effect outcomes are pinned; build the SignalStore slice with withState for the data, withComputed for derived values, withMethods for the actions that used to be dispatched, and withHooks for load and reset; keep the old facade - the same selectors and dispatch points - so nothing outside the feature notices; then move consumers one component at a time from store.select to a signal and from dispatch to a method call. The last step deletes the actions, reducers and effects for that slice, and the two models coexist until then. The risks I would name out loud: two sources of truth if both stores write the same data during the transition, losing the devtools timeline the team relied on, and a team learning a new pattern mid-delivery. Migrating because SignalStore is newer is not a reason.",
+      "examples": [
+        {
+          "title": "The slice that replaces an actions/reducers/effects trio",
+          "code": "export const EmployeeStore = signalStore(\n  { providedIn: 'root' },\n  withState({ employees: [] as Employee[], loading: false, error: null as string | null }),\n  withComputed(({ employees }) => ({\n    active: computed(() => employees().filter((e) => !e.archived)),\n  })),\n  withMethods((store) => {\n    const api = inject(EmployeeApi);\n    return {\n      load: async () => {\n        patchState(store, { loading: true, error: null });\n        try {\n          patchState(store, { employees: await api.list(), loading: false });\n        } catch (e) {\n          patchState(store, { loading: false, error: String(e) });\n        }\n      },\n      archive: (id: string) => {\n        const employees = store.employees().map((e) => (e.id === id ? { ...e, archived: true } : e));\n        patchState(store, { employees });\n      },\n    };\n  }),\n);",
+          "explanation": "state replaces the reducer, computed replaces the memoized selector, methods replace dispatch, and the HTTP call sits where the effect used to - one file where there were three, with no dispatcher in between."
+        }
+      ],
+      "tags": [
+        "MS"
       ]
     }
   ],
@@ -1677,13 +2129,16 @@
       "scenarioBased": false,
       "isMarked": false,
       "question": "Walk me through how an Angular app boots, step by step. Does it go to app.ts first?",
-      "answer": "No - and correcting that misconception inside the answer is valuable, because it\ntests whether you know the order rather than the file names. The order is: the\nbrowser receives index.html, discovers the module script, downloads and executes\nmain.ts, main.ts calls bootstrapApplication with a root component, Angular creates\nthat component, its template renders, and only then does anything user-visible\nappear. Behind the scenes, the build tool read the main property in angular.json\n(which points at src/main.ts) and the Angular CLI injected the compiled bundle\nscripts near the bottom of index.html, which is why main-XYZ.js is the first\napplication code to run. The root component class is inert until\nbootstrapApplication instantiates it and renders it into the <app-root> placeholder. Within that you should be able to name where the router fits: the root template\ncontains router-outlet, the router reads the current URL, matches it against the\nroute config, and for a lazy route triggers a dynamic import before the routed\ncomponent is created. Mention that in Angular 21+ this app is zoneless by default,\nso change detection is scheduled by notification rather than by zone.js.",
+      "answer": "No - and correcting that misconception inside the answer is valuable, because it\ntests whether you know the order rather than the file names. The order is: the\nbrowser receives index.html, discovers the module script, downloads and executes\nmain.ts, main.ts calls bootstrapApplication with a root component, Angular creates\nthat component, its template renders, and only then does anything user-visible\nappear. Behind the scenes, the build tool read the main property in angular.json\n(which points at src/main.ts) and the Angular CLI injected the compiled bundle\nscripts near the bottom of index.html, which is why main-XYZ.js is the first\napplication code to run. The root component class is inert until\nbootstrapApplication instantiates it and renders it into the <app-root> placeholder. Within that you should be able to name where the router fits: the root template\ncontains router-outlet, the router reads the current URL, matches it against the\nroute config, and for a lazy route triggers a dynamic import before the routed\ncomponent is created. Mention that in Angular 21+ this app is zoneless by default,\nso change detection is scheduled by notification rather than by zone.js. Two details that separate a real answer from the file names: bootstrapApplication(AppComponent, appConfig) assembles the root injector from appConfig's providers - provideRouter, provideHttpClient and every app-wide service - before the root component is created, so anything the first render depends on belongs there; and the root component stays a shell until the router matches the URL and renders the routed component into router-outlet, which is why a slow first route feels like a slow application.",
       "examples": [
         {
           "title": "index.html -> main.ts -> bootstrapApplication -> App",
           "code": "index.html (build output)\n  <!doctype html>\n  <html lang=\"en\">\n    <head>\n      <link rel=\"stylesheet\" href=\"styles-ABC.css\">   <!-- render-blocking -->\n    </head>\n    <body>\n      <app-root></app-root>\n      <script type=\"module\" src=\"main-XYZ.js\"></script>\n    </body>\n  </html>\n\nmain.ts\n  import { bootstrapApplication } from '@angular/platform-browser';\n  import { App } from './app/app';\n  import { appConfig } from './app/app.config';\n\n  bootstrapApplication(App, appConfig)\n    .catch((err) => console.error(err));\n\napp.ts  (NOT the entry point - the class only)\n  @Component({\n    selector: 'app-root',\n    imports: [RouterOutlet],\n    template: `<router-outlet />`,\n  })\n  export class App {}\n\nThe actual order\n  1. HTML parsed, app-root element exists as an empty host element\n  2. main.js downloaded, module graph resolved\n  3. main.ts executes -> bootstrapApplication(App, appConfig)\n  4. Angular creates App and renders its template into <app-root>\n  5. Router initialises, reads location.pathname\n  6. Route matched. If the route is lazy:\n       loadComponent: () => import('./orders/orders.component')\n     -> dynamic import of that chunk -> network request -> then component created\n  7. First meaningful paint of real content\n\nNote on file names\n  Angular 20+ generates src/app/app.ts exporting App rather than\n  src/app/app.component.ts exporting AppComponent. Either way the logic is the\n  same - the root component is not the entry point, main.ts is.\n\nKey point\n  Nothing renders until step 4 at the earliest, and nothing route-specific renders\n  until step 6. Both are network-bound, not CPU-bound, which is why this is a\n  performance question.",
           "explanation": "Naming the exact order, correcting the root-component misconception explicitly, and\nplacing the router dynamic import at the right step is what a strong answer looks\nlike."
         }
+      ],
+      "tags": [
+        "MS"
       ]
     },
     {
@@ -1709,13 +2164,16 @@
       "scenarioBased": false,
       "isMarked": false,
       "question": "What is code splitting in an Angular app, and how does a lazy route actually load?",
-      "answer": "The mechanism to be precise about: the build tool reads the dynamic import in the\nroute configuration, puts that component and its unique dependencies in a separate\nchunk, and leaves it out of the initial bundle. At runtime the router triggers the\nimport, which is just a promise-returning network fetch, and only after it\nresolves is the component created. The important performance consequence is that\nlazy loading moves bytes off the critical path rather than making them smaller,\nand it costs you a round trip on first navigation - so prefetching is the usual\nfollow-up. Be able to explain why a barrel file can defeat splitting, because\nimporting one symbol from a barrel can drag the whole barrel into the chunk\ngraph.",
+      "answer": "The mechanism to be precise about: the build tool reads the dynamic import in the\nroute configuration, puts that component and its unique dependencies in a separate\nchunk, and leaves it out of the initial bundle. At runtime the router triggers the\nimport, which is just a promise-returning network fetch, and only after it\nresolves is the component created. The important performance consequence is that\nlazy loading moves bytes off the critical path rather than making them smaller,\nand it costs you a round trip on first navigation - so prefetching is the usual\nfollow-up. Be able to explain why a barrel file can defeat splitting, because\nimporting one symbol from a barrel can drag the whole barrel into the chunk\ngraph. A few details worth knowing rather than assuming: a lazy component does not automatically get a chunk of its own, because dependencies shared with other routes are extracted into shared chunks; a chunk the browser has already cached costs no round trip on a later visit; and the only way to confirm what actually happened is to read the production build's chunk list and watch the network waterfall on a first navigation, rather than trusting the route config.",
       "examples": [
         {
           "title": "Dynamic import in the route config",
           "code": "app.routes.ts\n  export const routes: Routes = [\n    { path: '', component: HomeComponent },\n    {\n      path: 'orders',\n      // static import - OrdersComponent is in the initial bundle\n      component: OrdersComponent,\n    },\n    {\n      path: 'reports',\n      // dynamic import - separate chunk, fetched on navigation\n      loadComponent: () =>\n        import('./reports/reports.component')\n          .then((m) => m.ReportsComponent),\n    },\n  ];\n\nWhat the build produces\n  main-ABC.js         app shell, router, HomeComponent\n  chunk-DEF.js        ReportsComponent + anything only it uses\n  chunk-GHI.js        a shared dependency, loaded by either route if needed\n\nWhat happens on first navigation to /reports\n  1. Router matches the route\n  2. loadComponent() runs -> import() -> dynamic import\n  3. Browser fetches chunk-DEF.js (or reads it from cache)\n  4. Module evaluates, exports the component class\n  5. Component is created and rendered\n\nWhy a barrel file breaks this\n  // components/index.ts\n  export * from './reports.component';\n  export * from './orders.component';\n  export * from './customers.component';\n\n  import { X } from '../components';\n  The bundler must analyse the whole barrel to know what X pulls in, so all\n  three components can end up in the shared chunk and main.js grows. Import\n  from the file path directly to keep the graph narrow.",
           "explanation": "Lazy loading moves work off the critical path rather than reducing it, and the\nbarrel-file explanation is what shows you understand the build, not just the API."
         }
+      ],
+      "tags": [
+        "MS"
       ]
     },
     {
@@ -1828,6 +2286,9 @@
           "code": "Ranked for a typical internal app with 40k users on office wifi:\n\n1. Network-bound, before anything else\n   An 800ms API call on the critical path. Fix is often a cache or a\n   prefetch, and the win is measured in hundreds of ms.\n   Highest ratio of gain to effort of anything on this list.\n\n2. Main-thread blocking\n   Long tasks over 50ms. Affects every interaction, so it hurts INP directly.\n   Usually needs scheduler.yield or moving work out of the change detection\n   path.\n\n3. Rendering volume\n   500-row Material table with filtering and sorting on every keystroke.\n   Fix: virtualisation, and debouncing the filter so it is not per keystroke.\n\n4. Bundle size\n   Only matters for first load on poor networks. If 80% of sessions are repeat\n   and the bundle is cached, this is near zero and should be last.\n\n5. Change detection cost\n   Often real but rarely the biggest single item. Fix with OnPush and signals.\n\nWhat I deliberately did not fix\n  We spent two days on bundle size - the app was 900kb - and our field LCP was\n  already fine because 95% of traffic was repeat visits served from cache. I\n  should have checked the field data before optimising. We kept maybe 5% of that\n  work.",
           "explanation": "Ranking with a stated reason, and naming work you chose not to do and why, is what\nseparates this from a recited list."
         }
+      ],
+      "tags": [
+        "MS"
       ]
     },
     {
@@ -2068,6 +2529,44 @@
           "explanation": "Every caller after the first subscribes to the same underlying request instead of firing another one; swap in a signal store or Workbox runtime caching for the persisted layer."
         }
       ]
+    },
+    {
+      "id": "performance-25",
+      "category": "performance",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "What do you actually change to make an Angular application faster?",
+      "answer": "I start by naming where the time goes, because every bottleneck is one of five things - network, main-thread work, rendering volume, bundle size or memory - and each has a different fix. Network: cut redundant requests before anything else, by debouncing input, dropping duplicates and only asking for what the screen shows; a 900ms API call dwarfs any template optimisation. Main thread: run OnPush everywhere, keep template expressions trivial by moving work into computed signals, and avoid deep change-detection passes. Rendering volume: render only what is on screen with pagination or virtual scrolling, and let track() in @for reuse DOM instead of rebuilding it. Bundle: lazy-load features with loadComponent, audit what the initial chunk actually contains, and drop dependencies that tree shaking cannot remove. Then the hygiene items: compress images and fonts, measure with Lighthouse and Angular DevTools rather than guessing, and verify before and after with the same profile. Most wins come from removing work, not from making work faster - and the last 10 per cent is rarely worth the readability it costs.",
+      "examples": [
+        {
+          "title": "The search pipeline that removes most wasted work",
+          "code": "this.query.valueChanges.pipe(\n  debounceTime(300),\n  distinctUntilChanged(),\n  switchMap((q) => this.api.search(q ?? '')),\n  takeUntilDestroyed(),\n).subscribe((results) => this.results.set(results));",
+          "explanation": "One request per pause instead of one per keystroke, no request for a repeat query, stale responses cancelled, and nothing left subscribed after destroy. Four lines that usually beat any micro-optimisation."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
+    },
+    {
+      "id": "performance-26",
+      "category": "performance",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "How would you put together a performance report for an application?",
+      "answer": "A report answers one question - is it fast, for whom, and what is the next thing to fix - so I structure it as baseline, evidence, prioritised findings, then retest. Baseline: Core Web Vitals from real users (LCP for first paint, INP for responsiveness, CLS for stability) rather than only lab numbers, plus the environment they came from. Evidence: Lighthouse for the lab run, WebPageTest for filmstrips and connection conditions, Chrome DevTools and Angular DevTools for long tasks and expensive change detection, and bundle analysis for who is owning each kilobyte. Findings are written as a list ordered by impact against effort, each with the measurement, the suspected cause, the fix, an owner and how we will know it worked - for example the reports route ships a 410 kB chunk because a CSV exporter is bundled into it, fixed by a dynamic import, verified by re-running the build. Numbers are compared before and after under the same conditions, because a green Lighthouse score on office wifi tells you almost nothing about a user on a train. Budgets then keep it honest: bundle budgets fail the build, so the report becomes a threshold rather than a slide.",
+      "examples": [
+        {
+          "title": "What a finding looks like",
+          "code": "Finding: first load is 8.1s on Slow 4G (LCP 5.4s, target <= 2.5s)\nCause:   640 kB of initial JS, 210 kB of it unused on the landing route\nFix:     lazy-load the reports + admin features, drop the moment.js locale bundle\nOwner:   frontend\nVerify:  ng build budget pass, Lighthouse CI run on the PR, RUM LCP for 7 days",
+          "explanation": "Every line is checkable: a number someone can reproduce, a cause someone can confirm, and a verification that does not rely on feeling faster."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
     }
   ],
   "rxjs": [
@@ -2078,13 +2577,16 @@
       "scenarioBased": false,
       "isMarked": false,
       "question": "What is an Observable in RxJS and how is it different from a Promise?",
-      "answer": "An Observable is lazy, cold by default, and can emit multiple values over time; it supports cancellation via unsubscribe() and is composable with operators. A Promise is eager, emits at most one value, is not cancellable, and is not pipeable. For example: new Observable(sub => { interval(1000).subscribe(n => sub.next(n)); return () => clear(); }) emits many values and can be torn down, while fetch() returns a single-value Promise.",
+      "answer": "An Observable is lazy, cold by default, and can emit multiple values over time; it supports cancellation via unsubscribe() and is composable with operators. A Promise is eager, emits at most one value, is not cancellable, and is not pipeable. For example: new Observable(sub => { interval(1000).subscribe(n => sub.next(n)); return () => clear(); }) emits many values and can be torn down, while fetch() returns a single-value Promise. A Promise is either pending, fulfilled or rejected and settles exactly once, and async/await is sugar over its then() chain; an Observable may emit many times, may be cancelled, and is pipeable into every operator RxJS has. Reach for a Promise when the result is a single event you will wait for, and for an Observable when it is a stream you may need to cancel, throttle or combine - Angular's HttpClient returns Observables precisely so an unsubscribe can cancel an in-flight request.",
       "examples": [
         {
           "title": "Observable vs Promise",
           "code": "// Observable (multiple values, cancellable)\nimport { Observable, interval } from 'rxjs';\nconst obs = new Observable(sub => {\n  const id = setInterval(() => sub.next(Date.now()), 1000);\n  return () => clearInterval(id);\n});\nconst sub = obs.subscribe(v => console.log('tick', v));\nsetTimeout(() => sub.unsubscribe(), 2500);\n\n// Promise (single value)\nfetch('/api').then(r => r.json()).then(console.log);",
           "explanation": "Observable emits over time and teardown is explicit; Promise settles once."
         }
+      ],
+      "tags": [
+        "MS"
       ]
     },
     {
@@ -2117,6 +2619,9 @@
           "code": "import { BehaviorSubject } from 'rxjs';\nconst user$ = new BehaviorSubject<User|null>(null);\nuser$.next(u); console.log(user$.value); // current value",
           "explanation": "BehaviorSubject emits current value to new subscribers."
         }
+      ],
+      "tags": [
+        "MS"
       ]
     },
     {
@@ -2160,6 +2665,9 @@
           "url": "https://blog.angular-university.io/rxjs-higher-order-mapping/",
           "explanation": "A detailed walkthrough of the higher-order mapping operators and when each one is the right choice."
         }
+      ],
+      "tags": [
+        "MS"
       ]
     },
     {
@@ -2224,6 +2732,9 @@
           "code": "fromEvent(inputEl, 'input').pipe(\n  debounceTime(300),\n  distinctUntilChanged(),\n  switchMap((e: any) => search((e.target as HTMLInputElement).value))\n).subscribe(results => this.results = results);",
           "explanation": "Debounce, ignore duplicates, cancel stale requests."
         }
+      ],
+      "tags": [
+        "MS"
       ]
     },
     {
@@ -2233,13 +2744,35 @@
       "scenarioBased": false,
       "isMarked": false,
       "question": "What is error handling in RxJS and when would you use catchError, retry, and retry with a delay?",
-      "answer": "catchError: catches an error in the stream and returns a replacement Observable (a fallback value, EMPTY, or a retry attempt) so the stream can carry on. retry(n): re-subscribes immediately up to n times - fine for a single transient blip. retry({ delay }): the modern form, where delay can be a number, a function of the error and retry index (that is how you do exponential backoff), or an observable such as timer(1000). Note that retryWhen() is deprecated in RxJS 7 - reach for retry({ delay }) instead. Handle errors close to where they can be meaningfully recovered, and remember that catchError replaces the stream, so anything downstream of it will not see the failure unless you re-throw.",
+      "answer": "catchError: catches an error in the stream and returns a replacement Observable (a fallback value, EMPTY, or a retry attempt) so the stream can carry on. retry(n): re-subscribes immediately up to n times - fine for a single transient blip. retry({ delay }): the modern form, where delay can be a number, a function of the error and retry index (that is how you do exponential backoff), or an observable such as timer(1000). Note that retryWhen() is deprecated in RxJS 7 - reach for retry({ delay }) instead. Handle errors close to where they can be meaningfully recovered, and remember that catchError replaces the stream, so anything downstream of it will not see the failure unless you re-throw. In a real service I classify before I rethrow: status 0 is network or CORS, 401 means re-authenticate, 403 means authenticated but not allowed, 404 is a contract problem and 5xx is upstream, and each deserves a different log or reaction; loading state is cleared in finalize() so the screen cannot end up stuck half-finished. The rule to remember is that catchError must return an Observable - hand back fallback data such as of([]) when the view can degrade to an empty state, or throwError(() => error) when the caller has to decide.",
       "examples": [
         {
           "title": "retry with backoff",
           "code": "source$.pipe(\n  retry({\n    count: 3,\n    delay: (error, retryCount) =>\n      timer(2 ** retryCount * 1000),        // 2s, 4s, 8s\n  }),\n)\n.subscribe(...);",
           "explanation": "Custom retry with exponential backoff before failing. retryWhen(errors => errors.pipe(delay(...))) is the deprecated equivalent."
         }
+      ],
+      "tags": [
+        "MS"
+      ]
+    },
+    {
+      "id": "rxjs-11",
+      "category": "rxjs",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "What do debounceTime and distinctUntilChanged each do, and why would you use them together?",
+      "answer": "They solve different problems, which is why they are complementary rather than interchangeable. debounceTime(duration) waits for silence: it emits the most recent value only after no new value has arrived for that period, so a user typing 'angular' in half a second produces one emission instead of six. throttleTime(duration) is the opposite temperament - it emits immediately, then suppresses everything for the interval, which suits high-frequency sources where the latest value matters less than a steady one. distinctUntilChanged() does no timing at all: it compares each emission with the previous one and drops the repeat, with a custom comparator available when equality is not what you mean. In a search box the pair covers two different kinds of waste: debounceTime stops the request per keystroke, and distinctUntilChanged stops a request when the query came back to a value you already asked for - typing, pausing, deleting a trailing space and retyping it should not cost a second round trip. Then switchMap does the third job, cancelling the response you no longer want. Chain them in that order - quieten the stream, drop repeats, then flatten with cancellation - because debounceTime after switchMap would still leave stale responses free to land.",
+      "examples": [
+        {
+          "title": "The standard search chain, with what each stage buys",
+          "code": "this.query.valueChanges.pipe(\n  debounceTime(300),           // 1. one emission per typing pause\n  distinctUntilChanged(),      // 2. no request for a query already sent\n  switchMap((q) => this.api.search(q ?? '')), // 3. latest wins, stale cancelled\n  takeUntilDestroyed(),\n).subscribe((results) => this.results.set(results));",
+          "explanation": "Three operators, three costs removed: request volume, duplicate requests, and wasted responses. None of them can do the other two jobs."
+        }
+      ],
+      "tags": [
+        "MS"
       ]
     }
   ],
@@ -2519,6 +3052,101 @@
           "explanation": "A short visual walkthrough of the same-origin policy, preflight and the response headers."
         }
       ]
+    },
+    {
+      "id": "misc-8",
+      "category": "misc",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "What is Agile, and what does a sprint actually look like day to day?",
+      "answer": "Agile is an approach, not a ceremony: deliver in small increments, get them in front of real users, and let what you learn change the next increment instead of defending a plan written a year ago. Scrum is the most common framework for putting that into a calendar. The product owner owns and orders the backlog and answers what is worth building; the development team owns how and delivers it; the scrum master owns the process and the impediments. The sprint is a fixed box - usually one or two weeks - with four events: planning to agree a goal and take the top of the backlog into the sprint, a daily scrum to inspect and adjust rather than to report status, a review where the increment is demonstrated to stakeholders and feedback changes the backlog, and a retrospective about how the team worked. Underneath sits the Definition of Done - the shared bar for what complete means: reviewed, tests green, accessibility checked, deployed to staging, accepted. As the Angular developer on it I take a story, clarify the acceptance criteria with the analyst, estimate it with the team, build the UI and the services, write tests, raise a pull request, address review comments and support QA through to release. For an employee-search feature I would split it into the search form, the API integration, loading and empty states, accessibility and automated tests - small enough to review in one sitting and to ship independently.",
+      "examples": [
+        {
+          "title": "Splitting one feature into reviewable increments",
+          "code": "Story: As a recruiter I can search employees by name and department\n\nSlice 1  search form + validation, no data          (shippable, shows the UX)\nSlice 2  GET integration + loading / empty states   (usable end to end)\nSlice 3  error and retry states + no-results copy   (polish that QA can test)\nSlice 4  keyboard + screen-reader pass, axe in CI   (Definition of Done)\nSlice 5  debounce, cancel stale requests, tests     (performance, measured)",
+          "explanation": "Each slice leaves the application in a working, demoable state, so feedback on the design arrives after slice 1 instead of after the whole feature is built."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
+    },
+    {
+      "id": "misc-9",
+      "category": "misc",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "What is the difference between Scrum and Kanban, and what are story points, velocity and the Definition of Done?",
+      "answer": "Both are ways of working empirically, but they optimise for different shapes of work. Scrum is a fixed cadence: roles, a timeboxed sprint, a committed sprint goal, and no mid-sprint changes, which suits work you can plan a week or two ahead. Kanban is continuous flow: you visualise work on a board, limit work in progress so the team finishes rather than starts, and pull the next item when capacity frees up, which suits a stream of support, incident and bug work that does not fit a sprint. Kanban measures cycle time - how long one item takes from start to finish - while Scrum measures velocity. Story points are a relative estimate of effort, complexity and uncertainty, typically on a Fibonacci scale; they are not hours and not a commitment, and the moment a point target is set for a person it stops being useful. Velocity is the average number of points a team completes per sprint - a planning signal for how much a future sprint can hold, never a performance metric. The Definition of Done is different again: it is the shared, non-negotiable criteria for what complete means (code reviewed, pipeline green, accessibility checked, deployed, accepted), as opposed to the acceptance criteria of an individual story, which say what that story must do. In interviews I keep that distinction crisp, because DoD-versus-acceptance-criteria is a common follow-up.",
+      "examples": [
+        {
+          "title": "The four things, side by side",
+          "code": "Scrum        fixed sprint, roles, events, sprint goal; measures velocity\nKanban       continuous pull, WIP limits, no sprints; measures cycle time\nStory point   relative size of ONE item (1, 2, 3, 5, 8...) - not hours\nVelocity      average points completed per sprint - a forecasting signal, not a target\nDefinition   shared bar for every item: reviewed, tested, accessible,\n of Done       deployed to staging, accepted\nAcceptance    the contract for ONE story: what this change must do",
+          "explanation": "Points size an item, velocity forecasts a sprint, the Definition of Done gates every item - confusing any two of them is what makes estimates feel like commitments."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
+    },
+    {
+      "id": "misc-10",
+      "category": "misc",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "What is the difference between prompting an AI model and using an AI coding agent?",
+      "answer": "Prompting is a single turn: you give a model an instruction and the context you think it needs, and you get text or code back that you then read, judge and apply yourself. 'Explain how switchMap differs from mergeMap' is prompting, and the model has no idea what your repository looks like. An agent is a loop around a model: it is given a goal plus tools - reading files, searching the codebase, editing, running the shell and the test suite - and it plans, acts, observes the result of each action, and iterates until the goal is met or it needs a decision from you. 'Find where duplicate employee-search requests originate in this project, fix them, run the tests and summarise the diff' is an agent task, and the difference is not just length: the agent's output depends on what it found, and it can verify its own work. That changes what good looks like. A good prompt states the objective, the relevant context, the constraints, the shape of the output and how you will judge it. A good agent setup adds scoped permissions, repository instructions it can follow, a single command that tells it whether it is done, and a git history that makes everything reversible. The bit I would not skip: an agent that can edit files is not an agent that is right. I review the diff, run the tests myself, and read security-sensitive changes line by line - the same scepticism as reviewing a colleague, with less benefit of the doubt.",
+      "examples": [
+        {
+          "title": "The same request at two levels",
+          "code": "PROMPT (one turn, output you must apply)\n\"Give me an RxJS operator chain that debounces a search input and cancels stale requests.\"\n\nAGENT (goal, tools, verification loop)\n\"In this project, find where typing in the employee search box issues a request per\nkeystroke. Change it so only one request is in flight and repeats are skipped, keep\nexisting tests passing, add a test for the new behaviour, and tell me which files\nchanged and why. Run `npx ng test` to verify.\"\n\n// the agent reads, edits, runs the suite, reads the failure it caused, and fixes it\n// before reporting back - the loop is the difference, not the model",
+          "explanation": "The prompt asks for knowledge; the agent is given an outcome plus a way to check it reached one. Everything else - permissions, review, reversibility - follows from that."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
+    },
+    {
+      "id": "misc-11",
+      "category": "misc",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "How would you integrate Claude into an application, and what are the main challenges?",
+      "answer": "I would never call the provider from the browser. The Angular app talks to our own backend, the backend validates the user, permissions and input, holds the API key in a secrets manager, calls the model, validates the response against the shape the UI needs, and returns it - so the key never ships in a bundle and every call is accounted for. The UI then does what UIs are good at: streaming output as it arrives, a visible loading and cancelled state, an obvious way to edit or discard what came back, and never auto-executing a consequential action on the model's say-so. The challenges are consistent enough to recite: hallucination, mitigated by grounding answers in retrieved data, validating structured output against a schema, and a human in the loop for anything that matters; prompt injection, mitigated by treating user input and retrieved content strictly as data, keeping instructions in a separate trusted layer, and giving tools the least privilege that works; latency, mitigated by streaming, timeouts and background jobs for long work; cost and rate limits, mitigated by quotas, caching of repeated requests and token budgets with monitoring; privacy, mitigated by minimising what leaves - no secrets, no personal data you do not need, no prompt logging that becomes a compliance problem; and reliability, mitigated by retrying only the retryable (429 and 5xx), a fallback behaviour when the model is unavailable, and a feature flag to switch the whole thing off. The last one matters more than people expect: you will want an off switch on day one.",
+      "examples": [
+        {
+          "title": "The flow, and what each hop is responsible for",
+          "code": "browser                  your backend                    provider API\n  |                          |                                |\n  | POST /api/summarise      |                                |\n  | { ticketId, locale }     |                                |\n  |------------------------->| validate session + permissions  |\n  |                          | check input size / rate limit   |\n  |                          | read API key from secrets       |\n  |                          |-------------------------------->|\n  |                          |<-------------------------------|\n  |                          | validate output against schema  |\n  |<-------------------------| log metadata only (no prompt)   |\n  | SSE stream of tokens     |                                |\n\nAngular side: post to your own endpoint, stream with fromEvent/fetch SSM,\nsurface loading / error / cancel, and require a human to accept the result.",
+          "explanation": "Every risk is answered at one of these hops: key exposure by never leaving the backend, injection by where instructions live, cost by the quota before the call, privacy by what you put on the wire at all."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
+    },
+    {
+      "id": "misc-12",
+      "category": "misc",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "What is the difference between AG Grid's client-side and server-side row models?",
+      "answer": "They differ in one question: where does sorting, filtering and grouping happen. The client-side row model loads the whole dataset into the browser and the grid does the work - sort, filter, group, aggregate, paginate - which makes every interaction instant and needs no server contract, and it is the right choice while the data fits comfortably in memory: thousands to low hundreds of thousands of rows, virtualised so only visible rows exist in the DOM. Past that point the browser is paying for data nobody will look at, and you move to the server-side row model: the grid keeps only the rows in view and asks a datasource for them as the user sorts, filters, groups or scrolls, sending the full request context (start row, sort model, filter model, group state) so the server can answer authoritatively. That buys you millions of rows and server-owned business rules, and costs you an API that understands all of it, careful cancellation of superseded requests, a caching strategy, and loading states in the UI. AG Grid also ships an infinite row model for append-only paging and a viewport model for sparse data such as maps, and the server-side model is an enterprise feature while the client-side one is free. My decision inputs: dataset size, whether the rules for filtering and grouping must live server-side, backend capability, and how much offline or instant interaction you need.",
+      "examples": [
+        {
+          "title": "What the server-side datasource has to implement",
+          "code": "import { IServerSideDatasource } from 'ag-grid-enterprise';\n\nconst dataSource: IServerSideDatasource = {\n  getRows(params) {\n    const { startRow, endRow, sortModel, filterModel } = params.request!;\n\n    api\n      .loadRows({ startRow, endRow, sortModel, filterModel })\n      .then(({ rows, rowCount }) => params.success({ rowData: rows, rowCount }))\n      .catch((error) => params.fail()); // grid keeps its current rows, shows its error\n  },\n};\n\ngridApi.setGridOption('serverSideDatasource', dataSource);",
+          "explanation": "The grid hands you a page plus the whole sort and filter state, and expects success or fail - which is where cancellation of stale requests and a sensible loading state become your problem rather than the grid's."
+        }
+      ],
+      "tags": [
+        "MS"
+      ]
     }
   ],
   "behavioural": [
@@ -2545,13 +3173,21 @@
       "scenarioBased": false,
       "isMarked": false,
       "question": "Tell me about yourself.",
-      "answer": "The most under-prepared question in the loop, and the one where most people\neither recite a resume chronologically or start with their university. It is\nnot a life story - it is a 60 to 90 second argument for why this conversation is\nworth having, ending where this role begins. The structure that works: present\ntense and current role, the two or three things you are actually good at\nbacked by a concrete outcome each, then the bridge into why this role. A good\ntell is naming what you want next, because that frames the rest of the loop.\nKeep it under 90 seconds so there is time for them to ask.",
+      "answer": "The most under-prepared question in the loop, and the one where most people\neither recite a resume chronologically or start with their university. It is\nnot a life story - it is a 60 to 90 second argument for why this conversation is\nworth having, ending where this role begins. The structure that works: present\ntense and current role, the two or three things you are actually good at\nbacked by a concrete outcome each, then the bridge into why this role. A good\ntell is naming what you want next, because that frames the rest of the loop.\nKeep it under 90 seconds so there is time for them to ask. Two traps to avoid: nothing from before your professional life - university, school and hobbies do not belong in this answer, because the interviewer already has your resume and is not asking you to read it back to them - and nothing negative about your current or previous employer, since they will reasonably assume you will describe them the same way in six months. Whatever you claim, expect it to become the next question: pick two or three things you can go an inch deeper on, each with a number and a story attached, and steer towards them instead of listing ten you cannot defend.",
       "examples": [
         {
           "title": "60 to 90 seconds, ending at this role",
           "code": "BAD\nGraduated from X in 2015, then interned at A, then joined B as a frontend\ndeveloper, then moved to C...\n- Chronological, no point, and the interviewer now has your resume in front\n  of them.\n\nGOOD\nI am a frontend engineer at C, where I own our Angular design system and the\ncheckout flow.\n\nTwo things I would say I am genuinely good at. First, I cut initial bundle\nsize by 180kb on checkout last year - mostly by auditing what was actually\nbeing composed rather than swapping libraries - and I left a CI budget behind\nso it stayed down. Second, I have led three version migrations end to end, and\nthe last one was a major upgrade across four teams where the useful part was\nagreeing the sequencing with people who disagreed with me.\n\nWhat I want next is to be closer to the whole system rather than one surface of\nit, which is why this role interested me.",
           "explanation": "Ends at this role, has two concrete outcomes, and states what you want next so\nthe rest of the loop has a frame."
+        },
+        {
+          "title": "The preparation that happens before you say a word",
+          "code": "BEFORE THE ROUND\n- Replace every generic line with your real domain and one number you can defend:\n  what got faster, what shipped, what you owned. 'Improved performance' is not an answer.\n- Treat every sentence as a potential next question: list the technologies you mention\n  and be ready with a short answer for each of them.\n- Keep it to 60-90 seconds. The opener's job is to choose your follow-ups, not to prove\n  everything at once.\n- Notice period, location and compensation are their questions to ask - do not fold\n  logistics into the one answer you get to frame the conversation.\n- Say it out loud once. A script recited from memory sounds like a script.",
+          "explanation": "The opener is a framing device: it decides what they ask next, so the follow-ups get prepared as deliberately as the answer itself."
         }
+      ],
+      "tags": [
+        "MS"
       ]
     },
     {
