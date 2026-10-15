@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { Difficulty } from '../../../types/questions-type';
 
 /**
- * The difficulty and scenario pills. They appear on a question row in the index
- * and again on the question page, and they used to be copy-pasted markup with a
- * long chain of `[class.*]` bindings, so they live here instead.
+ * The difficulty, scenario and prep-round pills. They appear on a question row in
+ * the index and again on the question page, and they used to be copy-pasted markup
+ * with a long chain of `[class.*]` bindings, so they live here instead.
  */
 @Component({
   selector: 'app-question-badges',
@@ -41,10 +41,18 @@ import { Difficulty } from '../../../types/questions-type';
         >scenario</span
       >
     }
+
+    @for (tag of tags(); track tag) {
+      <span
+        class="rounded-full bg-[#003986] px-2 py-0.5 text-xs font-medium whitespace-nowrap text-white"
+        >{{ tag }}</span
+      >
+    }
   `,
 })
 export class QuestionBadges {
   readonly difficulty = input.required<Difficulty>();
   readonly scenarioBased = input(false);
   readonly isNew = input(false);
+  readonly tags = input<readonly string[]>([]);
 }

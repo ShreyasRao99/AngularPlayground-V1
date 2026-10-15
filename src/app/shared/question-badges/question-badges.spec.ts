@@ -52,4 +52,23 @@ describe('QuestionBadges', () => {
 
     expect(badges(fixture)).toEqual(['new', 'medium']);
   });
+
+  it('should show a pill for each tag, after the other badges', async () => {
+    const fixture = await createBadges('medium');
+
+    expect(badges(fixture)).toEqual(['medium']);
+
+    fixture.componentRef.setInput('tags', ['MS']);
+    await fixture.whenStable();
+
+    expect(badges(fixture)).toEqual(['medium', 'MS']);
+
+    // the tag is a filled pill, not an outlined one, in the client's own colour
+    const pills = Array.from(
+      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>('span.rounded-full'),
+    );
+    const pill = pills[pills.length - 1];
+    expect(pill.classList).toContain('bg-[#003986]');
+    expect(pill.classList).toContain('text-white');
+  });
 });

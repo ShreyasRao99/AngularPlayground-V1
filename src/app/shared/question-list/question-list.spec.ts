@@ -66,7 +66,7 @@ describe('QuestionList', () => {
 
   it('should show every question in the category by default', async () => {
     const fixture = await createList();
-    expect(rows(fixture).length).toBe(24);
+    expect(rows(fixture).length).toBe(26);
     expect(fixture.componentInstance['hasActiveFilters']()).toBe(false);
   });
 
@@ -77,7 +77,7 @@ describe('QuestionList', () => {
     expect(rows(fixture).length).toBe(5);
 
     selectDifficulties(fixture, ['medium']);
-    expect(rows(fixture).length).toBe(12);
+    expect(rows(fixture).length).toBe(14);
 
     selectDifficulties(fixture, ['basic', 'advanced']);
     expect(rows(fixture).length).toBe(12);
@@ -86,7 +86,7 @@ describe('QuestionList', () => {
   it('should toggle review state and filter on it', async () => {
     const fixture = await createList();
     const buttons = markButtons(fixture);
-    expect(buttons.length).toBe(24);
+    expect(buttons.length).toBe(26);
 
     buttons[0].click();
     fixture.detectChanges();
@@ -96,7 +96,7 @@ describe('QuestionList', () => {
 
     fixture.componentInstance['markedFilter'].set('unmarked');
     fixture.detectChanges();
-    expect(rows(fixture).length).toBe(23);
+    expect(rows(fixture).length).toBe(25);
 
     fixture.componentInstance['markedFilter'].set('marked');
     fixture.detectChanges();
@@ -181,7 +181,7 @@ describe('QuestionList', () => {
 
     fixture.componentInstance['clearFilters']();
     fixture.detectChanges();
-    expect(rows(fixture).length).toBe(12);
+    expect(rows(fixture).length).toBe(17);
   });
 
   it('should persist only review state to localStorage', async () => {
