@@ -22,7 +22,6 @@ export interface Question {
   difficulty: Difficulty;
   scenarioBased: boolean;
   isMarked: boolean;
-  isNew?: boolean;
   question: string;
   answer: string;
   examples: QuestionExample[];

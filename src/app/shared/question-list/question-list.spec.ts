@@ -181,7 +181,7 @@ describe('QuestionList', () => {
 
     fixture.componentInstance['clearFilters']();
     fixture.detectChanges();
-    expect(rows(fixture).length).toBe(17);
+    expect(rows(fixture).length).toBe(16);
   });
 
   it('should persist only review state to localStorage', async () => {

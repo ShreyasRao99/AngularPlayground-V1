@@ -357,7 +357,7 @@ link.addEventListener('click', (event) => {
   event.stopPropagation(); // ancestors never hear about it
   // event.stopImmediatePropagation(); // and other listeners here do not either
 });`,
-    covers: ['js-7', 'js-8', 'js-5', 'js-12'],
+    covers: ['js-7', 'js-8', 'js-5'],
   },
   {
     id: 'js-modules-lazy',
@@ -419,6 +419,86 @@ document.querySelector('#dex').addEventListener('click', async (event) => {
   const { renderDetail } = await import('./detail.js'); // second chunk, on demand
   renderDetail(card.dataset.pokemon);
 });`,
-    covers: ['js-5', 'js-16', 'js-12'],
+    covers: ['js-5', 'js-16'],
+  },
+  {
+    id: 'js-broadcast-channel',
+    category: 'javascript',
+    title: 'Keep two browser tabs in sync with BroadcastChannel',
+    summary: 'A same-origin messaging bus for tabs, iframes and workers, and the gotchas that bite.',
+    durationMinutes: 45,
+    prompt:
+      'Build a Pokémon favourites panel that stays identical in every open tab. You may not poll, and you may not use a server: the only channel between the tabs is BroadcastChannel.',
+    endpoints: [
+      { path: '/pokemon?limit=20', note: 'The list whose favourites you sync' },
+      { path: '/pokemon/{name}', note: 'The detail a tab opens from a synced selection' },
+    ],
+    steps: [
+      {
+        title: 'Open two tabs and prove the message travels',
+        task: 'Create new BroadcastChannel("favourites") in both tabs, log in onmessage, and post a message from one. Confirm the other tab logs it and the sender does not - then explain why the sender is deliberately excluded.',
+        learn: 'What is the BroadcastChannel API',
+      },
+      {
+        title: 'Structured clone, not JSON',
+        task: 'Send a Set of favourite ids, a Date and an ArrayBuffer and read them back as the right types, then try to send a function and a DOM node and catch the DataCloneError. Explain why a class instance arrives as a plain object with its prototype gone.',
+        learn: 'Structured clone limits',
+      },
+      {
+        title: 'Sync a real interaction',
+        task: 'Wire a favourite toggle: on click update the local list and postMessage the change, and in the other tab apply it on receipt. You now have one writer and one follower - decide what happens when both tabs toggle at once, and make the message idempotent by sending the full favourite set or a "set to" value instead of a "toggle" instruction.',
+        learn: 'Idempotent messages and one source of truth',
+      },
+      {
+        title: 'Handle the tab that opens late',
+        task: 'Open a third tab after a few changes and show it received nothing, because BroadcastChannel has no replay. Fix it by seeding from localStorage on load and writing to localStorage on every change, then have the new tab postMessage a "hello" that the others answer with the current state. Compare the two approaches.',
+        learn: 'No replay: pairing the channel with persistent state',
+      },
+      {
+        title: 'Clean up and compare the alternatives',
+        task: 'Call channel.close() and confirm delivery stops, then close the channel with the component or injector. Do the same sync with the window "storage" event and with postMessage to a specific window handle, and say when each is the better tool.',
+        learn: 'Channel lifecycle and the alternatives',
+      },
+    ],
+    stretch: [
+      'Feature-detect "BroadcastChannel" in window and fall back to the storage event.',
+      'Elect a single writer with the Web Locks API so only the leader persists state.',
+      'Show a message arriving in an iframe and in a web worker on the same channel.',
+      'Show a tab frozen in the back/forward cache missing a message, and how you recover.',
+    ],
+    starter: `const channel = new BroadcastChannel('favourites');
+const KEY = 'pokemon-favourites';
+
+let favourites = new Set(JSON.parse(localStorage.getItem(KEY) ?? '[]'));
+
+function render() {
+  // paint the toggles from the current set
+}
+
+function publish() {
+  localStorage.setItem(KEY, JSON.stringify([...favourites]));
+  channel.postMessage({ type: 'favourites', ids: [...favourites] }); // full state: idempotent
+}
+
+channel.onmessage = ({ data }) => {
+  if (data?.type === 'hello') return publish(); // a new tab asked for the current state
+  if (data?.type !== 'favourites') return;
+
+  favourites = new Set(data.ids);
+  render(); // apply, and do not re-broadcast
+};
+
+function toggle(id) {
+  favourites.has(id) ? favourites.delete(id) : favourites.add(id);
+  render();
+  publish();
+}
+
+// the channel never replays, so the first paint comes from storage
+window.addEventListener('load', () => {
+  render();
+  channel.postMessage({ type: 'hello' });
+});`,
+    covers: ['js-25'],
   },
 ];

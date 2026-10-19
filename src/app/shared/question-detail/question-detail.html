@@ -39,7 +39,6 @@
           class="min-w-0 overflow-hidden"
           [difficulty]="faq.difficulty"
           [scenarioBased]="faq.scenarioBased"
-          [isNew]="!!faq.isNew"
           [tags]="faq.tags ?? []"
         />
 
@@ -99,12 +98,52 @@
       />
     </header>
 
-    <p
-      class="m-0 text-[0.95rem] leading-relaxed text-(--mat-sys-on-surface-variant)"
+    <div
+      class="flex flex-col gap-3 text-[0.95rem] leading-relaxed text-(--mat-sys-on-surface-variant)"
       data-testid="answer"
     >
-      {{ faq.answer }}
-    </p>
+      @for (block of answerBlocks(); track $index) {
+        @if (block.kind === 'p') {
+          <p class="m-0">
+            @for (run of block.runs; track $index) {
+              @if (run.code) {
+                <code
+                  class="rounded bg-(--mat-sys-surface-container-high) px-1 py-0.5 font-mono text-[0.85em]"
+                  >{{ run.text }}</code
+                >
+              } @else if (run.bold) {
+                <strong class="font-semibold text-(--mat-sys-on-surface)">{{ run.text }}</strong>
+              } @else if (run.italic) {
+                <em>{{ run.text }}</em>
+              } @else {
+                {{ run.text }}
+              }
+            }
+          </p>
+        } @else {
+          <ul class="m-0 flex list-disc flex-col gap-1 pl-5">
+            @for (item of block.items; track $index) {
+              <li>
+                @for (run of item; track $index) {
+                  @if (run.code) {
+                    <code
+                      class="rounded bg-(--mat-sys-surface-container-high) px-1 py-0.5 font-mono text-[0.85em]"
+                      >{{ run.text }}</code
+                    >
+                  } @else if (run.bold) {
+                    <strong class="font-semibold text-(--mat-sys-on-surface)">{{ run.text }}</strong>
+                  } @else if (run.italic) {
+                    <em>{{ run.text }}</em>
+                  } @else {
+                    {{ run.text }}
+                  }
+                }
+              </li>
+            }
+          </ul>
+        }
+      }
+    </div>
 
     @for (example of faq.examples; track example.title) {
       <section class="flex flex-col gap-2">

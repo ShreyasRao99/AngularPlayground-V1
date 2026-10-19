@@ -3,9 +3,18 @@ import { ViewportScroller } from '@angular/common';
 import { provideRouter } from '@angular/router';
 import { Category, Question } from '../../../types/questions-type';
 import questionsData from '../questions.json';
+import { parseAnswer } from '../answer-markdown';
+import { CATEGORIES } from '../categories';
 import { QuestionDetail } from './question-detail';
 
 const BANK = Object.values(questionsData).flat() as Question[];
+
+// The same section-ordered walk the component uses for prev/next, so the
+// expectations below describe "the neighbouring question" rather than a
+// hard-coded id that has to be edited whenever the bank is.
+const SEQUENCE = CATEGORIES.flatMap((category) =>
+  BANK.filter((question) => question.category === category),
+);
 
 function authored(id: string): Question {
   const question = BANK.find((entry) => entry.id === id)!;
@@ -89,9 +98,26 @@ describe('QuestionDetail', () => {
     const fixture = await createDetail('performance', question.id);
 
     expect(root(fixture).querySelector('h1')?.textContent?.trim()).toBe(question.question);
-    expect(root(fixture).querySelector('[data-testid="answer"]')?.textContent?.trim()).toBe(
-      question.answer,
-    );
+
+    // answers are Markdown-ish, so compare the rendered blocks rather than the
+    // raw source string: every run has to survive into the DOM
+    const normalize = (text: string) => text.replace(/\s+/g, ' ').trim();
+    const rendered = Array.from(
+      root(fixture).querySelectorAll('[data-testid="answer"] p, [data-testid="answer"] li'),
+    )
+      .map((node) => node.textContent?.trim())
+      .join(' ');
+    const expected = parseAnswer(question.answer)
+      .map((block) =>
+        block.kind === 'p'
+          ? block.runs.map((run) => run.text).join('')
+          : block.items.map((item) => item.map((run) => run.text).join('')).join(' '),
+      )
+      .join(' ');
+
+    // inline <strong>/<em> sit on their own template lines, so the DOM carries a
+    // little extra whitespace at the run boundaries; compare the words, not the gaps
+    expect(normalize(rendered)).toBe(normalize(expected));
   });
 
   it('should show the whole question, never clamped behind an ellipsis', async () => {
@@ -169,13 +195,52 @@ describe('QuestionDetail', () => {
     expect(new Set(names).size).toBe(2);
   });
 
-  it('should not link past the start of the category', async () => {
-    const first = authored('misc-2');
-    const fixture = await createDetail('misc', first.id);
+  it('should link back into the previous section at a section\u2019s first question', async () => {
+    // misc-2 is the first of its section, so an empty left slot would strand the
+    // reader; it points at the last question of the section before it instead
+    const index = SEQUENCE.findIndex((question) => question.id === 'misc-2');
+    const previous = SEQUENCE[index - 1];
 
-    // misc-2 is the first of three, so the first question can only link forwards
-    expect(navHrefs(fixture, 0)).toEqual(['/misc/misc-6']);
-    expect(navHrefs(fixture, 1)).toEqual(['/misc/misc-6']);
+    const fixture = await createDetail('misc', 'misc-2');
+
+    expect(navHrefs(fixture, 0)).toEqual([
+      `/${previous.category}/${previous.id}`,
+      '/misc/misc-6',
+    ]);
+    expect(navHrefs(fixture, 1)).toEqual(navHrefs(fixture, 0));
+  });
+
+  it('should link forward into the next section at a section\u2019s last question', async () => {
+    const last = SEQUENCE.filter((question) => question.category === 'signals').at(-1)!;
+    const index = SEQUENCE.findIndex((question) => question.id === last.id);
+    const previous = SEQUENCE[index - 1];
+    const next = SEQUENCE[index + 1];
+
+    expect(next.category).not.toBe('signals');
+
+    const fixture = await createDetail('signals', last.id);
+
+    expect(navHrefs(fixture, 0)).toEqual([
+      `/${previous.category}/${previous.id}`,
+      `/${next.category}/${next.id}`,
+    ]);
+  });
+
+  it('should leave no previous link at the very first question in the bank', async () => {
+    const first = SEQUENCE[0];
+    const fixture = await createDetail(first.category, first.id);
+
+    // only the next link: there is nothing before the first question
+    expect(navHrefs(fixture, 0)).toEqual([`/${SEQUENCE[1].category}/${SEQUENCE[1].id}`]);
+  });
+
+  it('should leave no next link at the very last question in the bank', async () => {
+    const last = SEQUENCE[SEQUENCE.length - 1];
+    const previous = SEQUENCE[SEQUENCE.length - 2];
+    const fixture = await createDetail(last.category, last.id);
+
+    // only the previous link: there is nothing after the last question
+    expect(navHrefs(fixture, 0)).toEqual([`/${previous.category}/${previous.id}`]);
   });
 
   it('should toggle review state for the routed question only', async () => {
