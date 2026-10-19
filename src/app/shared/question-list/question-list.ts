@@ -11,6 +11,7 @@ import { QuestionNotes } from '../question-notes/question-notes';
 import { QuestionStore } from '../question-store';
 
 type MarkedFilter = 'all' | 'marked' | 'unmarked';
+type MostAskedFilter = 'all' | 'most';
 
 interface DifficultyOption {
   value: Difficulty;
@@ -53,16 +54,25 @@ export class QuestionList {
 
   protected readonly difficultyFilter = signal<readonly Difficulty[]>([]);
   protected readonly markedFilter = signal<MarkedFilter>('all');
+  protected readonly mostAskedFilter = signal<MostAskedFilter>('all');
+
+  // Only behavioural has more questions than a reader can rehearse, so the
+  // "Most asked" triage is offered there and nowhere else.
+  protected readonly showMostAskedFilter = computed(() => this.category() === 'behavioural');
 
   protected readonly faqs = computed(() => {
     const difficulties = this.difficultyFilter();
     const marked = this.markedFilter();
+    const mostAskedOnly = this.showMostAskedFilter() && this.mostAskedFilter() === 'most';
 
     return this.store.questionData().filter((question) => {
       if (question.category !== this.category()) {
         return false;
       }
       if (difficulties.length && !difficulties.includes(question.difficulty)) {
+        return false;
+      }
+      if (mostAskedOnly && !question.mostAsked) {
         return false;
       }
       return marked === 'all' || question.isMarked === (marked === 'marked');
@@ -82,7 +92,10 @@ export class QuestionList {
   );
 
   protected readonly hasActiveFilters = computed(
-    () => this.difficultyFilter().length > 0 || this.markedFilter() !== 'all',
+    () =>
+      this.difficultyFilter().length > 0 ||
+      this.markedFilter() !== 'all' ||
+      this.mostAskedFilter() !== 'all',
   );
 
   protected countForDifficulty(difficulty: Difficulty): number {
@@ -101,9 +114,14 @@ export class QuestionList {
     this.markedFilter.set(event.value as MarkedFilter);
   }
 
+  protected onMostAskedFilterChange(event: MatButtonToggleChange): void {
+    this.mostAskedFilter.set(event.value as MostAskedFilter);
+  }
+
   protected clearFilters(): void {
     this.difficultyFilter.set([]);
     this.markedFilter.set('all');
+    this.mostAskedFilter.set('all');
   }
 
   protected toggleMarked(id: string): void {

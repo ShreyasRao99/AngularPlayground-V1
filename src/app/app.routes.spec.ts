@@ -70,6 +70,13 @@ describe('app routes', () => {
     expect(outlet(fixture).textContent).not.toContain('Proof of concept not found');
   });
 
+  it('should route the devtools demo path to the demo rather than reading it as a question', async () => {
+    const { fixture } = await navigate('/performance/devtools-demo');
+
+    expect(outlet(fixture).textContent).not.toContain('Question not found');
+    expect(outlet(fixture).textContent).toContain('The slow search');
+  });
+
   it('should still show the not found state for an unknown id, with a usable label', async () => {
     const { fixture } = await navigate('/performance/performance-999');
 

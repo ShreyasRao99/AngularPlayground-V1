@@ -12,6 +12,19 @@
       <mat-button-toggle value="unmarked">Not marked</mat-button-toggle>
     </mat-button-toggle-group>
 
+    @if (showMostAskedFilter()) {
+      <mat-button-toggle-group
+        class="marked-filter self-center [--mat-button-toggle-height:32px]"
+        hideSingleSelectionIndicator
+        aria-label="Filter by how often the question comes up"
+        [value]="mostAskedFilter()"
+        (change)="onMostAskedFilterChange($event)"
+      >
+        <mat-button-toggle value="all">All</mat-button-toggle>
+        <mat-button-toggle value="most">Most asked</mat-button-toggle>
+      </mat-button-toggle-group>
+    }
+
     <mat-chip-listbox
       multiple
       aria-label="Filter by difficulty"

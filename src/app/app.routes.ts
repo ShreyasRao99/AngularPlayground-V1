@@ -18,6 +18,14 @@ export const routes: Routes = [
     path: 'performance',
     loadComponent: () => import('./performance/performance').then((c) => c.Performance),
   },
+  // The live demo for the DevTools/Lighthouse POC. Declared next to its
+  // category and before the `:category/:questionId` catch-all, which would
+  // otherwise read it as a question id.
+  {
+    path: 'performance/devtools-demo',
+    loadComponent: () =>
+      import('./performance/devtools-demo/devtools-demo').then((c) => c.DevtoolsDemo),
+  },
   { path: 'rxjs', loadComponent: () => import('./rxjs/rxjs').then((c) => c.RxJS) },
   { path: 'signals', loadComponent: () => import('./signals/signals').then((c) => c.Signals) },
   { path: 'misc', loadComponent: () => import('./misc/misc').then((c) => c.Misc) },

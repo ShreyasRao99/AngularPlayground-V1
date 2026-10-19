@@ -1,7 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatButtonToggleChange } from '@angular/material/button-toggle';
 import { MatChipListboxChange } from '@angular/material/chips';
 import { provideRouter } from '@angular/router';
 import { Question } from '../../../types/questions-type';
+import { QuestionStore } from '../question-store';
 import { QuestionList } from './question-list';
 
 type MarkedFlag = { id: string; isMarked: boolean };
@@ -66,7 +68,7 @@ describe('QuestionList', () => {
 
   it('should show every question in the category by default', async () => {
     const fixture = await createList();
-    expect(rows(fixture).length).toBe(26);
+    expect(rows(fixture).length).toBe(27);
     expect(fixture.componentInstance['hasActiveFilters']()).toBe(false);
   });
 
@@ -77,16 +79,43 @@ describe('QuestionList', () => {
     expect(rows(fixture).length).toBe(5);
 
     selectDifficulties(fixture, ['medium']);
-    expect(rows(fixture).length).toBe(14);
+    expect(rows(fixture).length).toBe(15);
 
     selectDifficulties(fixture, ['basic', 'advanced']);
     expect(rows(fixture).length).toBe(12);
   });
 
+  it('should not offer the most-asked triage outside behavioural', async () => {
+    const fixture = await createList('performance');
+    const root = fixture.nativeElement as HTMLElement;
+
+    expect(root.querySelector('mat-button-toggle-group[aria-label*="how often"]')).toBeNull();
+  });
+
+  it('should filter behavioural down to the curated most-asked core', async () => {
+    const fixture = await createList('behavioural');
+    const root = fixture.nativeElement as HTMLElement;
+
+    expect(root.querySelector('mat-button-toggle-group[aria-label*="how often"]')).toBeTruthy();
+
+    const expected = TestBed.inject(QuestionStore)
+      .questionData()
+      .filter((question) => question.category === 'behavioural' && question.mostAsked).length;
+    expect(expected).toBeGreaterThan(0);
+    expect(expected).toBeLessThan(50);
+
+    fixture.componentInstance['onMostAskedFilterChange']({
+      value: 'most',
+    } as unknown as MatButtonToggleChange);
+    fixture.detectChanges();
+
+    expect(rows(fixture).length).toBe(expected);
+  });
+
   it('should toggle review state and filter on it', async () => {
     const fixture = await createList();
     const buttons = markButtons(fixture);
-    expect(buttons.length).toBe(26);
+    expect(buttons.length).toBe(27);
 
     buttons[0].click();
     fixture.detectChanges();
@@ -96,7 +125,7 @@ describe('QuestionList', () => {
 
     fixture.componentInstance['markedFilter'].set('unmarked');
     fixture.detectChanges();
-    expect(rows(fixture).length).toBe(25);
+    expect(rows(fixture).length).toBe(26);
 
     fixture.componentInstance['markedFilter'].set('marked');
     fixture.detectChanges();

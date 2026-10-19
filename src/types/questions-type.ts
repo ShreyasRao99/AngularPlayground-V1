@@ -30,4 +30,11 @@ export interface Question {
    * would ask. Optional so the older questions stay valid until they are tagged.
    */
   tags?: string[];
+  /**
+   * Curated "most likely to be asked" flag. Only used on behavioural questions,
+   * where the bank is wide enough to need triage and there is no ask-frequency
+   * data to sort by; the question list shows a "Most asked" toggle for that
+   * category alone. Absent means simply not in the curated core.
+   */
+  mostAsked?: boolean;
 }

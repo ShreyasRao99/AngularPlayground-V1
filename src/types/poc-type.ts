@@ -29,4 +29,12 @@ export interface Poc {
   stretch: string[];
   starter: string;
   covers: string[];
+  /**
+   * Optional absolute route to an interactive version of the exercise (leading
+   * slash), for POCs whose point is easier to feel than to read. Rendered as a
+   * button on the detail page; omit it for the POCs that are only a written
+   * walkthrough. Keep the leading slash: a bare relative link resolves against
+   * `/poc/:pocId` and falls through the catch-all to the first category.
+   */
+  demoRoute?: string;
 }

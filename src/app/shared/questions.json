@@ -2490,6 +2490,22 @@
       "tags": [
         "MS"
       ]
+    },
+    {
+      "id": "performance-27",
+      "category": "performance",
+      "difficulty": "medium",
+      "scenarioBased": true,
+      "isMarked": false,
+      "question": "Scenario: a Pokédex team-builder page stutters when a user types in the search box, and a mobile Lighthouse run scores poorly. Walk me through how you would use Lighthouse and the Angular DevTools to find the cause, fix it, and prove the fix with the same two tools.",
+      "answer": "When a page is \"slow\" I treat Lighthouse and the Angular DevTools as two different instruments: **Lighthouse** tells me what is wrong for a real user - when the first paint arrives, whether the main thread is blocked, how many bytes shipped - and the **Angular DevTools profiler** tells me why inside my code, meaning what re-renders and how often. The scenario: a team-builder page where typing in the search box stutters, a mobile Lighthouse run scores poorly, and a 250 kB charting library ships in the initial bundle although it is only used below the fold.\n\nReproduce it under a controlled setting first. Open Chrome DevTools, open the **Lighthouse** panel, tick **Performance**, set the device to **Mobile** with simulated throttling, and run it in an incognito window with an empty cache. The three numbers that carry the diagnosis are **LCP**, **TBT** (or **INP**) and total JS bytes; expand the Opportunities and Diagnostics to read the audits. *Reduce unused JavaScript* names the charting library that ships but is never used on first paint, and *Avoid enormous network payloads* points at the payload size.\n\nLighthouse localises the fault to a bundle, not a line, so the next step is the Chrome **Performance** panel. Record the same keystroke, find the one long task, and use the **Bottom-Up** and **Call Tree** views to attribute the time. In this app the bulk is *Scripting* with a *Recalculate Style* tail, and drilling in lands on a method called from the template - which runs on every change detection cycle and therefore cannot be memoised.\n\nThe **Angular DevTools** profiler confirms it. Install the extension, open the **Profiler** tab, record, type a single character and stop: the flame graph lists every change detection cycle and the time each component spent in it. Here the whole list re-renders on one keystroke, and the **Component explorer** lets me select the component and see the expression that keeps changing.\n\nThe fix is three moves in impact order.\n- Replace the template method with a **computed** (or a pure pipe), so the value is derived once per input change instead of once per change detection cycle.\n- Put the list on **OnPush** with a stable **track** key, so a keystroke updates the rows instead of recreating every row.\n- Defer the heavy chart with `@defer (on viewport)` and a dynamic `import()`, which removes the library from the initial bundle - the exact complaint behind *Reduce unused JavaScript*.\n\nFinally, prove it with the same tools and the same settings: re-run Lighthouse and compare LCP, TBT and total JS against the baseline, then re-record the Angular DevTools profile for the same keystroke and show the cycle count and the list component's time drop. A green score on a warm cache or a fast laptop is not the number that matters, and an optimisation with no before and after is a guess.",
+      "examples": [
+        {
+          "title": "From a template method to a computed and a deferred chart",
+          "code": "// before: a method in the template runs on every change detection cycle\n<p>{{ visibleCount() }} shown</p>\n<app-chart [data]=\"chartData()\"></app-chart>   // heavy library, eager\n\n// after: a computed derives once per input change, not once per cycle\nreadonly filter = signal('');\nreadonly visible = computed(() =>\n  this.all().filter((p) => p.name.includes(this.filter().toLowerCase())),\n);\n\n<p>{{ visible().length }} shown</p>\n\n@defer (on viewport) {\n  <app-chart [data]=\"visible()\" />\n} @placeholder {\n  <div class=\"chart-skeleton\"></div>\n}",
+          "explanation": "The template method was re-evaluated on every change detection cycle, while a computed re-evaluates only when its signal inputs change. Deferring the chart with a dynamic import takes the charting library out of the initial bundle - the 'unused JavaScript' Lighthouse reported - and the placeholder keeps the layout from shifting when it finally loads."
+        }
+      ]
     }
   ],
   "rxjs": [
@@ -3118,7 +3134,8 @@
       ],
       "tags": [
         "MS"
-      ]
+      ],
+      "mostAsked": true
     },
     {
       "id": "behavioural-3",
@@ -3134,7 +3151,8 @@
           "code": "Frame it as threads, not jobs:\n- Thread 1: performance work. What the problem was, which parts were mine,\n  what changed.\n- Thread 2: migrations and cross-team delivery. Same structure.\n- Then: the bits that do not fit, named by me first.\n\nNaming a gap yourself\n\"She will ask about the 8 months at D, so say it first:\nThat was a reorg. My role was made redundant, and looking back I waited about\ntwo months before looking externally, which cost me savings. I would handle\nthat differently - start while still employed.\"\n\nFive jobs, one explanation\n\"I have had five jobs. Three were contract, which is why it looks like a lot:\ntwo were three-month pieces, and between them I was in one bad agency that\nplaced me badly and I should have left sooner.\"",
           "explanation": "Gaps and churn named by you first is the entire tell. Chronological narration is\nwhat loses this question."
         }
-      ]
+      ],
+      "mostAsked": true
     },
     {
       "id": "behavioural-4",
@@ -3150,7 +3168,8 @@
           "code": "BAD\nI work too hard.\n- Humblebrag. Everyone says this and it reads as having not prepared.\n\nBAD\nMy previous manager was difficult to work with.\n- Not your weakness, and you have just told them how you handle conflict.\n\nBAD\nI am not very good at saying no.\n- Plausible but unevidenced, so it becomes a prediction they will test.\n\nGOOD\nI used to lose track of context when I came back to a thread after a day on\nsomething else, and I would re-derive decisions that had already been made.\n\nWhat it looked like: a task that had been scoped on Monday would be re-scoped\non Wednesday by me, with no memory of why the first answer was chosen.\n\nWhat I changed: decisions that affect more than one person now get a two-line\nwritten rationale - the problem, the choice, the rejected option. I do it at the\nend of the day it is made, which takes about a minute.\n\nWhere it has not worked: for genuinely throwaway work I still skip it, and\noccasionally that bites.",
           "explanation": "Real and job-relevant, a specific system rather than willpower, and an honest\nnote on where it still fails."
         }
-      ]
+      ],
+      "mostAsked": true
     },
     {
       "id": "behavioural-5",
@@ -3182,7 +3201,8 @@
           "code": "WEAK\nWe built a design system used by 40 teams.\n- Team success, no personal decision, and the number is doing the work.\n\nSTRONG\nMine was the migration off a legacy build system. What makes it worth telling\nabout is a decision, not the work: we could have done it all at once, or\nsequenced it by team.\n\nI chose sequential, by dependency order rather than by team size or by which\nteam complained loudest. The argument against me was team size - the big teams\nwere still on the old pipeline for months and that hurt morale.\n\nWhat it cost: about four months where the biggest teams had no path to the new\nsetup. I had predicted three.\n\nThe flaw: I did not budget for the two teams whose builds were not actually\nindependent, so we discovered mid-migration that the sequencing I had called\nobvious was wrong for them. That was my analysis error, and it cost about three\nweeks.\n\nResult: zero rollbacks across 40 teams, and the sequencing doc was reused for\nthe platform migration afterwards.",
           "explanation": "One judgement call with a named alternative, a predicted cost, and a real\nflaw that was yours. Scale is not the point."
         }
-      ]
+      ],
+      "mostAsked": true
     },
     {
       "id": "behavioural-7",
@@ -3198,7 +3218,8 @@
           "code": "The area was our payments provider's webhook retry semantics. I knew nothing\nabout it.\n\nStep one, cheap and fast: I asked three questions - which people actually know\nthis, what does a correct integration look like, and what is the most common way\npeople get it wrong. The third question was the valuable one, and it turned out\nthe standard advice was wrong for our case.\n\nStep two: I wrote the naive integration first, against a sandbox, and it failed\nin a way that confirmed the thing I had been told was fine. Cheap correction,\nlow stakes.\n\nStep three: rather than keep guessing, I wrote down my model of the behaviour\nas I understood it and sent it to the payments engineer to correct. She changed\ntwo of my five assumptions and said the other three were right for reasons I had\nnot considered.\n\nHow I knew I was done: not when it felt clear, but when I could predict what the\nsystem would do in the three cases we actually hit, and I had a test for each.",
           "explanation": "Asking what people commonly get wrong, testing cheap and early, and having an\nexplicit model that someone corrected - that is the method they are grading."
         }
-      ]
+      ],
+      "mostAsked": true
     },
     {
       "id": "behavioural-8",
@@ -3214,7 +3235,8 @@
           "code": "The trap\nWe refactored the validation module, removed 600 lines, and made it much\neasier to read.\n- A cleanup. Good, but not simplification.\n\nThe actual simplification\nWe had a generic form-validation engine: rules defined in JSON, a rule engine\nthat interpreted them, and a schema that had to stay in sync with the TypeScript\ntypes.\n\nIt existed because two years earlier we thought we would need configurable\nvalidation for two more teams.\n\nWhat made it safe to remove: I grepped the rule definitions and found 41 of them,\nand 38 were static. The other three were our login form and had not changed in\nfour months.\n\nSo we deleted the engine, inlined the 38 as typed functions so TypeScript now\nchecks them, and kept the three as three explicit validators. The JSON schema is\ngone, so the class of bug where the two drifted cannot happen anymore.\n\nWhat it cost: three weeks, and the three dynamic validators are hand-written,\nwhich is more code than they were before.\n\nResult: a whole category of runtime validation bugs went away.",
           "explanation": "Finding the evidence that the generality was never needed, and removing the\nmechanism rather than the lines, is what makes this simplification."
         }
-      ]
+      ],
+      "mostAsked": true
     },
     {
       "id": "behavioural-9",
@@ -3246,7 +3268,8 @@
           "code": "The axis: independently deployable pieces versus one deployable whole.\n\nThe alternative a good peer would have chosen: a modular monolith. Fewer moving\nparts, one deployment, no duplicated runtime. Entirely defensible for a team of 15\nwith four domains - and honestly the right call.\n\nI chose micro-frontends for two domains only, not the whole app, because those\ntwo had genuinely different release cadences driven by different customers, and\neach release of the monolith forced a coordinated freeze on the other team.\n\nWhat it cost, and this is the part I underestimated: each boundary means a\nruntime, a duplicated dependency tree, and a design-system versioning problem. We\nspent roughly a quarter of one engineer's time on version alignment.\n\nReversal condition, written down at the time: if we add a third frontend, or if\ncross-domain journeys make up more than about 30% of traffic, we fold back into a\nmodular monolith. The second one has not triggered yet.\n\nWhat I got wrong: I did not budget for the version-alignment cost at all, and that\nis the cost that actually hurt.",
           "explanation": "A named defensible alternative, a cost you accepted, and a written reversal\ncondition is the structure. The project itself is almost irrelevant."
         }
-      ]
+      ],
+      "mostAsked": true
     },
     {
       "id": "behavioural-11",
@@ -3278,7 +3301,8 @@
           "code": "The rule I set myself: no explanation clause before the ownership. Not because\nthe context does not matter, but because it always sounds like an excuse first.\n\nWhat happened: I cut a release branch while a long-running migration was\nhalf-applied, because I trusted a feature flag check that was scoped to the web\nclient. The API path did not have it. About 3% of users saw an error state for\nroughly 40 minutes.\n\nMy part specifically: I was the one who decided the flag was sufficient coverage,\nand I did not check the second entry point. The migration engineer had assumed the\nflag was complete, because I told them it was.\n\nWhat I changed, and it is a system change not a lesson: release checklists now\nrequire every entry point to be named explicitly against the flag or the change,\nand a reviewer whose name is on the checklist has to confirm coverage. It has\ncaught two omissions since, including one of mine.\n\nWhat I still feel about it: not the outage, but that I let a person assume\ninstead of asking them.",
           "explanation": "No explanation before the ownership, a specific part in a shared failure, and a\nsystemic change rather than the lesson be more careful."
         }
-      ]
+      ],
+      "mostAsked": true
     },
     {
       "id": "behavioural-13",
@@ -3294,7 +3318,8 @@
           "code": "Open with the flag, because they are testing for consistency:\nThat is the same mistake I would tell you about - the half-applied migration and\nthe feature flag. I will not retell it.\n\nWhat I have not said yet, since you are asking about the biggest one rather than\na failure: the scale of it. It was 3% of users for 40 minutes, which by our\nnumbers was a few thousand people, and it was the day before a customer\nconference.\n\nThe communication part, which I did handle badly at first: I told support in the\nDMs, then corrected it publicly an hour later when I realised I should have. The\ncorrection was messier than the original message should have been. Support had\nalready answered a ticket saying the error was ours, which turned out to be wrong -\nit was a caching layer.\n\nWhat that taught me, separately from the outage: the audience for incident\ncommunication is not the one that is easiest to reach.",
           "explanation": "Flagging the overlap immediately, then supplying the scale and the communication\ndetail they have not heard, is what answers this properly."
         }
-      ]
+      ],
+      "mostAsked": true
     },
     {
       "id": "behavioural-14",
@@ -3310,7 +3335,8 @@
           "code": "Detection over drama:\nI was on call. First signal was a support ticket, not a page, because our alert\nwas on error rate and the failure was a 200 response with empty data. So the\nfirst fifteen minutes were spent establishing what was actually happening -\nthree people comparing a user report against logs, and finding that the data was\nmissing rather than the request failing.\n\nDeciding before knowing:\nWe had two plausible causes and a choice between rolling back a deploy from an\nhour ago and waiting. I chose to roll back even though the deploy was not\nobviously related, because the cost of rollback was about two minutes and the\ncost of waiting was unbounded. That was a judgement under uncertainty, not a\ndiagnosis.\n\nOutward communication: I sent one message to support at minute twenty saying\nwhat we knew, what we did not, and when the next update would be. I would not\nhave done that at minute twenty in my previous job.\n\nCause, not trigger: the trigger was a config change. The actual cause was that\nour cache had no invalidation on a field we had started writing from a new\nservice six weeks earlier, and the deploy only happened to be running when\ntraffic crossed a threshold.\n\nThe fix was the invalidation. The alert change - alerting on empty responses,\nnot just errors - was mine, because that was the fifteen minutes.",
           "explanation": "Detection versus the drama, a real decision under uncertainty, a proactive\noutward update, and the cause rather than the trigger."
         }
-      ]
+      ],
+      "mostAsked": true
     },
     {
       "id": "behavioural-15",
@@ -3326,7 +3352,8 @@
           "code": "The pressure: a hard date set by a contract, and a review process that had not\nstarted.\n\nWhat I did not do: I did not skip the security review. It was the thing that\nwould have bitten later, and I said that out loud even though it cost me four\ndays of the schedule.\n\nWhat I did skip, and said so: the accessibility pass. I documented it as a named\ndebt with an owner and a date rather than pretending it was covered.\n\nWhat I asked for: I asked for one reviewer from the platform team for four hours,\nnot for more hands on my own task. That was a better trade than trying to\nparallelise work I did not fully understand yet.\n\nResult: shipped on the date, with the accessibility debt tracked and closed six\nweeks later by someone else.\n\nHonest assessment: I was lucky about the reviewer being available. If she had\nnot been, I would have made a worse call.",
           "explanation": "Naming what you skipped and got caught by, documenting the debt, and admitting\nthe luck are what keep this from reading as heroics."
         }
-      ]
+      ],
+      "mostAsked": true
     },
     {
       "id": "behavioural-16",
@@ -3342,7 +3369,8 @@
           "code": "Deciding the scope first:\nTwo weeks to implement against an unfamiliar message queue. I did not try to learn\nmessage queues. I wrote down the four things our use case required - ordering per\nkey, at-least-once delivery, retry with backoff, and dead-lettering - and treated\neverything else as out of scope for the fortnight.\n\nOrdering for speed:\nI did the four in dependency order and in parallel where possible, so the item I\nwas most likely to be wrong about was first while there was still time to change\nthe plan. That order was: at-least-once delivery, then retry, then dead-lettering,\nthen ordering - which is not the order they appear in most docs.\n\nVerifying rather than assuming:\nOn day nine I had a local harness replaying our real message shapes, which is what\ntold me our retry semantics were wrong - not the reading, and not a code review.\n\nDeciding to stop:\nI stopped when I could no longer name anything I would do differently with more\nknowledge. Specifically: I could explain every behaviour we would hit, and I could\nwrite a test that would fail if a behaviour changed.\n\nWhat I got wrong: I left dead-lettering untested for three weeks because I assumed\nit was simple, and it was not. Time pressure made me treat a familiar-looking\nproblem as a known one.",
           "explanation": "Explicit scope, ordering by risk rather than by documentation order, verifying with\na harness, and a named stopping condition - plus admitting where the speed\nshortcut bit."
         }
-      ]
+      ],
+      "mostAsked": true
     },
     {
       "id": "behavioural-17",
@@ -3358,7 +3386,8 @@
           "code": "What the request was actually for:\nMy lead asked me to add a feature to a system I owned, the week before a\nrelease. I said no. Not the week before.\n\nWhy it was a real refusal, not a soft one:\nThe reason I said no was not the week. It was that the feature needed to write\nto a table that had no migration strategy, and we had already agreed with the\ndata team that schema changes went through their review. So the real constraint\nwas someone else's process, not my time.\n\nThe nearest thing I could do:\nI offered two things. A read-only version against the existing endpoint, which\nthey could ship in the week, and a version writing to the new structure after\ntheir review, which I said I would own and could start the day the migration was\napproved.\n\nWhat I said I would need to say yes:\nA migration reviewed and merged, and one week after it. They got both.\n\nWhat happened: the read-only version shipped on time and got used enough that\nthe write version turned out to be a lower priority than they had assumed. That\nwas luck as much as judgement.",
           "explanation": "A real constraint you can name, an alternative rather than a flat refusal, and\nthe condition under which you would have said yes."
         }
-      ]
+      ],
+      "mostAsked": true
     },
     {
       "id": "behavioural-18",
@@ -3422,7 +3451,8 @@
           "code": "We disagreed about where validation belonged - in the component or in the API\nlayer.\n\nHis position, which I had not considered properly: our desktop client and the\npartner integration both call that API, so component-level validation left the\npartner path unprotected. That was a real hole and I had not seen it.\n\nWhat changed in my position: I stopped arguing it had to be one or the\nother. We did both - component validation for fast feedback, API validation as\nthe actual contract, with a shared schema so the rules cannot drift.\n\nResolution: I asked for his integration test case and added it to our suite, so\nhis scenario stayed covered.",
           "explanation": "Naming what you learned and changing your own position is what separates a\nresolution from a win. Adding his test case shows you treated his concern as\nlegitimate."
         }
-      ]
+      ],
+      "mostAsked": true
     },
     {
       "id": "behavioural-22",
@@ -3438,7 +3468,8 @@
           "code": "I argued we should not ship the migration in the same release as the dependency\nbump. My case was a blast radius argument, not taste: if the bump broke, we\ncould not tell a dependency issue from a migration issue in the logs.\n\nHe decided otherwise - one release was simpler to roll back.\n\nCommitting: I wrote the rollback plan so reverting was a single command rather\nthan a sequence, and I pre-tagged both versions so the diff was available\ninstantly. I also added a canary at 10% so we would see the failure mode\nquickly.\n\nCost: the bump did cause a 20-minute degradation on 3% of traffic. The canary\nlimited it and the rollback took 90 seconds. I do not think the extra release\nwould have saved us, and I told him so afterwards.",
           "explanation": "The commitment must be visible and specific, and conceding after the data lands\nis the strongest possible ending."
         }
-      ]
+      ],
+      "mostAsked": true
     },
     {
       "id": "behavioural-23",
@@ -3518,7 +3549,8 @@
           "code": "Nobody owned our bundle size and it had doubled in a year. It was not in\nanyone's goals, and the natural moment to cut it - adding a library - was the\nmoment it grew.\n\nWhy I picked it up: I was the one who had added 140kb of it in one PR, so I had\nthe context to tell what was ours and what was vendor.\n\nWhat I did without being asked: measured the composition, found one moment\nlibrary and three unused internal helpers, removed the helpers, replaced the\nmoment usage, and wrote a one-paragraph note on what to use instead. Then I\nadded a budget check to CI and told my manager, because it would fail PRs and\npeople should know that before they hit one.\n\nResult: initial bundle down 180kb. The budget has blocked four PRs since,\nincluding two of mine.",
           "explanation": "Fixing your own contribution, then warning the team before the guardrail bites,\nis what separates this from credit-taking."
         }
-      ]
+      ],
+      "mostAsked": true
     },
     {
       "id": "behavioural-28",
@@ -3582,7 +3614,8 @@
           "code": "A staff engineer told me my design reviews were thorough but slow - about 40\nminutes - and that people stopped bringing me reviews early because of it.\n\nHonest first reaction: I thought that was unfair, I was being careful. I also\ncould not argue with the observation, because I had noticed people asking\nwhether they should bring things to me.\n\nWhat was actually right: I was re-deriving the design from scratch each time\ninstead of asking what they had already decided. My thoroughness was partly me\nnot trusting their work.\n\nThe change: I now ask them to write up their thinking first and I review that,\nwhich typically takes 15 minutes. I also started asking what would make this\neasier for you next time.\n\nLast review since: about 18 minutes, and two juniors told me it is the reason\nthey bring me things early now.",
           "explanation": "Separating your defensive reaction from the fair part of the critique, and\nadmitting what your thoroughness actually was, is the whole answer."
         }
-      ]
+      ],
+      "mostAsked": true
     },
     {
       "id": "behavioural-32",
@@ -3630,7 +3663,8 @@
           "code": "A compliance feature landed in week one of a six-week build, with a hard date.\n\nWhat I did in week one rather than week five: went back with a descoped plan.\nTwo of the four sub-features were regulator-facing and mandatory; two were\ninternal analytics. I dropped the analytics, about 30% of the work, and shipped\na stub for it after.\n\nWhy those two: the regulator-facing items carried the actual legal risk.\nInternal analytics was nice to have.\n\nWho I told: the compliance lead and my manager in week one, with the trade\nstated as a trade, not an apology. They approved the cut the same day.\n\nResult: shipped on the original date with the mandatory scope. The analytics\nwent out six weeks later as planned.",
           "explanation": "Week one instead of week five is the entire lesson. Coming back early with a\ndefended descope is scope discipline."
         }
-      ]
+      ],
+      "mostAsked": true
     },
     {
       "id": "behavioural-35",
@@ -3646,7 +3680,8 @@
           "code": "Three weeks in, the brief said improve engagement and nothing else changed.\n\nMove one: I wrote a one-page doc stating what I believed was being asked and\nwhat I was assuming about success, and sent it asking them to correct it. Three\nof my five assumptions were wrong, and finding that out on day 15 was worth more\nthan a month of building.\n\nMove two: shipped a thin version in week four - one notification surface, no\npersonalisation - to get a reaction instead of an opinion.\n\nMove three, the one that actually stuck: I asked for a prioritisation call every\nFriday, 30 minutes, decisions recorded in the doc. After that, changes started\narriving with a reason attached instead of just arriving.\n\nWhat I would change: I should have pushed for move three in week one rather than\nweek four.",
           "explanation": "Written assumptions expose what is actually being asked, and the recurring\ndecision forum is what stops the churn - plus naming your own delay."
         }
-      ]
+      ],
+      "mostAsked": true
     },
     {
       "id": "behavioural-36",
@@ -3758,7 +3793,8 @@
           "code": "P - Point\nThree things I would contribute in the first six months.\nR - Reason\nBased on what you said about their specific problem, these are the parts of it\nI have actually done.\nE - Example\n1. Bundle and load: I cut initial JS by 180kb by auditing composition rather\n   than swapping libraries, and I left the CI budget behind so it stayed down.\n2. State migration: I moved an app from NgRx to signals one vertical slice at a\n   time, keeping observables where cancellation and retry mattered. Five weeks\n   of two paradigms, then one.\n3. The thing you are probably worse at than you think: nobody on your team\n   seems to own incident follow-up, and the last three postmortems have action\n   items that were never closed. I close those.\nP - Point\nThe common factor is that all three end with a mechanism still running, not a\nfix I made once.",
           "explanation": "Each claim is a checkable experience rather than a trait, and the third one shows\nyou have thought about the actual job."
         }
-      ]
+      ],
+      "mostAsked": true
     },
     {
       "id": "behavioural-43",

@@ -1,0 +1,185 @@
+<section class="mx-auto flex max-w-3xl flex-col gap-4 p-4 sm:p-6">
+  <header class="flex flex-col gap-2">
+    <a
+      class="inline-flex items-center gap-1 self-start text-sm font-medium text-(--mat-sys-primary) no-underline hover:underline"
+      routerLink="/poc/perf-devtools-lighthouse"
+    >
+      <span class="material-symbols-outlined text-base">arrow_back</span>
+      Back to the proof of concept
+    </a>
+
+    <h1 class="m-0 text-xl leading-snug font-semibold sm:text-2xl">
+      The slow search, running live
+    </h1>
+
+    <p class="m-0 text-[0.95rem] leading-relaxed text-(--mat-sys-on-surface-variant)">
+      The scenario from the exercise, seeded with local data so it runs offline. Type in the box,
+      watch the counters, then change the two switches to make the wasted work disappear. Lighthouse
+      and the Angular DevTools are what you would reach for on a real app; this page isolates the
+      mechanism they would point at.
+    </p>
+  </header>
+
+  <div
+    class="flex flex-col gap-3 rounded-lg border border-(--mat-sys-outline-variant) p-3"
+    data-testid="controls"
+  >
+    <label class="flex flex-col gap-1 text-sm font-medium">
+      Search
+      <input
+        type="search"
+        data-testid="query"
+        class="rounded-md border border-(--mat-sys-outline) bg-transparent px-2 py-1.5 text-sm"
+        [value]="query()"
+        (input)="onQueryInput($event)"
+        placeholder="Filter by name or type"
+      />
+    </label>
+
+    <div class="flex flex-wrap items-center gap-2 text-sm">
+      <span class="font-medium">Filter with</span>
+      <button
+        type="button"
+        data-testid="mode-method"
+        [attr.aria-pressed]="mode() === 'method'"
+        [class]="toggleClass(mode() === 'method')"
+        (click)="setMode('method')"
+      >
+        Template method
+      </button>
+      <button
+        type="button"
+        data-testid="mode-computed"
+        [attr.aria-pressed]="mode() === 'computed'"
+        [class]="toggleClass(mode() === 'computed')"
+        (click)="setMode('computed')"
+      >
+        Computed
+      </button>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2 text-sm">
+      <span class="font-medium">Chart</span>
+      <button
+        type="button"
+        data-testid="chart-eager"
+        [attr.aria-pressed]="chartMode() === 'eager'"
+        [class]="toggleClass(chartMode() === 'eager')"
+        (click)="setChartMode('eager')"
+      >
+        Eager
+      </button>
+      <button
+        type="button"
+        data-testid="chart-deferred"
+        [attr.aria-pressed]="chartMode() === 'deferred'"
+        [class]="toggleClass(chartMode() === 'deferred')"
+        (click)="setChartMode('deferred')"
+      >
+        Deferred
+      </button>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2 text-sm">
+      <label class="flex items-center gap-2">
+        Rows
+        <select
+          data-testid="row-count"
+          class="rounded-md border border-(--mat-sys-outline) bg-transparent px-2 py-1 text-sm"
+          [value]="rowCount()"
+          (change)="onRowCountChange($event)"
+        >
+          @for (option of rowOptions; track option) {
+            <option [value]="option">{{ option }}</option>
+          }
+        </select>
+      </label>
+
+      <button
+        type="button"
+        data-testid="bump"
+        class="rounded-full border border-(--mat-sys-outline-variant) px-3 py-1 text-xs font-medium"
+        (click)="bumpHeartbeat()"
+      >
+        Trigger unrelated change detection
+      </button>
+      <span class="text-xs text-(--mat-sys-on-surface-variant)"
+        >unrelated updates: {{ heartbeat() }}</span
+      >
+    </div>
+  </div>
+
+  <dl class="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
+    <div class="rounded-lg bg-(--mat-sys-surface-container-high) px-3 py-2">
+      <dt class="text-xs text-(--mat-sys-on-surface-variant)">Filter runs</dt>
+      <dd class="m-0 text-lg font-semibold tabular-nums" data-testid="filter-runs">
+        {{ runCount() }}
+      </dd>
+    </div>
+    <div class="rounded-lg bg-(--mat-sys-surface-container-high) px-3 py-2">
+      <dt class="text-xs text-(--mat-sys-on-surface-variant)">Rows scanned</dt>
+      <dd class="m-0 text-lg font-semibold tabular-nums" data-testid="rows-scanned">
+        {{ scannedCount() }}
+      </dd>
+    </div>
+    <div class="rounded-lg bg-(--mat-sys-surface-container-high) px-3 py-2">
+      <dt class="text-xs text-(--mat-sys-on-surface-variant)">Last run</dt>
+      <dd class="m-0 text-lg font-semibold tabular-nums" data-testid="last-ms">
+        {{ lastMs() }} ms
+      </dd>
+    </div>
+    <div class="rounded-lg bg-(--mat-sys-surface-container-high) px-3 py-2">
+      <dt class="text-xs text-(--mat-sys-on-surface-variant)">Total filter time</dt>
+      <dd class="m-0 text-lg font-semibold tabular-nums" data-testid="total-ms">
+        {{ totalMs() }} ms
+      </dd>
+    </div>
+  </dl>
+
+  <p class="m-0 text-sm leading-relaxed text-(--mat-sys-on-surface-variant)">
+    In <strong>template method</strong> mode the filter runs on every change detection pass,
+    including the unrelated one above, and returns a fresh array each time so the list is checked
+    too. In <strong>computed</strong> mode it runs only when the query or the dataset changes, and
+    the same array reference lets the list skip its check. Trigger the unrelated update in both
+    modes and compare <em>Filter runs</em> and <em>list checked</em>.
+  </p>
+
+  @if (mode() === 'method') {
+    @if (rowsMethod(); as rows) {
+      <app-devtools-rows [rows]="rows" [total]="rowCount()" />
+    }
+  } @else {
+    @if (visible(); as rows) {
+      <app-devtools-rows [rows]="rows" [total]="rowCount()" />
+    }
+  }
+
+  <section class="flex flex-col gap-2">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <h2 class="m-0 text-sm font-semibold">Chart</h2>
+      <span class="text-xs text-(--mat-sys-on-surface-variant)" data-testid="chart-status">
+        {{
+          chartMode() === 'eager'
+            ? 'Loaded eagerly with the page'
+            : 'Deferred to a separate chunk, loads on viewport'
+        }}
+      </span>
+    </div>
+
+    @if (chartMode() === 'eager') {
+      <app-devtools-chart [data]="chartData()" />
+    } @else {
+      @defer (on viewport) {
+        <app-devtools-chart [data]="chartData()" />
+      } @placeholder {
+        <p
+          class="m-0 rounded-lg border border-dashed border-(--mat-sys-outline-variant) p-3 text-xs text-(--mat-sys-on-surface-variant)"
+          data-testid="chart-placeholder"
+        >
+          The chart is deferred. Scrolling it into view loads its chunk - watch the Network tab,
+          then record a header in the Angular DevTools to see the chunk arrive late.
+        </p>
+      }
+    }
+  </section>
+</section>
