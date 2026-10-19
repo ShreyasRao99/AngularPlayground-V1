@@ -171,6 +171,92 @@ If you stashed anything in Step 0, `git stash pop` it now and confirm
 | Committed the CRLF `404.html`                                    | Permanent EOL-only churn on every deploy          |
 | Waited on a CI workflow                                          | None exists; verify with `gh run list` and `curl` |
 
+## Curating the question bank and POCs
+
+Context for content work: questions, answers and the proof-of-concept exercises.
+Read this before editing `questions.json` or a POC.
+
+### Where content lives
+
+| What                      | Path                                                       |
+| ------------------------- | ---------------------------------------------------------- |
+| Questions                 | `src/app/shared/questions.json`                            |
+| Shapes                    | `src/types/questions-type.ts`, `src/types/poc-type.ts`     |
+| Category order and labels | `src/app/shared/categories.ts` (`CATEGORIES`)             |
+| POC bank                  | `src/app/poc/pocs/<category>.ts`, assembled in `pocs/index.ts` |
+| Answer rendering          | `src/app/shared/answer-markdown.ts` + `question-detail.html`   |
+
+- The JSON is an object keyed by category, each an array of questions. Category
+  order is html, css, javascript, angular, performance, rxjs, signals, misc,
+  behavioural.
+- Question ids are `<category>-<n>`, except javascript which is `js-<n>`
+  (`js-25`). Ids are referenced by POC `covers` and persisted in localStorage, so
+  never renumber a question and never reuse a removed id.
+- Current bank is **208** questions: html 16, css 12, javascript 24, angular 49,
+  performance 26, rxjs 11, signals 10, misc 10, behavioural 50.
+
+### Answer format
+
+`answer` is Markdown-ish, parsed by `answer-markdown.ts`:
+
+- A blank line starts a new paragraph.
+- A run of lines each beginning with `- ` becomes one bullet list; put the
+  bullets on consecutive lines with **no** blank line between them.
+- A single `\n` inside a block is a soft wrap and is joined back into one line.
+- Inline `**bold**`, `*italic*` and `` `code` ``. Italic needs a non-space right
+  after the opening `*`, so `*ngIf` and `a * b` stay literal. No `_emphasis_` and
+  no `[links](url)` - the parser does not understand them.
+
+### Editing `questions.json` safely
+
+- **The round-trip is exact:** `JSON.stringify(data, null, 2) + '\n'` reproduces
+  the file byte-for-byte. Edit it by running a script through `node`, not by
+  hand, so the 2-space indent and the trailing newline survive.
+- **Node is not on PATH here.** Use
+  `"/mnt/c/Program Files/nodejs/node.exe"`. The Windows binary cannot read WSL
+  `/tmp`, so keep throwaway scripts under the repo's gitignored `tmp/` and delete
+  them when done.
+- **Do not run Prettier on `questions.json`.** `.prettierrc` is `printWidth: 100,
+  singleQuote: true`, but the JSON is not Prettier-clean and a format would churn
+  the whole file.
+- Deleting a question means removing every POC `covers` entry that names its id,
+  or the POC links to a 404.
+
+### POCs
+
+- One file per category under `src/app/poc/pocs/`, exporting `<CATEGORY>_POCS`,
+  spread into `POCS` in `pocs/index.ts`. That order is the display order.
+- Shape is `Poc` in `poc-type.ts`: `id`, `category`, `title`, `summary`,
+  `durationMinutes` (a number), `prompt`, `endpoints`, `steps`
+  (`title`/`task`/`learn`), `stretch`, `starter` (a code string) and `covers`.
+- `covers` lists the question ids the exercise teaches; those questions link to
+  the POC. A POC id is a slug (`js-broadcast-channel`), not numbered.
+- Behavioural has no POCs - `POC_CATEGORIES` excludes it.
+
+### Tests that pin content (update them with the content)
+
+- `question-list.spec.ts` hard-codes numbers for **performance** and **html**:
+  26 rows, the 5/14/12 difficulty splits and the 7 advanced, and 16 for html.
+  Adding, removing or re-difficulty-ing those questions breaks it.
+- `question-detail.spec.ts` derives prev/next from the data via its own
+  `SEQUENCE`, so it follows the bank; it only hard-codes a few ids.
+- `poc.spec.ts` asserts against `POCS.length`, so it follows the data.
+
+### Prev/next navigate across sections
+
+`question-detail.ts` walks a flat, `CATEGORIES`-ordered `sequence`, not the
+current category, so the last question of a section links forward to the first of
+the next, and the first links back to the last of the previous. Only the very
+first and last question in the bank keep an empty outer slot. The "Question X of
+Y" counter stays per-section.
+
+### Verify
+
+```bash
+npx ng test                                   # expect 160 passed, 0 failed
+npx ng build --base-href /AngularPlayground-V1/
+```
+
 ## Branch and commit conventions
 
 - Branch off `dev` as `feature/<short-name>` (use `fix/<short-name>` for bug

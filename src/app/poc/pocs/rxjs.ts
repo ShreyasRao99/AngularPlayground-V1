@@ -67,7 +67,7 @@ readonly results$ = this.term.valueChanges.pipe(
   shareReplay({ bufferSize: 1, refCount: true }),
   takeUntilDestroyed(this.destroyRef),
 );`,
-    covers: ['rxjs-9', 'rxjs-5', 'rxjs-10', 'rxjs-7', 'rxjs-8', 'angular-6'],
+    covers: ['rxjs-9', 'rxjs-5', 'rxjs-10', 'rxjs-7', 'rxjs-8', 'performance-25'],
   },
   {
     id: 'rxjs-subjects-store',
@@ -464,6 +464,6 @@ const panel$ = (source: Observable<unknown>, fallback: unknown) =>
 
   // fix 3: let the template do it
   // readonly pokemon$ = this.http.get<Pokemon>(...);  <div>{{ pokemon$ | async }}</div>`,
-    covers: ['rxjs-7', 'angular-11', 'performance-12', 'angular-17'],
+    covers: ['rxjs-7', 'performance-12', 'angular-17'],
   },
 ];

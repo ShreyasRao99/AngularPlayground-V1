@@ -612,7 +612,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) =>
 // @if (auth.isAdmin()) {
 //   <a routerLink="/reports">Reports</a>
 // }`,
-    covers: ['angular-15', 'angular-18', 'angular-14'],
+    covers: ['angular-15', 'angular-41', 'angular-14'],
   },
   {
     id: 'angular-directive-pipe',
@@ -691,6 +691,6 @@ export class PokemonWeightEager implements PipeTransform {
     return \`\${hectograms ?? 0} hg\`;
   }
 }`,
-    covers: ['angular-3', 'angular-20', 'angular-2'],
+    covers: ['angular-3', 'angular-35', 'angular-2'],
   },
 ];

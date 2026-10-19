@@ -77,7 +77,7 @@ readonly sorted = computed(() => {
       'performance-21',
       'performance-8',
       'performance-22',
-      'angular-20',
+      'angular-35',
     ],
   },
   {
