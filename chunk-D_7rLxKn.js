@@ -2462,7 +2462,7 @@ Reproduce it under a controlled setting first. Open Chrome DevTools, open the **
 
 Lighthouse localises the fault to a bundle, not a line, so the next step is the Chrome **Performance** panel. Record the same keystroke, find the one long task, and use the **Bottom-Up** and **Call Tree** views to attribute the time. In this app the bulk is *Scripting* with a *Recalculate Style* tail, and drilling in lands on a method called from the template - which runs on every change detection cycle and therefore cannot be memoised.
 
-The **Angular DevTools** profiler confirms it. Install the extension, open the **Profiler** tab, record, type a single character and stop: the flame graph lists every change detection cycle and the time each component spent in it. Here the whole list re-renders on one keystroke, and the **Component explorer** lets me select the component and see the expression that keeps changing.
+The **Angular DevTools** profiler confirms it. Install the extension, open the **Profiler** tab, record, type a single character and stop: the flame graph lists every change detection cycle and the time each component spent in it. Here the whole list re-renders on one keystroke, and the **Component explorer** lets me select the component and see the expression that keeps changing. Angular DevTools only attaches to a development build, so run this under \`ng serve\` or a dev build - never against a deployed production site, where the extension reports the app was built with production configuration.
 
 The fix is three moves in impact order.
 - Replace the template method with a **computed** (or a pure pipe), so the value is derived once per input change instead of once per change detection cycle.
