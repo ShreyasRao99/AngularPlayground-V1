@@ -192,8 +192,14 @@ Read this before editing `questions.json` or a POC.
 - Question ids are `<category>-<n>`, except javascript which is `js-<n>`
   (`js-25`). Ids are referenced by POC `covers` and persisted in localStorage, so
   never renumber a question and never reuse a removed id.
-- Current bank is **208** questions: html 16, css 12, javascript 24, angular 49,
-  performance 26, rxjs 11, signals 10, misc 10, behavioural 50.
+- Current bank is **209** questions: html 16, css 12, javascript 24, angular 49,
+  performance 27, rxjs 11, signals 10, misc 10, behavioural 50.
+- Behavioural is the only category with triage: a curated 20 of the 50 carry
+  `mostAsked: true`, and the question list shows a **Most asked** toggle for that
+  category alone (see the `showMostAskedFilter` guard). It is an editorial core,
+  not measured ask-frequency - there is no such data - so treat it as a starting
+  set, not a ranking. The 50 themselves are deliberately distinct facets and are
+  not deduped.
 
 ### Answer format
 
@@ -228,15 +234,22 @@ Read this before editing `questions.json` or a POC.
   spread into `POCS` in `pocs/index.ts`. That order is the display order.
 - Shape is `Poc` in `poc-type.ts`: `id`, `category`, `title`, `summary`,
   `durationMinutes` (a number), `prompt`, `endpoints`, `steps`
-  (`title`/`task`/`learn`), `stretch`, `starter` (a code string) and `covers`.
+  (`title`/`task`/`learn`), `stretch`, `starter` (a code string), `covers` and an
+  optional `demoRoute`.
 - `covers` lists the question ids the exercise teaches; those questions link to
   the POC. A POC id is a slug (`js-broadcast-channel`), not numbered.
+- `demoRoute` is an **absolute** route (`/performance/devtools-demo`, leading
+  slash - a relative one resolves against `/poc/:pocId` and falls through the
+  catch-all to `/html`). It renders the "Open the live demo" button on the
+  detail page. The demo is a standalone route declared before the
+  `:category/:questionId` catch-all, with its component under
+  `src/app/performance/devtools-demo/`.
 - Behavioural has no POCs - `POC_CATEGORIES` excludes it.
 
 ### Tests that pin content (update them with the content)
 
 - `question-list.spec.ts` hard-codes numbers for **performance** and **html**:
-  26 rows, the 5/14/12 difficulty splits and the 7 advanced, and 16 for html.
+  27 rows, the 5/15/12 difficulty splits and the 7 advanced, and 16 for html.
   Adding, removing or re-difficulty-ing those questions breaks it.
 - `question-detail.spec.ts` derives prev/next from the data via its own
   `SEQUENCE`, so it follows the bank; it only hard-codes a few ids.
@@ -253,7 +266,7 @@ Y" counter stays per-section.
 ### Verify
 
 ```bash
-npx ng test                                   # expect 160 passed, 0 failed
+npx ng test                                   # expect 170 passed, 0 failed
 npx ng build --base-href /AngularPlayground-V1/
 ```
 

@@ -78,6 +78,13 @@
       <p class="m-0 text-[0.95rem] leading-relaxed">{{ poc.prompt }}</p>
     </div>
 
+    @if (poc.demoRoute) {
+      <a mat-flat-button class="self-start" [routerLink]="poc.demoRoute" data-testid="open-demo">
+        <mat-icon>play_arrow</mat-icon>
+        Open the live demo
+      </a>
+    }
+
     <section class="flex flex-col gap-1">
       <h2 class="m-0 text-sm font-semibold">Data &mdash; use the PokéAPI</h2>
       <ul class="m-0 flex list-none flex-col gap-1 p-0">

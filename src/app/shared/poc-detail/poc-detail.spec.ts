@@ -129,6 +129,17 @@ describe('PocDetail', () => {
     expect(JSON.parse(localStorage.getItem('poc-completed') ?? '[]')).toEqual([POCS[3].id]);
   });
 
+  it('should link the live demo from an absolute path, not relative to the poc', async () => {
+    const poc = POCS.find((item) => item.demoRoute)!;
+    const fixture = await createDetail(poc.id);
+    const link = root(fixture).querySelector('a[data-testid="open-demo"]');
+
+    // A bare relative link resolved against `/poc/:pocId` and fell through the
+    // catch-all, so the demo button landed on /html.
+    expect(poc.demoRoute?.startsWith('/')).toBe(true);
+    expect(link?.getAttribute('href')).toBe(poc.demoRoute);
+  });
+
   it('should show a not found state for an unknown id', async () => {
     const fixture = await createDetail('nope');
 
