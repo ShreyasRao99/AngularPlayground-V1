@@ -331,12 +331,12 @@ new PerformanceObserver((list) => {
       },
       {
         title: 'Record the Angular DevTools profiler',
-        task: 'Install the Angular DevTools extension and open its Profiler tab. Record, type a single character in the search box, and stop. Count the change detection cycles for that one keystroke, read the per-component time in the flame graph, then pick the hottest component in the Component explorer and inspect the expression that keeps changing.',
+        task: 'Install the Angular DevTools extension and open its Profiler tab. Angular DevTools only attaches to a development build, so do this against `ng serve` or your own project, not a production site. Record, type a single character in the search box, and stop. Count the change detection cycles for that one keystroke, read the per-component time in the flame graph, then pick the hottest component in the Component explorer and inspect the expression that keeps changing.',
         learn: 'How does change detection affect Angular performance',
       },
       {
         title: 'Attribute the long task in the Performance panel',
-        task: 'Record the same keystroke in the Chrome Performance panel. Find the long task over 200ms and use the Bottom-Up and Call Tree views to see whether it is scripting, style recalculation or layout, drilling until you reach the template expression. A long task is what turns a slow render into an input that lags behind the keystroke.',
+        task: 'Record the same keystroke in the Chrome Performance panel. Find the long task over 200ms and use the Bottom-Up and Call Tree views to see whether it is scripting, style recalculation or layout, drilling until you reach the template expression. The panel works on any build, but the Angular-specific track (enableProfiling) is development-only, like Angular DevTools. A long task is what turns a slow render into an input that lags behind the keystroke.',
         learn: 'What is a long task, and how does blocking the main thread show up to a user',
       },
       {

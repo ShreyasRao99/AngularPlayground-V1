@@ -244,6 +244,10 @@ Read this before editing `questions.json` or a POC.
   detail page. The demo is a standalone route declared before the
   `:category/:questionId` catch-all, with its component under
   `src/app/performance/devtools-demo/`.
+- Angular DevTools (and `enableProfiling`'s Angular track) only attach to a
+  **development** build. The deployed site is a production build, so any POC or
+  demo that asks the reader to profile must send them to `ng serve` / a dev
+  build and say so, rather than implying it works on the live page.
 - Behavioural has no POCs - `POC_CATEGORIES` excludes it.
 
 ### Tests that pin content (update them with the content)

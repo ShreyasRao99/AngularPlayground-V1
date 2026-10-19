@@ -18,6 +18,15 @@
       and the Angular DevTools are what you would reach for on a real app; this page isolates the
       mechanism they would point at.
     </p>
+
+    <p
+      class="m-0 rounded-lg border-l-4 border-(--mat-sys-tertiary) bg-(--mat-sys-surface-container-high) px-3 py-2 text-sm leading-relaxed text-(--mat-sys-on-surface-variant)"
+    >
+      This page is a production build, so <strong>Angular DevTools will not attach to it</strong>:
+      the extension only supports development builds. The counters below stand in for what it would
+      show, and Lighthouse and the Network tab work here as normal. To follow the DevTools steps,
+      run your own copy with <code>ng serve</code>.
+    </p>
   </header>
 
   <div
@@ -176,8 +185,9 @@
           class="m-0 rounded-lg border border-dashed border-(--mat-sys-outline-variant) p-3 text-xs text-(--mat-sys-on-surface-variant)"
           data-testid="chart-placeholder"
         >
-          The chart is deferred. Scrolling it into view loads its chunk - watch the Network tab,
-          then record a header in the Angular DevTools to see the chunk arrive late.
+          The chart is deferred. Scrolling it into view loads its chunk - watch the Network tab to
+          see it arrive late. Angular DevTools would show the same thing, but it needs a development
+          build (<code>ng serve</code>), so run that in your own copy rather than here.
         </p>
       }
     }
