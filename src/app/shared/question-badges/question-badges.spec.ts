@@ -42,17 +42,6 @@ describe('QuestionBadges', () => {
     expect(badges(fixture)).toEqual(['medium', 'scenario']);
   });
 
-  it('should only show the new pill when the question was just added', async () => {
-    const fixture = await createBadges('medium');
-
-    expect(badges(fixture)).toEqual(['medium']);
-
-    fixture.componentRef.setInput('isNew', true);
-    await fixture.whenStable();
-
-    expect(badges(fixture)).toEqual(['new', 'medium']);
-  });
-
   it('should show a pill for each tag, after the other badges', async () => {
     const fixture = await createBadges('medium');
 

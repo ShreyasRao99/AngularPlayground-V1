@@ -14,7 +14,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { DomSanitizer, SafeResourceUrl, Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { Question, QuestionExample } from '../../../types/questions-type';
-import { categoryLabel } from '../categories';
+import { parseAnswer } from '../answer-markdown';
+import { CATEGORIES, categoryLabel } from '../categories';
 import { NavTarget, QuestionNav } from '../question-nav/question-nav';
 import { QuestionBadges } from '../question-badges/question-badges';
 import { QuestionNotes } from '../question-notes/question-notes';
@@ -53,6 +54,10 @@ export class QuestionDetail {
 
   protected readonly categoryName = computed(() => categoryLabel(this.category()));
 
+  // The answer is Markdown-ish: blank lines split paragraphs, "- " lines become
+  // a list, and **bold** / *italic* / `code` are inline runs.
+  protected readonly answerBlocks = computed(() => parseAnswer(this.question()?.answer ?? ''));
+
   protected readonly question = computed(
     () =>
       this.store
@@ -62,8 +67,8 @@ export class QuestionDetail {
         ) ?? undefined,
   );
 
-  // Prev/next walk the category in bank order, so paging through a topic never
-  // needs the index to stay mounted.
+  // The counter above the answer is per-section: "question 3 of 26" stays
+  // meaningful while paging through a topic.
   private readonly siblings = computed(() =>
     this.store.questionData().filter((question) => question.category === this.category()),
   );
@@ -71,6 +76,17 @@ export class QuestionDetail {
   protected readonly position = computed(() =>
     this.siblings().findIndex((question) => question.id === this.questionId()),
   );
+
+  // Prev/next walk the whole bank in section order rather than the category, so
+  // the last question of a section hands off to the first question of the next,
+  // and the first hands back to the last of the previous. Only the very first
+  // and very last question in the bank have no neighbour on one side.
+  private readonly sequence = computed(() => {
+    const questions = this.store.questionData();
+    return CATEGORIES.flatMap((category) =>
+      questions.filter((question) => question.category === category),
+    );
+  });
 
   protected readonly total = computed(() => this.siblings().length);
 
@@ -120,11 +136,13 @@ export class QuestionDetail {
   }
 
   private neighbour(offset: number): Question | undefined {
-    const position = this.position();
-    const siblings = this.siblings();
-    const target = position + offset;
+    const sequence = this.sequence();
+    const index = sequence.findIndex(
+      (question) => question.id === this.questionId() && question.category === this.category(),
+    );
+    const target = index + offset;
 
-    return position >= 0 && target >= 0 && target < siblings.length ? siblings[target] : undefined;
+    return index >= 0 && target >= 0 && target < sequence.length ? sequence[target] : undefined;
   }
 
   private toTarget(question: Question | undefined): NavTarget | undefined {
