@@ -2842,7 +2842,7 @@
         },
         {
           "title": "The four timing operators, side by side",
-          "code": "import { map, take, timer } from 'rxjs';\n\nconst source$ = timer(0, 50).pipe(take(5), map((n) => n + 1));\n\nsource$.pipe(debounceTime(120)); // emits only after a 120ms gap\nsource$.pipe(throttleTime(120)); // first value, then one per 120ms window\nsource$.pipe(auditTime(120));    // latest value at the end of each window\nsource$.pipe(sampleTime(120));   // latest value on a fixed 120ms cadence\n\n// For a fast UI stream, a rough mental model:\n// debounce = wait for calm; throttle = rate limit; audit = rear-view rate limit;\n// sample = periodic snapshot.",
+          "code": "import { auditTime, debounceTime, map, sampleTime, take, throttleTime, timer } from 'rxjs';\n\nconst source$ = timer(0, 50).pipe(take(5), map((n) => n + 1));\n\nsource$.pipe(debounceTime(120)); // emits only after a 120ms gap\nsource$.pipe(throttleTime(120)); // first value, then one per 120ms window\nsource$.pipe(auditTime(120));    // latest value at the end of each window\nsource$.pipe(sampleTime(120));   // latest value on a fixed 120ms cadence\n\n// For a fast UI stream, a rough mental model:\n// debounce = wait for calm; throttle = rate limit; audit = rear-view rate limit;\n// sample = periodic snapshot.",
           "explanation": "The operator names describe when the value is released, not just how often: debounce waits for silence, throttle limits the start rate, audit limits the end rate, and sample is clock-driven."
         }
       ],
