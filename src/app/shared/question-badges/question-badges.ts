@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { Difficulty } from '../../../types/questions-type';
 
 /**
- * The difficulty, scenario and prep-round pills. They appear on a question row in
- * the index and again on the question page, and they used to be copy-pasted markup
+ * The difficulty, scenario and tag pills. They appear on a question row in the
+ * index and again on the question page, and they used to be copy-pasted markup
  * with a long chain of `[class.*]` bindings, so they live here instead.
  */
 @Component({
@@ -30,16 +30,13 @@ import { Difficulty } from '../../../types/questions-type';
 
     @if (scenarioBased()) {
       <span
-        class="rounded-full bg-(--mat-sys-secondary-container) px-2 py-0.5 text-xs font-medium whitespace-nowrap text-(--mat-sys-on-secondary-container)"
+        class="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium whitespace-nowrap text-violet-900"
         >scenario</span
       >
     }
 
     @for (tag of tags(); track tag) {
-      <span
-        class="rounded-full bg-[#003986] px-2 py-0.5 text-xs font-medium whitespace-nowrap text-white"
-        >{{ tag }}</span
-      >
+      <span [class]="tagClass(tag)">{{ tag }}</span>
     }
   `,
 })
@@ -47,4 +44,12 @@ export class QuestionBadges {
   readonly difficulty = input.required<Difficulty>();
   readonly scenarioBased = input(false);
   readonly tags = input<readonly string[]>([]);
+
+  protected tagClass(tag: string): string {
+    const base = 'rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap';
+
+    return tag === 'NEW'
+      ? `${base} bg-emerald-100 text-emerald-900`
+      : `${base} bg-[#003986] text-white`;
+  }
 }

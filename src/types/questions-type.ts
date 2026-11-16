@@ -26,8 +26,8 @@ export interface Question {
   answer: string;
   examples: QuestionExample[];
   /**
-   * Prep round labels, e.g. `["MS"]` for the questions an interviewer said they
-   * would ask. Optional so the older questions stay valid until they are tagged.
+   * Badge labels, e.g. `["MS"]` for a prep round or `["NEW"]` for freshly added
+   * material. Optional so the older questions stay valid until they are tagged.
    */
   tags?: string[];
   /**
