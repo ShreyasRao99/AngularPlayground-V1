@@ -555,7 +555,180 @@ channel.postMessage(() => {});      // functions
 channel.postMessage(document.body); // DOM nodes
 
 const copy = structuredClone(new Pokemon('pikachu'));
-console.log(copy instanceof Pokemon); // false - prototype is not preserved`,explanation:`postMessage copies with the structured clone algorithm, not JSON: Map, Set, Date and ArrayBuffer survive, functions and DOM nodes throw DataCloneError, and a class instance is copied as a plain object with its prototype lost.`}]}],angular:[{id:`angular-1`,category:`angular`,difficulty:`medium`,scenarioBased:!1,isMarked:!1,question:`What is a component in Angular?`,answer:`A **component** is an Angular building block that combines an HTML template, styles and a TypeScript class that holds the logic and state. Components are standalone by default in modern Angular and import the dependencies they use directly in their imports array.`,examples:[{title:`A standalone component`,code:`import { Component, inject } from '@angular/core';
+console.log(copy instanceof Pokemon); // false - prototype is not preserved`,explanation:`postMessage copies with the structured clone algorithm, not JSON: Map, Set, Date and ArrayBuffer survive, functions and DOM nodes throw DataCloneError, and a class instance is copied as a plain object with its prototype lost.`}]},{id:`js-26`,category:`javascript`,difficulty:`advanced`,scenarioBased:!1,isMarked:!1,question:`What is a polyfill, and how do you write one? Implement Array.prototype.map without using the native method, including the edge cases interviewers check.`,answer:`A **polyfill** is code that supplies a standard API at runtime when the environment does not have it. A **transpiler** is a different thing: it rewrites syntax such as optional chaining or classes into older syntax, but it cannot add a missing function. A **ponyfill** is the same implementation delivered as an ordinary function instead of being patched onto a global prototype. Interviewers ask for a polyfill because it exposes several things at once: whether you understand this, prototypes, callbacks, sparse arrays, and the difference between an array and an array-like object.
+
+The method you write has to match the contract, not just the happy path. Native Array.prototype.map does the following.
+
+- It throws a **TypeError** when the receiver is null or undefined.
+- It throws a **TypeError** when the callback is not a function, even for an empty array.
+- It reads length once, converts it to an integer, and does not visit indexes added during the loop.
+- It skips holes in a sparse array and leaves those holes in the result, rather than filling them with undefined.
+- It calls the callback with value, index and the original array, and honours the optional thisArg.
+- It returns a new array and never mutates the source.
+- It works on any array-like receiver, including a string.
+
+The interview-safe way to add it is feature detection plus Object.defineProperty, so the native method is never overwritten and the new method is non-enumerable like the built-ins. Define the method on a prototype only when it is genuinely missing. In application code prefer a named ponyfill such as myMap, because then the native is still available to compare against and other code cannot be affected by a bug in yours.
+
+The same shape answers the other common polyfill questions: filter, reduce, call/apply/bind, Promise.all, Promise.any, debounce, deep clone, flat, Object.create and JSON.stringify. The details that earn the mark are always the same: receiver and argument validation, correct this binding, hole handling, a captured length, and not calling the built-in you are replacing.`,examples:[{title:`A spec-shaped map polyfill`,code:`if (!Array.prototype.myMap) {
+  Object.defineProperty(Array.prototype, 'myMap', {
+    value: function myMap(callback, thisArg) {
+      if (this == null) throw new TypeError('myMap called on null or undefined');
+      if (typeof callback !== 'function') throw new TypeError('callback is not a function');
+
+      const O = Object(this);
+      const len = Math.min(Math.max(Math.trunc(Number(O.length)) || 0, 0), Number.MAX_SAFE_INTEGER);
+      const result = new Array(len);
+
+      for (let i = 0; i < len; i++) {
+        if (i in O) {
+          result[i] = callback.call(thisArg, O[i], i, O);
+        }
+      }
+      return result;
+    },
+    writable: true,
+    configurable: true,
+    enumerable: false, // the built-ins are not enumerable either
+  });
+}
+
+const doubled = [1, 2, 3].myMap((n) => n * 2); // [2, 4, 6]
+const sparse = [, 2, , 4].myMap((n) => n * 2); // holes stay holes, length 4`,explanation:`The checks at the top are the spec's observable behaviour; the i in O test is what preserves sparse arrays; defineProperty keeps the method out of for...in loops.`},{title:`Prove it against the native method`,code:`const holes = [, 1, , 3];
+const native = holes.map((n) => n * 2);
+const mine = holes.myMap((n) => n * 2);
+
+console.assert(mine.length === native.length);
+console.assert(!(2 in mine) && !(2 in native));
+const upper = Array.prototype.myMap.call('abc', (ch) => ch.toUpperCase());
+console.assert(upper.join('') === 'ABC');
+
+const context = { factor: 10 };
+console.assert(
+  [1, 2].myMap(function (n) { return n * this.factor; }, context)[1] === 20,
+);
+
+try {
+  [].myMap(null);
+  console.assert(false, 'should have thrown');
+} catch (error) {
+  console.assert(error instanceof TypeError);
+}`,explanation:`Sparse holes, string receivers, thisArg and the empty-array TypeError are the cases most candidates miss; asserting against the native keeps the test honest.`}],tags:[`NEW`]},{id:`js-27`,category:`javascript`,difficulty:`medium`,scenarioBased:!1,isMarked:!1,question:`What does this loop print, and why? Explain the difference between var and let in a setTimeout callback.`,answer:`The first loop logs **3, 3, 3**; the second logs **0, 1, 2**. Two rules explain the difference: when the timer callbacks run, and which binding each closure captured.
+
+setTimeout registers a macrotask. It does not run the callback immediately. The synchronous loop therefore finishes first, and only then does the event loop pick up the queued timers. By that point the var loop has already incremented i to 3. var is function-scoped, not block-scoped, so there is exactly one i for the whole loop; all three arrow functions close over that same variable and read its current value at execution time, not the value it held when setTimeout was called.
+
+let in the head of a for loop is special. The specification creates a fresh binding for each iteration, copying the previous value in and the next value out. Each callback closes over its own j, so it reads the value that iteration had: 0, 1 and 2. This is not a special case in setTimeout; it is how let behaves in a for loop.
+
+Useful follow-ups an interviewer may ask.
+
+- If you log synchronously inside the loop, both versions print 0, 1, 2; the puzzle is entirely about when the callback reads the variable.
+- To fix the var version without changing the declaration: wrap the body in an IIFE that receives i as an argument, pass i as setTimeout's third argument, use forEach, or copy \`const current = i\` inside a let block.
+- A delay of 0 does not mean now. The callback runs after the current call stack and after microtasks such as Promise callbacks, and the actual delay is a minimum, not a guarantee.
+- Changing the delay to i * 1000 does not fix the var version: all three callbacks still read the same final i and all print 3, just at different times.
+- \`const\` cannot be used in the for-loop head of this counting loop because the increment would reassign it; the per-iteration binding rule still applies when you use let.`,examples:[{title:`The classic puzzle`,code:`for (var i = 0; i < 3; i++) {
+  setTimeout(() => console.log('var', i), 0);
+}
+// var 3
+// var 3
+// var 3
+
+for (let j = 0; j < 3; j++) {
+  setTimeout(() => console.log('let', j), 0);
+}
+// let 0
+// let 1
+// let 2
+
+console.log('sync first');
+// sync first, then all six timer callbacks`,explanation:`The loop runs to completion before any timer callback; var shares one binding, while let creates one binding per iteration.`},{title:`Four ways to keep the var value`,code:`// 1. an IIFE creates a new function scope per iteration
+for (var i = 0; i < 3; i++) {
+  (function (value) {
+    setTimeout(() => console.log(value), 0);
+  })(i);
+}
+
+// 2. setTimeout forwards extra arguments to the callback
+for (var i = 0; i < 3; i++) {
+  setTimeout((value) => console.log(value), 0, i);
+}
+
+// 3. forEach gives each callback its own parameter
+[0, 1, 2].forEach((value) => setTimeout(() => console.log(value), 0));
+
+// 4. snapshot the value in a new binding each time
+for (var i = 0; i < 3; i++) {
+  const current = i;
+  setTimeout(() => console.log(current), 0);
+}`,explanation:`All four work for the same underlying reason: each callback closes over a different binding instead of the single function-scoped var.`}],tags:[`NEW`]},{id:`js-28`,category:`javascript`,difficulty:`advanced`,scenarioBased:!1,isMarked:!1,question:`What is recursion, and what practice problems should you be able to solve with it?`,answer:`Recursion is a function that solves a problem by calling itself on a smaller input. Every correct recursive function has three parts: a **base case** that stops the recursion, a **recursive case** that reduces the problem, and an argument that is guaranteed to move toward the base case. Without the last two you get infinite recursion and a RangeError from the call stack.
+
+The mental model is a stack of paused calls. Each call keeps its own arguments and local variables until the calls above it return, which is why the stack depth equals the depth of the recursion. Tree recursion - where one call makes two or more recursive calls - produces a call tree rather than a chain, and that is where naive solutions become exponential.
+
+A practice set that covers the patterns interviewers actually use.
+
+- **Factorial and sum:** the simplest linear recursion; the base case is 0 or 1, and the recursive case is n * factorial(n - 1).
+- **Reverse a string or an array:** \`reverse(s) = reverse(s.slice(1)) + s[0]\`, with an empty or single-character base case.
+- **Palindrome check:** compare the first and last characters, then recurse on the middle slice; handle one-character or empty middles as the base.
+- **Fibonacci:** the naive version has two recursive calls and runs in O(2^n); add memoisation to make it O(n), and be ready to explain the memo as a Map keyed by n.
+- **Flatten a nested array:** recurse when the current item is an array, otherwise push the value into the output accumulator.
+- **Deep clone or deep equal:** recurse over nested objects, keep a WeakMap or Set of visited objects to break cycles, and decide how to treat arrays, dates and class instances.
+- **Permutations and subsets:** choose an element, recurse on the rest, then undo the choice; this is the backtracking pattern.
+- **Binary search:** recurse on whichever half can still contain the target; the base case is an empty range or a match.
+- **Tree traversal:** pre-order, in-order and post-order are naturally recursive; this is the same pattern as an Angular tree component or a comment thread.
+- **Directory size / nested JSON schema:** accumulate a result from every child; this is the recursive form of reduce.
+- **Tower of Hanoi and grid paths:** count or enumerate moves and paths; when the same subproblem repeats, memoise it.
+
+When not to recurse: a chain that can be thousands deep can overflow the stack, and V8 does not implement tail-call optimisation, so a loop is often safer for linear scans. For trees and nested data recursion is usually clearer than a hand-written stack, but a cycle or an unbounded input needs a visited set and an explicit limit. Always state the time and space cost in terms of the call tree, not just the loop you replaced.`,examples:[{title:`Linear recursion and memoised tree recursion`,code:`function factorial(n) {
+  if (n <= 1) return 1; // base case
+  return n * factorial(n - 1); // moves toward the base
+}
+
+function fibonacci(n, memo = new Map()) {
+  if (n <= 1) return n;
+  if (memo.has(n)) return memo.get(n);
+
+  const value = fibonacci(n - 1, memo) + fibonacci(n - 2, memo);
+  memo.set(n, value);
+  return value;
+}
+
+console.log(factorial(5)); // 120
+console.log(fibonacci(40)); // 102334155, quickly thanks to the memo`,explanation:`Factorial is a chain of calls; Fibonacci is a tree, and the memo turns repeated subproblems into one lookup each.`},{title:`Flatten and every permutation`,code:`function flatten(input) {
+  const output = [];
+
+  for (const item of input) {
+    if (Array.isArray(item)) output.push(...flatten(item));
+    else output.push(item);
+  }
+  return output;
+}
+
+function permutations(items) {
+  if (items.length <= 1) return [items];
+
+  return items.flatMap((item, index) => {
+    const rest = [...items.slice(0, index), ...items.slice(index + 1)];
+    return permutations(rest).map((permutation) => [item, ...permutation]);
+  });
+}
+
+console.log(flatten([1, [2, [3, 4]], 5])); // [1, 2, 3, 4, 5]
+console.log(permutations(['a', 'b', 'c'])); // 6 permutations`,explanation:`Flatten recurses on the shape of the data; permutations recurse on the remaining choices, which is the same choose-and-undo pattern as backtracking.`},{title:`The cycle trap in deep clone`,code:`function deepClone(value, seen = new WeakMap()) {
+  if (value === null || typeof value !== 'object') return value;
+  if (seen.has(value)) return seen.get(value);
+
+  const copy = Array.isArray(value) ? [] : {};
+  seen.set(value, copy);
+
+  for (const key of Object.keys(value)) {
+    copy[key] = deepClone(value[key], seen);
+  }
+  return copy;
+}
+
+const node = { name: 'root' };
+node.self = node;
+
+const clone = deepClone(node);
+console.log(clone !== node && clone.self === clone); // true`,explanation:`The WeakMap is what stops a self-reference from recursing forever; it also preserves shared references instead of duplicating them.`}],tags:[`NEW`]}],angular:[{id:`angular-1`,category:`angular`,difficulty:`medium`,scenarioBased:!1,isMarked:!1,question:`What is a component in Angular?`,answer:`A **component** is an Angular building block that combines an HTML template, styles and a TypeScript class that holds the logic and state. Components are standalone by default in modern Angular and import the dependencies they use directly in their imports array.`,examples:[{title:`A standalone component`,code:`import { Component, inject } from '@angular/core';
 import { UserCard } from './user-card';
 
 @Component({
@@ -2566,7 +2739,93 @@ Chain them in that order - quieten the stream, drop repeats, then flatten with c
   distinctUntilChanged(),      // 2. no request for a query already sent
   switchMap((q) => this.api.search(q ?? '')), // 3. latest wins, stale cancelled
   takeUntilDestroyed(),
-).subscribe((results) => this.results.set(results));`,explanation:`Three operators, three costs removed: request volume, duplicate requests, and wasted responses. None of them can do the other two jobs.`}],tags:[`MS`]}],signals:[{id:`signals-1`,category:`signals`,difficulty:`medium`,scenarioBased:!1,isMarked:!1,question:`What is a Signal and how is it different from an RxJS Observable?`,answer:`A Signal is a synchronous, granular reactive primitive: a value you read by calling it (count()) and update with set/update, that automatically notifies consumers that depend on it. An **Observable** is an asynchronous, lazy stream you must subscribe to, with operators for retry, debounce and merging. Signals are ideal for component-local and synchronous UI state; Observables stay the tool for async event streams, HTTP and WebSockets.
+).subscribe((results) => this.results.set(results));`,explanation:`Three operators, three costs removed: request volume, duplicate requests, and wasted responses. None of them can do the other two jobs.`}],tags:[`MS`]},{id:`rxjs-12`,category:`rxjs`,difficulty:`advanced`,scenarioBased:!1,isMarked:!1,question:`Which RxJS operators are worth knowing beyond map, filter, switchMap and shareReplay, and what real-world problem does each solve?`,answer:"The public API is much larger than the handful of operators most code uses. The earlier questions in this bank already cover map, filter, switchMap, mergeMap, concatMap, exhaustMap, combineLatest, forkJoin, withLatestFrom, merge, share, shareReplay, debounceTime, distinctUntilChanged, catchError and retry; this is the practical remainder, grouped by what each operator does. Every item includes a minimal example and the situation it is actually for.\n\n**Creation and conversion.**\n\n- `of(1, 2, 3)` emits its arguments and completes - use it to seed a test or an initial form value; `from(promise)` and `from(iterable)` adapt an existing source - wrap fetch, a Set or a generator.\n- `fromEvent(target, 'click')` turns DOM or Node events into a stream - global keyboard shortcuts, resize, scroll; `fromEventPattern(add, remove)` does the same for an API that exposes add/remove listener functions.\n- `interval(1000)` and `timer(500, 1000)` produce ticks - polling, debounced logout, a countdown; remember that they are infinite and need takeUntil.\n- `range(1, 10)` and `generate(initial, condition, iterate, result)` produce finite sequences - pagination windows and small state machines without a Subject.\n- `defer(() => http.get(url))` creates the source lazily per subscriber - always read the current token or filter instead of capturing a stale value; `iif(() => isLoggedIn, user$, login$)` chooses a source at subscribe time - auth-dependent branches.\n- `race(a$, b$)` mirrors whichever source emits first - a request against a timeout or two interchangeable backends; `partition(source, predicate)` splits one stream into two - separate success and failure queues.\n- `animationFrames()` emits timestamped frames from requestAnimationFrame - canvas animation or a smooth drag; `bindCallback` and `bindNodeCallback` wrap callback-style APIs - older browser APIs and fs.\n- `EMPTY`, `NEVER` and `throwError(() => error)` express completion, never and failure - the return values of switchMap branches and the defaults in tests; `scheduled(source, scheduler)` controls when work is executed.\n\n**Filtering and limiting.**\n\n- `take(n)`, `takeLast(n)`, `takeUntil(notifier$)`, `takeWhile(predicate)` and `skip(n)`, `skipLast(n)`, `skipUntil(notifier$)`, `skipWhile(predicate)` decide how much of a stream reaches the subscriber - pagination, onboarding steps, stopping a poll when a component is destroyed.\n- `first()`, `last()`, `single()`, `elementAt(i)`, `find(predicate)`, `findIndex(predicate)` pick one value and complete - a one-shot read, the selected row, a lookup by id; `ignoreElements()` waits for completion without emitting - fire-and-forget writes.\n- `distinct()` removes duplicate values across the whole stream, while `distinctUntilKeyChanged('id')` compares one property - dedupe a websocket feed by entity id; `debounce(predicate)` is the dynamic form of debounceTime - wait until the user pauses based on a value.\n- `throttleTime`, `auditTime`, `sampleTime` and their predicate versions rate-limit a stream - scroll and resize handlers, analytics, progress updates; rxjs-13 explains exactly how they differ.\n- `defaultIfEmpty(value)` supplies a value when the source completes empty - an empty search result state; `throwIfEmpty()` turns empty completion into an error - a required lookup; `isEmpty()`, `count()`, `min()`, `max()` and `every()` answer questions about the whole stream - dashboard summaries.\n\n**Transformation.**\n\n- `scan(accumulator, seed)` emits every intermediate state - a running total, a cart count, an undo stack; `reduce(accumulator, seed)` emits only the final state - one summary after a stream completes.\n- `toArray()` collects everything and emits once - batch a websocket feed before saving; `bufferTime(ms)`, `bufferCount(n)`, `bufferToggle(open$, close$)` and `bufferWhen(closing)` collect values into arrays - batch analytics, compress a burst of messages, group a drag gesture.\n- `windowTime`, `windowCount`, `windowToggle` and `windowWhen` collect values into nested Observables instead of arrays - process each batch as its own stream; `groupBy(keyFn)` splits a stream into per-key streams - one live price feed per symbol.\n- `expand(project)` recursively expands each value into more values - paginated API traversal, a tree of replies; `mergeScan` and `switchScan` combine scan with an inner Observable - state that updates from a request per action.\n- `pairwise()` emits the previous and current value - detect a direction change, compare old and new price; `pluck('user', 'name')` and `mapTo(value)` are older, narrower forms of map and are best replaced by map in new code.\n\n**Combination.**\n\n- `concat(a$, b$)` subscribes in order, waiting for each to complete - run a migration before a sync; `zip(a$, b$)` pairs values by index - align a list of ids with responses.\n- `startWith(value)`, `endWith(value)`, `concatWith(other$)`, `mergeWith(other$)` add values or sources without a separate combineLatest - an initial loading state, a trailing completion marker, two independent event sources.\n- `combineLatestWith(other$)`, `zipWith(other$)` and `raceWith(other$)` are the pipeable forms of the static operators - use them when the first source is already the pipe's subject.\n- `switchAll()`, `mergeAll()`, `concatAll()`, `exhaustAll()`, `combineLatestAll()` and `zipAll()` flatten a stream of Observables - choose the same strategy as the map-family operators but when the inner Observables arrive as values.\n\n**Error, lifecycle and scheduling.**\n\n- `finalize(callback)` runs on completion, error or unsubscribe - hide a spinner, release a lock, commit a metric; `delay(ms)` and `delayWhen(notifier$)` shift emissions in time - debounce a UI animation or align two events.\n- `timeout(ms)` and `timeoutWith(ms, fallback$)` convert a hang into an error or a fallback - a slow third-party API; `retryWhen` is deprecated in favour of the delay form of retry.\n- `repeat(n)` and `repeatWhen(notifier$)` resubscribe after completion - poll a finite endpoint until a condition changes; `materialize()` and `dematerialize()` turn notifications into values and back - log a stream without terminating it.\n- `observeOn(scheduler)` and `subscribeOn(scheduler)` move delivery or subscription to a scheduler - keep heavy work off the microtask queue; `timestamp()` and `timeInterval()` attach timing metadata - measure latency between events.\n\n**Multicasting and interop.**\n\n- `connectable(source, config)`, `connect()`, `multicast()`, `publish()`, `publishReplay()`, `publishBehavior()` and `publishLast()` give explicit control over when a source is connected and which values late subscribers see - a websocket that starts only after the first subscriber, or a replay cache with a manual disconnect.\n- `firstValueFrom(observable)` and `lastValueFrom(observable)` turn an Observable into a Promise - the one-shot boundary when the rest of the code is async/await. Remember that they unsubscribe after the first or last value, so use them only for finite streams.\n- `TestScheduler`, `VirtualTimeScheduler` and the marble-testing helpers are the testing tools - assert debounce and retry timing without waiting in real time.",examples:[{title:`Creation operators: adapters, laziness and choice`,code:`import { animationFrames, defer, fromEvent, iif, of, partition, race, takeUntil } from 'rxjs';
+
+// DOM event -> stream with teardown handled by unsubscribe
+const keys$ = fromEvent<KeyboardEvent>(window, 'keydown');
+
+// read the token at subscribe time, not when the pipeline is built
+const user$ = defer(() => fetch(\`/api/user\`, {
+  headers: { Authorization: \`Bearer \${tokenStore.current}\` },
+}));
+
+// choose an auth flow at subscribe time
+const entry$ = iif(() => auth.isLoggedIn(), user$, login$);
+
+// first source wins
+const fastest$ = race(cdnRequest$, originRequest$);
+
+// one source, two destinations
+const [even$, odd$] = partition(of(1, 2, 3, 4), (n) => n % 2 === 0);
+
+// smooth animation without setInterval drift
+const frames$ = animationFrames().pipe(takeUntil(destroy$));`,explanation:`These operators replace hand-written callbacks and Subjects at the edges of the app: DOM, fetch, auth branching and animation all become streams with a consistent cancellation story.`},{title:`Transformation and combination: state, batches and order`,code:`import { fromEvent, scan, pairwise, map, groupBy, mergeMap, zip, startWith, endWith } from 'rxjs';
+
+// running total on every click
+const count$ = fromEvent(button, 'click').pipe(scan((total) => total + 1, 0));
+
+// previous + current, e.g. detect scroll direction
+const direction$ = scrollY$.pipe(pairwise(), map(([a, b]) => (b > a ? 'down' : 'up')));
+
+// one stream per symbol
+const bySymbol$ = ticks$.pipe(
+  groupBy((tick) => tick.symbol),
+  mergeMap((group) => group.pipe(scan((last, tick) => tick, null))),
+);
+
+// align ids with responses by index
+const rows$ = zip(ids$, responses$);
+
+// explicit lifecycle markers
+const session$ = user$.pipe(startWith(null), endWith('closed'));`,explanation:`scan is the state operator; pairwise needs exactly two values; groupBy plus mergeMap builds per-key streams; zip is for index alignment, not for latest-value combination.`},{title:`Lifecycle, scheduling and explicit multicasting`,code:`import { connectable, finalize, firstValueFrom, repeat, Subject, timeout, timer } from 'rxjs';
+
+const request$ = http.get('/api/pokemon').pipe(
+  timeout(5000),
+  finalize(() => spinner.hide()), // runs on success, error and unsubscribe
+);
+
+// poll a finite endpoint until the caller stops
+const poll$ = request$.pipe(repeat({ delay: () => timer(30_000) }));
+
+// connect only when the first subscriber arrives
+const live$ = connectable(websocket$, { connector: () => new Subject() });
+const subscription = live$.connect();
+
+// async/await boundary for a one-shot result
+const pokemon = await firstValueFrom(request$);`,explanation:`finalize is the reliable cleanup point; repeat controls resubscription; connectable separates building a pipeline from starting it; firstValueFrom is the bridge back to async/await.`},{title:`Further reading`,code:`RxJS operator reference - https://rxjs.dev/api/operators`,url:`https://rxjs.dev/api/operators`,explanation:`The official reference grouped by creation, transformation, filtering, combination and utility operators, with marble diagrams for each.`}],tags:[`NEW`]},{id:`rxjs-13`,category:`rxjs`,difficulty:`medium`,scenarioBased:!1,isMarked:!1,question:`What is the difference between throttling and debouncing, and how do you implement each in RxJS?`,answer:`Both reduce how often a handler runs, but they answer different questions. **Debouncing** asks "has the input been quiet for long enough?" and emits the last value after a pause. **Throttling** asks "has enough time passed since the last emission?" and allows at most one emission per window. A search box usually wants debounce because the final value is the one that matters; a scroll or resize handler usually wants throttle because you want regular updates while the user is still moving.
+
+In RxJS the core operators are \`debounceTime(ms)\`, \`throttleTime(ms, scheduler, { leading, trailing })\`, \`auditTime(ms)\` and \`sampleTime(ms)\`. Their differences are worth stating precisely.
+
+- debounceTime resets its timer on every value; only a gap of ms with no new value releases the latest value. The trailing value wins.
+- throttleTime emits the first value, then ignores values for the window. With \`leading: true, trailing: false\` the last value in the window is lost; with trailing enabled it also emits the latest value at the end of the window.
+- auditTime ignores values for the window and then emits the most recent one at the end. It is the "trailing latest" relative of throttle without a leading emission.
+- sampleTime samples the source on a fixed cadence and emits the most recent value if one arrived in that interval. Use it for a steady dashboard refresh rather than a user action.
+
+A timing sketch makes the difference visible. Suppose the source emits a, b, c quickly, then d, e after a pause. debounceTime emits c after the first burst and e after the second. throttleTime with leading default emits a and d. auditTime emits c and e. sampleTime emits whatever the latest value is on each tick, which may be nothing.
+
+The practical choices in Angular: a search field uses debounceTime, then distinctUntilChanged, then switchMap so stale requests are cancelled. A scroll listener or an analytics event uses throttleTime with a trailing emission so the final scroll position is represented. A button that must not double-submit uses exhaustMap, not throttle, because throttle still allows a request once the window expires while the first one may still be in flight. A progress indicator driven by a fast stream uses sampleTime to avoid repainting on every tick. Debounce generally adds latency but preserves the final value; throttle generally preserves responsiveness but drops intermediate values, so choose based on whether the final value or the continuous feedback matters.`,examples:[{title:`Debounce a search, throttle a scroll`,code:`import { debounceTime, distinctUntilChanged, fromEvent, map, switchMap, throttleTime } from 'rxjs';
+
+readonly results$ = this.search.valueChanges.pipe(
+  debounceTime(300), // wait for 300ms of silence
+  distinctUntilChanged(),
+  switchMap((term) => this.api.search(term)), // cancel the previous request
+);
+
+readonly scrollPosition$ = fromEvent(window, 'scroll').pipe(
+  throttleTime(100, undefined, { leading: true, trailing: true }),
+  map(() => window.scrollY),
+);`,explanation:`The search wants the final term, so it debounces and cancels; the scroll wants regular updates and the final position, so it throttles with a trailing emission.`},{title:`The four timing operators, side by side`,code:`import { auditTime, debounceTime, map, sampleTime, take, throttleTime, timer } from 'rxjs';
+
+const source$ = timer(0, 50).pipe(take(5), map((n) => n + 1));
+
+source$.pipe(debounceTime(120)); // emits only after a 120ms gap
+source$.pipe(throttleTime(120)); // first value, then one per 120ms window
+source$.pipe(auditTime(120));    // latest value at the end of each window
+source$.pipe(sampleTime(120));   // latest value on a fixed 120ms cadence
+
+// For a fast UI stream, a rough mental model:
+// debounce = wait for calm; throttle = rate limit; audit = rear-view rate limit;
+// sample = periodic snapshot.`,explanation:`The operator names describe when the value is released, not just how often: debounce waits for silence, throttle limits the start rate, audit limits the end rate, and sample is clock-driven.`}],tags:[`NEW`]}],signals:[{id:`signals-1`,category:`signals`,difficulty:`medium`,scenarioBased:!1,isMarked:!1,question:`What is a Signal and how is it different from an RxJS Observable?`,answer:`A Signal is a synchronous, granular reactive primitive: a value you read by calling it (count()) and update with set/update, that automatically notifies consumers that depend on it. An **Observable** is an asynchronous, lazy stream you must subscribe to, with operators for retry, debounce and merging. Signals are ideal for component-local and synchronous UI state; Observables stay the tool for async event streams, HTTP and WebSockets.
 
 You bridge the two with toObservable() and toSignal().`,examples:[{title:`signal() basic read/write`,code:`import { signal, computed } from '@angular/core';
 
@@ -2856,7 +3115,165 @@ For a team the value is one integration surface. A single MCP server can put an 
   "mcpServers": {
     "github": { "command": "npx", "args": ["-y", "@modelcontextprotocol/server-github"] }
   }
-}`,explanation:`The server describes each tool with a JSON Schema for the model to call, and the client only needs the command that starts it. The host then routes the model's tool call to the server and returns the result, so the same server works in any MCP client.`}]}],behavioural:[{id:`behavioural-1`,category:`behavioural`,difficulty:`advanced`,scenarioBased:!1,isMarked:!1,question:`Which behavioural question framework will you use to answer these questions?`,answer:`This is often the first question of the loop, and it is a free opportunity either way. Weak answers name STAR and stop, or worse, explain that they do not use a **framework** because they answer honestly. Good answers name a small toolkit and match the tool to the shape of the question, because the frameworks differ in which specific weakness they defend against.
+}`,explanation:`The server describes each tool with a JSON Schema for the model to call, and the client only needs the command that starts it. The host then routes the model's tool call to the server and returns the result, so the same server works in any MCP client.`}]},{id:`misc-15`,category:`misc`,difficulty:`advanced`,scenarioBased:!1,isMarked:!1,question:`What does HTTPS add over HTTP, and does using HTTPS make a site secure? What vulnerabilities can still exist?`,answer:`HTTPS is HTTP sent inside TLS. TLS gives you three properties on the wire: **confidentiality** (a passive observer sees ciphertext rather than the request, cookies or response body), **integrity** (a modified packet fails the authentication check and the connection is dropped) and **server authentication** (the certificate chain proves that the server controls the hostname you asked for). It does not encrypt anything after TLS terminates: the server, its database, its logs and its backups still see plaintext. Nor does it make the application trustworthy - a phishing site can have a perfectly valid certificate for its own lookalike domain.
+
+So HTTPS protects the pipe, not the site. Once the browser has loaded your JavaScript, the main risks are application-level.
+
+- **XSS:** injected script runs with your origin's privileges, reads the DOM, steals tokens from localStorage and makes authenticated requests. TLS cannot stop it; output encoding, a strict CSP and avoiding dangerous sinks such as innerHTML are the defences.
+- **CSRF:** the browser attaches cookies to a request to your origin even when another site triggered it; SameSite cookies, CSRF tokens and checking Origin or Referer are the defences.
+- **Broken authentication and session handling:** weak passwords, tokens that never expire, session fixation, tokens in localStorage or URLs, and no rotation on login.
+- **Broken access control:** hiding a button or route in Angular is not authorisation; the API must check every request, or an attacker can call it directly (IDOR and missing role checks).
+- **Server-side injection:** SQL, NoSQL and command injection, and SSRF where an unvalidated URL is fetched by the backend.
+- **Misconfiguration:** missing CSP, HSTS, frame-ancestors and nosniff; verbose stack traces; default credentials; public storage buckets; permissive CORS.
+- **Insecure cookies and mixed content:** a session cookie without Secure, HttpOnly and SameSite, or an HTTPS page loading an HTTP script that can be tampered with.
+- **Supply chain and third-party scripts:** a compromised npm package, CDN or analytics tag can read everything the page can. Secrets accidentally shipped in the bundle and public source maps belong here too.
+- **Clickjacking, open redirects and prototype pollution:** each is an application bug that a certificate does nothing about.
+- **Availability:** DDoS, credential stuffing and brute force are not solved by TLS either.
+
+The interview sentence is: HTTPS secures transport; security is a property of the whole system - authentication, authorisation, input handling, output encoding, dependency hygiene, headers, monitoring and incident response. HSTS, a strict CSP, cookie flags and server-side authorisation are what you add on top.`,examples:[{title:`What TLS actually protects`,code:`// HTTP on the wire - anyone on the path can read and alter it
+GET /login HTTP/1.1
+Host: example.com
+Cookie: session=secret
+
+// HTTPS: the same request inside a TLS record
+// - encrypted: a passive observer sees ciphertext, not the cookie
+// - integrity: a modified byte fails the MAC/AEAD check
+// - authentication: the certificate proves control of example.com
+// It says nothing about whether the app behind it is safe.`,explanation:`TLS protects the request in transit and the identity of the server; it has no visibility into XSS, authorisation bugs or a compromised backend.`},{title:`The protections HTTPS does not replace`,code:`// Application and transport hardening, not TLS itself
+Content-Security-Policy: default-src 'self'; script-src 'self'
+Strict-Transport-Security: max-age=63072000; includeSubDomains
+Set-Cookie: session=...; Secure; HttpOnly; SameSite=Lax
+X-Content-Type-Options: nosniff
+
+// Still an XSS hole even on a perfect HTTPS connection:
+element.innerHTML = userInput;`,explanation:`Headers and cookie flags reduce the impact of application bugs; using a dangerous DOM sink bypasses all of them.`}],tags:[`NEW`]},{id:`misc-16`,category:`misc`,difficulty:`medium`,scenarioBased:!0,isMarked:!1,question:`When a UI developer uses an AI coding agent, what should they review in the generated code before accepting it?`,answer:`Treat agent output as a pull request from a fast but overconfident colleague: review the diff, not the summary, and make the machine prove what it can. I start with the cheapest checks - run the tests, lint and a production build myself - and then read the change against these categories.
+
+- **Does it solve the stated problem?** The agent may implement a plausible feature you did not ask for, invent an endpoint or prop, or skip the empty, loading and error states. Reproduce the original user story by hand on a slow network before trusting the tests.
+- **Security.** Look for innerHTML, bypassSecurityTrustHtml, sanitizer bypasses, dynamic script injection, open redirects, secrets in the client, tokens in localStorage, permissive CORS and client-only authorisation. Agents often "fix" a type error with any, a non-null assertion or a disabled lint rule; each one can hide a real bug.
+- **Angular correctness.** Check change detection and whether components should be OnPush, subscription cleanup, effects that write signals, template method calls, stable track identities, SSR access to window, and forms validation. Generated code frequently looks idiomatic but places an HTTP call in a component or subscribes without teardown.
+- **State and data flow.** Is there one source of truth, or has the agent duplicated state and added effects to synchronise it? Check race conditions, request cancellation, retries, cache invalidation and runtime validation of API payloads. TypeScript types disappear at runtime.
+- **Accessibility and internationalisation.** Semantic elements, labels, focus management, keyboard paths, live regions and contrast are easy to omit. So are hard-coded strings, dates and currencies, and any layout that assumes English text length.
+- **Performance.** Look at new dependencies and bundle growth, N+1 requests, large lists without virtualisation, images without dimensions and any work added to the critical path. An agent can also introduce a memory leak by keeping a reference in a service.
+- **Tests.** Generated tests can mirror the implementation and pass while the behaviour is wrong. Check that they would fail if the requirement changed, that they assert user-visible behaviour, and that they do not mock away the very thing being tested.
+- **Maintainability and supply chain.** Watch for over-engineering, dead code, commented-out alternatives, duplicated utilities, new packages with unclear licences, and lockfile or CI changes nobody asked for. Formatting noise makes a real change harder to review.
+- **Configuration and deployment.** New environment variables, build flags, polyfills, permissions or secrets need an owner and a documented path through the environments.
+
+The process matters as much as the checklist: ask for a plan first, keep the change small enough to review, read the full diff, run the verification commands, and never accept security-sensitive code you do not understand. A good prompt states the constraints, the acceptance criteria and the commands that define done; the review is what turns a plausible diff into a safe change.`,examples:[{title:`A plausible diff that should not ship`,code:`// what an agent may produce when asked only to "make it work"
+this.http.get('/api/user').subscribe((user) => {
+  this.user = user;
+  document.getElementById('bio')!.innerHTML = user.bio; // XSS + no cleanup
+});
+
+// what the review should turn it into
+readonly user = toSignal(this.http.get<User>('/api/user'), { initialValue: null });
+
+<!-- Angular escapes the value and the subscription is owned by toSignal -->
+<p>{{ user()?.bio }}</p>`,explanation:`The first version compiles and looks fine in a demo; the review catches both the dangerous sink and the unmanaged subscription.`},{title:`A review loop that is hard to fake`,code:`git diff --stat
+git diff
+npx ng lint
+npx ng test
+npx ng build --base-href /AngularPlayground-V1/
+
+# Then reproduce the user story by hand:
+# empty state, error state, slow network, keyboard-only use, 320px width`,explanation:`The commands verify syntax and regressions; the manual pass is what checks the requirement, the states and the accessibility that generated tests usually miss.`}],tags:[`NEW`]},{id:`misc-17`,category:`misc`,difficulty:`medium`,scenarioBased:!1,isMarked:!1,question:`What are the main types of software testing (unit, integration, smoke, end-to-end and so on), and who is responsible for each?`,answer:`The names overlap in interviews, so define each one by the question it answers and the scope it covers.
+
+- **Unit test:** exercises one function, class or component in isolation, with dependencies faked. Fast and precise; it proves a unit's logic, not that the pieces work together. Written by the developer who owns the code.
+- **Integration test:** exercises two or more real pieces together - a service and an HTTP layer, a component and a store, a repository and a database. It catches contract and wiring errors that unit tests mock away. Usually written by developers, sometimes with QA.
+- **Component test:** an Angular-specific integration test: render the component, set inputs, click and assert the DOM. It is the sweet spot for UI behaviour and is written by the front-end developer.
+- **Contract test:** verifies that a consumer and a provider agree on a request and response shape. Useful when services and front ends deploy separately; usually owned by the teams that own the contract.
+- **End-to-end (E2E) test:** drives the real application through a browser across the whole stack - login, navigate, save, see the result. It gives the most confidence and the most flakiness, so keep the set small and critical. QA or SDET generally owns the suite, with developers maintaining the hooks it needs.
+- **Smoke test:** a tiny, fast set run after a build or deploy to prove the application is fundamentally alive - the home page loads, login works, the critical API responds. It answers "is it worth testing further?" and is owned by whoever owns the deployment pipeline.
+- **Sanity test:** a narrow check focused on one change or fix, asking whether that specific area still behaves after the change. Often manual, often QA.
+- **Regression test:** a broad repeatable set that proves previously working behaviour still works after a change. Automated where possible; QA owns the strategy and developers keep the suite green.
+- **Acceptance or UAT:** the product owner, business users or the customer confirm that the feature meets the agreed criteria in a realistic environment. The team prepares the environment and data, but the acceptance decision is theirs.
+- **Exploratory testing:** a skilled tester investigates without a fixed script, using heuristics and curiosity to find what the requirements missed. QA owns it, and it finds a different class of bug from automation.
+- **Performance, load and stress testing:** measures response time, throughput and behaviour under load or failure. Performance engineers or SREs own the strategy; developers fix the application.
+- **Security testing:** threat modelling, dependency scanning, SAST/DAST, penetration testing and abuse-case review. Security specialists lead, but every developer owns input handling and authorisation.
+- **Accessibility testing:** automated checks such as axe plus manual keyboard and screen-reader passes. Developers and QA share it, and it belongs in the Definition of Done.
+- **Visual regression testing:** compares screenshots to catch unintended layout changes. The front-end team usually owns the baseline and the review.
+
+Who does what is less important than the principle: quality is the team's responsibility, not a phase owned by one role. The test pyramid keeps the bulk of the coverage at the fast unit and integration levels, with fewer E2E tests for the critical journeys; the testing trophy is a similar idea with more emphasis on integration. In Angular terms: Vitest or Jasmine for units, TestBed for component and integration tests, HttpTestingController for API contracts, Playwright or Cypress for E2E, axe for accessibility, Lighthouse CI for performance, and a smoke job immediately after deployment. The pipeline runs them at different stages because they trade speed for confidence.`,examples:[{title:`One feature, split across the layers`,code:`// unit: the pure sort/filter logic
+it('sorts by name descending', () => {
+  expect(sortRows(rows, { key: 'name', direction: 'desc' })[0].name).toBe('Zapdos');
+});
+
+// integration/component: service + HTTP contract + rendered result
+it('renders the employees returned by the API', async () => {
+  httpMock.expectOne('/api/employees').flush([{ id: 1, name: 'Ada' }]);
+  const fixture = TestBed.createComponent(EmployeeList);
+  await fixture.whenStable();
+  expect(fixture.nativeElement.textContent).toContain('Ada');
+});
+
+// E2E: the critical journey, run against the deployed build
+await page.goto('/login');
+await page.fill('#email', 'ada@example.com');
+await page.click('button[type=submit]');
+await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();`,explanation:`Each layer answers a different question: does the logic work, do the pieces fit and render, and can a user complete the journey.`},{title:`Where each check runs`,code:`pull request   unit + component + integration + lint + build
+merge to dev   the same, plus contract tests and accessibility checks
+staging        E2E journeys, visual regression, performance budget
+production     smoke test immediately after deploy, then monitoring and alerts
+release        UAT sign-off on the acceptance criteria`,explanation:`Fast feedback sits closest to the change; slow, expensive tests run where a failure is still cheap enough to fix but broad enough to catch integration problems.`}],tags:[`NEW`]},{id:`misc-18`,category:`misc`,difficulty:`advanced`,scenarioBased:!1,isMarked:!1,question:`What are the common pieces of a modern AI coding agent setup, such as AGENTS.md, skills, subagents, MCP and hooks?`,answer:`Modern coding agents are configured at several layers, and the useful answer distinguishes what each layer is for rather than listing buzzwords.
+
+- **Repository instructions** such as AGENTS.md, CLAUDE.md or \`.cursor/rules\`: durable, always-loaded guidance about how this repository works - commands, conventions, architecture, deploy steps, non-negotiable constraints. They are policy, so keep them short, specific and verifiable; a long document that contradicts the code is worse than none.
+- **Skills:** packaged instructions and optional scripts loaded on demand when a task matches. A skill is the just-in-time procedure for one job - deploy this app, curate the question bank, run the release checklist - with progressive disclosure so the agent does not carry every procedure in context all the time. Skills are for repeatable workflows; repository instructions are for standing rules.
+- **Subagents:** separate agent sessions with their own context window and often their own tool permissions, used to explore a large codebase, review a diff or run independent investigations in parallel. They keep the main context clean and let work proceed concurrently, at the cost of coordination and duplicate exploration. A read-only review subagent is a common safe default.
+- **MCP (Model Context Protocol):** the open protocol that connects an agent to external tools and data - a database, GitHub, a browser, an issue tracker. The server advertises tools, resources and prompts; the host asks the user to approve tool calls. It is the integration layer, and every server is a security surface, so scope the tools and credentials narrowly.
+- **Tools, permissions and sandboxing:** the allow/deny rules for shell commands, file edits, network access and secrets. Least privilege and explicit approval for destructive actions matter more than any instruction in a prompt, because permissions are enforced by the runtime rather than by the model's goodwill.
+- **Hooks:** deterministic scripts that run on lifecycle events - before a tool call, after an edit, before a commit, when the agent stops. They are how you enforce formatting, linting, test gates or a protected-path check without hoping the model remembers. If a rule must always hold, put it in a hook or CI, not only in prose.
+- **Slash commands or saved prompts:** reusable entry points for common workflows such as plan a feature, review this diff, or write the migration. They reduce prompt drift across a team.
+- **Memory and context management:** a codebase index, retrieval over docs, a compacted conversation summary, or an explicit scratch file. The constraint is the context window, so the setup should make the right files easy to find rather than dumping the repository in.
+- **Planning and verification:** plan mode, a todo list, a single documented command that tells the agent whether it is done, and a git workflow that makes every change reviewable and reversible. Verification is the part that separates an agent from a chatbot.
+- **Model and agent configuration:** which model, reasoning effort, maximum steps, whether it may run in the background, and which MCP servers or tools are enabled. Different tasks deserve different permissions and budgets.
+
+The way they fit together: AGENTS.md states the rules, a skill supplies the procedure for a recurring task, a subagent isolates exploration or review, MCP supplies connectivity, permissions and sandboxing limit the blast radius, hooks and CI enforce what must be true, and version control makes the whole thing auditable. Do not rely on instructions alone for anything security-critical; enforce it in the runtime and in the pipeline.`,examples:[{title:`The layers, in one project`,code:`AGENTS.md                     # always-on: commands, conventions, deploy rules
+.opencode/skills/deploy/SKILL.md   # on-demand: the release checklist
+.opencode/agents/reviewer.md   # subagent: read-only diff review
+opencode.json                 # MCP servers, permissions, model settings
+.git/hooks/pre-commit         # deterministic: lint + format before commit
+.github/workflows/ci.yml      # the final gate the agent cannot skip`,explanation:`Each layer has a different job: policy, procedure, isolation, connectivity, enforcement and verification. Duplicating one job in another layer is where setups become fragile.`},{title:`A narrow MCP tool and a matching permission`,code:`{
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": { "GITHUB_TOKEN": "\${GITHUB_TOKEN}" }
+    }
+  },
+  "permissions": {
+    "edit": "allow",
+    "bash": { "git push": "ask", "rm -rf": "deny" }
+  }
+}
+
+// The token should be scoped to the repositories the agent actually needs.`,explanation:`MCP provides the capability, permissions bound it, and a scoped token limits what a mistaken or injected tool call can reach.`}],tags:[`NEW`]},{id:`misc-19`,category:`misc`,difficulty:`medium`,scenarioBased:!1,isMarked:!1,question:`What do a11y and i18n mean, and in which scenarios do they change how you build a UI?`,answer:`**a11y** is shorthand for accessibility: building interfaces that people with disabilities can use - with a screen reader, a keyboard only, magnification, reduced motion, or a different colour perception. **i18n** is shorthand for internationalisation: designing an application so it can be adapted to different languages, regions and writing directions without rewriting the UI. Localisation (l10n) is the actual translation and regional adaptation that i18n makes possible.
+
+Accessibility is not a layer of ARIA added at the end. The reliable baseline is semantic HTML, a logical heading order, every control reachable and operable by keyboard, visible focus, labels tied to inputs, sufficient contrast, text that survives 200% zoom, captions and transcripts for media, reduced-motion support, and an accessible error message. ARIA is for the gaps that native elements cannot express, and the first rule of ARIA is not to use it when a native element already does the job. In a single-page app, route changes must move focus and announce the new page; a modal must trap focus and restore it; a live region must announce async results; a data table needs proper headers and sorting semantics. Angular helps with the CDK a11y utilities, LiveAnnouncer and FocusMonitor, but the markup and interaction design still decide the outcome.
+
+Internationalisation changes the data model and the template, not just the text. All user-visible strings move out of components into message files; messages use ICU syntax for plurals, gender and select rather than string concatenation; dates, numbers, currencies and relative times go through Intl or Angular's locale-aware pipes; sorting and case conversion use the active locale; layout allows for text expansion of 30-50%; CSS uses logical properties such as margin-inline-start so right-to-left languages work without a second stylesheet; the document sets lang and dir; and the router keeps a locale segment or a persisted preference. Translation bundles are often lazy-loaded, and pseudo-localisation is a cheap way to catch hard-coded strings and clipped layouts before a translator sees them.
+
+Scenarios where this changes the design: a public-sector or enterprise procurement that requires WCAG 2.2 AA; a form with validation and error summaries; a modal or command palette; a data table with sorting and filtering; a product sold in multiple countries with local tax, currency and date formats; an Arabic or Hebrew locale that requires RTL; a marketing site whose copy is edited by non-developers; and an app where users switch language at runtime rather than by rebuilding for each locale. The two concerns meet in places people forget: \`aria-label\` and \`alt\` text must also be translated, the screen-reader language must match the content, and an icon-only button needs a translated accessible name, not just a tooltip. Angular's built-in i18n compiles one bundle per locale with $localize and i18n attributes and is a good fit for build-time translation; runtime libraries such as Transloco or ngx-translate fit apps that switch language without a reload. Either way, the earlier question on making an Angular app accessible covers the deeper a11y implementation details.`,examples:[{title:`i18n is not string replacement`,code:`// fragile: word order and plural rules differ by language
+const message = \`\${count} item\${count === 1 ? '' : 's'} in your cart\`;
+
+// ICU message: the translator controls the plural categories
+// cart.items = {count, plural, =0 {Your cart is empty}
+//   one {# item in your cart} other {# items in your cart}}
+const message = $localize\`:@@cart.items:{count, plural, =0 {Your cart is empty} one {# item in your cart} other {# items in your cart}}\`;
+
+// locale-aware formatting, never manual concatenation
+new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(date);
+new Intl.NumberFormat(locale, { style: 'currency', currency }).format(amount);`,explanation:`The ICU message keeps grammar and plural categories in the translator's hands; Intl keeps dates and money correct per locale instead of hard-coding a format.`},{title:`The accessibility details a translated UI must keep`,code:`<!-- an icon-only button needs a translated accessible name -->
+<button type="button" [attr.aria-label]="'Close dialog' | transloco">
+  <mat-icon aria-hidden="true">close</mat-icon>
+</button>
+
+<!-- the document language and direction are part of i18n -->
+<html lang="ar" dir="rtl">
+
+<!-- logical properties make RTL work without a second stylesheet -->
+.card { margin-inline-start: 1rem; text-align: start; }
+
+<!-- route changes in an SPA must be announced -->
+this.liveAnnouncer.announce(this.translate('page.loaded'));`,explanation:`Translation and accessibility meet in accessible names, language and direction, logical layout, and announcements after navigation.`}],tags:[`NEW`]}],behavioural:[{id:`behavioural-1`,category:`behavioural`,difficulty:`advanced`,scenarioBased:!1,isMarked:!1,question:`Which behavioural question framework will you use to answer these questions?`,answer:`This is often the first question of the loop, and it is a free opportunity either way. Weak answers name STAR and stop, or worse, explain that they do not use a **framework** because they answer honestly. Good answers name a small toolkit and match the tool to the shape of the question, because the frameworks differ in which specific weakness they defend against.
 
 Say which one you would choose for a given question, and why, and it sounds deliberate rather than recited.`,examples:[{title:`The toolkit and when to use it`,code:`STAR
 Situation, Task, Action, Result. The default for a past action.
@@ -3884,4 +4301,4 @@ it.
 P - Point
 The thing I watch for is when the ranking was set by a deadline rather than by
 the problem. That is worth revisiting out loud.`,explanation:`Naming what you refuse to trade, and separating binding constraints from
-negotiable ones, is the actual senior answer.`}]}]};var g=`q-marked-flags`;var w=`q-read-flags`;var y=`q-flags`;var b=Object.values(m).flat();var v={"angular-7":`performance-21`,"angular-23":`performance-22`,"angular-28":`performance-23`};var k={questionData:[]};function x(n){if(!n)return[];try{let a=JSON.parse(n);return Array.isArray(a)?a:[]}catch{return[]}}function r(n,a){let t=x(n).filter(e=>typeof e?.id==`string`).map(e=>[v[e.id]??e.id,a(e)]).filter(e=>e[1]!==null);return Object.fromEntries(t)}function S(){let n=localStorage.getItem(g);if(n!==null)return r(n,e=>typeof e?.isMarked==`boolean`?e.isMarked:null);let a=localStorage.getItem(w);if(a!==null)return r(a,e=>typeof e?.isRead==`boolean`?e.isRead:null);let t=localStorage.getItem(y);return t?r(t,e=>typeof e?.forLater==`boolean`?e.forLater:null):{}}var C=V({providedIn:`root`},Q(k),$(n=>({onInit(){let a=S();H(n,{questionData:b.map(t=>z(q({},t),{isMarked:a[t.id]===!0}))}),Nu(()=>{localStorage.setItem(g,JSON.stringify(n.questionData().map(({id:t,isMarked:e})=>({id:t,isMarked:e})).filter(t=>t.isMarked)))})}})),J(n=>({toggleMarked(a){H(n,t=>({questionData:t.questionData.map(e=>e.id===a?z(q({},e),{isMarked:!e.isMarked}):e)}))},replaceMarkedFlags(a){let t=new Set(a);H(n,e=>({questionData:e.questionData.map(l=>z(q({},l),{isMarked:t.has(l.id)}))}))}})));export{C as t};
+negotiable ones, is the actual senior answer.`}]}]};var g=`q-marked-flags`;var y=`q-read-flags`;var w=`q-flags`;var b=Object.values(m).flat();var v={"angular-7":`performance-21`,"angular-23":`performance-22`,"angular-28":`performance-23`};var k={questionData:[]};function x(n){if(!n)return[];try{let a=JSON.parse(n);return Array.isArray(a)?a:[]}catch{return[]}}function r(n,a){let t=x(n).filter(e=>typeof e?.id==`string`).map(e=>[v[e.id]??e.id,a(e)]).filter(e=>e[1]!==null);return Object.fromEntries(t)}function T(){let n=localStorage.getItem(g);if(n!==null)return r(n,e=>typeof e?.isMarked==`boolean`?e.isMarked:null);let a=localStorage.getItem(y);if(a!==null)return r(a,e=>typeof e?.isRead==`boolean`?e.isRead:null);let t=localStorage.getItem(w);return t?r(t,e=>typeof e?.forLater==`boolean`?e.forLater:null):{}}var C=V({providedIn:`root`},Q(k),$(n=>({onInit(){let a=T();H(n,{questionData:b.map(t=>z(q({},t),{isMarked:a[t.id]===!0}))}),Nu(()=>{localStorage.setItem(g,JSON.stringify(n.questionData().map(({id:t,isMarked:e})=>({id:t,isMarked:e})).filter(t=>t.isMarked)))})}})),J(n=>({toggleMarked(a){H(n,t=>({questionData:t.questionData.map(e=>e.id===a?z(q({},e),{isMarked:!e.isMarked}):e)}))},replaceMarkedFlags(a){let t=new Set(a);H(n,e=>({questionData:e.questionData.map(l=>z(q({},l),{isMarked:t.has(l.id)}))}))}})));export{C as t};
