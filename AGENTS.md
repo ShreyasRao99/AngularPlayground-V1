@@ -190,10 +190,10 @@ Read this before editing `questions.json` or a POC.
   order is html, css, javascript, angular, performance, rxjs, signals, misc,
   behavioural.
 - Question ids are `<category>-<n>`, except javascript which is `js-<n>`
-  (`js-25`). Ids are referenced by POC `covers` and persisted in localStorage, so
+  (`js-28`). Ids are referenced by POC `covers` and persisted in localStorage, so
   never renumber a question and never reuse a removed id.
-- Current bank is **209** questions: html 16, css 12, javascript 24, angular 49,
-  performance 27, rxjs 11, signals 10, misc 10, behavioural 50.
+- Current bank is **219** questions: html 16, css 12, javascript 27, angular 49,
+  performance 27, rxjs 13, signals 10, misc 15, behavioural 50.
 - Behavioural is the only category with triage: a curated 20 of the 50 carry
   `mostAsked: true`, and the question list shows a **Most asked** toggle for that
   category alone (see the `showMostAskedFilter` guard). It is an editorial core,
@@ -270,7 +270,7 @@ Y" counter stays per-section.
 ### Verify
 
 ```bash
-npx ng test                                   # expect 170 passed, 0 failed
+npx ng test                                   # expect 174 passed, 0 failed
 npx ng build --base-href /AngularPlayground-V1/
 ```
 

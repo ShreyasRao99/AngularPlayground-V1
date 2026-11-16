@@ -12,11 +12,13 @@ async function createBadges(difficulty: Difficulty) {
   return fixture;
 }
 
-function badges(fixture: ComponentFixture<QuestionBadges>): string[] {
+function pills(fixture: ComponentFixture<QuestionBadges>): HTMLElement[] {
   const root = fixture.nativeElement as HTMLElement;
-  return Array.from(root.querySelectorAll('span.rounded-full')).map(
-    (badge) => (badge as HTMLElement).textContent?.trim() ?? '',
-  );
+  return Array.from(root.querySelectorAll<HTMLElement>('span.rounded-full'));
+}
+
+function badges(fixture: ComponentFixture<QuestionBadges>): string[] {
+  return pills(fixture).map((badge) => badge.textContent?.trim() ?? '');
 }
 
 describe('QuestionBadges', () => {
@@ -40,6 +42,10 @@ describe('QuestionBadges', () => {
     await fixture.whenStable();
 
     expect(badges(fixture)).toEqual(['medium', 'scenario']);
+
+    const scenario = pills(fixture)[1];
+    expect(scenario.classList).toContain('bg-(--mat-sys-primary-container)');
+    expect(scenario.classList).toContain('text-(--mat-sys-on-primary-container)');
   });
 
   it('should show a pill for each tag, after the other badges', async () => {
@@ -52,12 +58,25 @@ describe('QuestionBadges', () => {
 
     expect(badges(fixture)).toEqual(['medium', 'MS']);
 
-    // the tag is a filled pill, not an outlined one, in the client's own colour
-    const pills = Array.from(
-      (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>('span.rounded-full'),
-    );
-    const pill = pills[pills.length - 1];
+    // the standard tag is a filled pill, not an outlined one, in the client's own colour
+    const allPills = pills(fixture);
+    const pill = allPills[allPills.length - 1];
     expect(pill.classList).toContain('bg-[#003986]');
     expect(pill.classList).toContain('text-white');
+  });
+
+  it('should give the NEW tag the lighter tertiary pill', async () => {
+    const fixture = await createBadges('advanced');
+
+    fixture.componentRef.setInput('tags', ['NEW']);
+    await fixture.whenStable();
+
+    expect(badges(fixture)).toEqual(['advanced', 'NEW']);
+
+    const allPills = pills(fixture);
+    const pill = allPills[allPills.length - 1];
+    expect(pill.classList).toContain('bg-(--mat-sys-tertiary-container)');
+    expect(pill.classList).toContain('text-(--mat-sys-on-tertiary-container)');
+    expect(pill.classList).not.toContain('bg-[#003986]');
   });
 });

@@ -501,4 +501,90 @@ window.addEventListener('load', () => {
 });`,
     covers: ['js-25'],
   },
+  {
+    id: 'js-polyfill-map',
+    category: 'javascript',
+    title: 'Write the missing array methods yourself',
+    summary: 'Rebuild map, filter and bind from the spec, then prove them against the natives.',
+    durationMinutes: 60,
+    prompt:
+      'Take a list of Pokémon from the PokéAPI and rebuild the array methods its data pipeline relies on. Your versions must match the native behaviour on the edge cases an interviewer will test, not just on the happy path.',
+    endpoints: [
+      { path: '/pokemon?limit=151', note: 'The list you transform with your own methods' },
+      { path: '/pokemon/{id}', note: 'Per-Pokémon data for the reduce and bind exercises' },
+    ],
+    steps: [
+      {
+        title: 'Write the contract before the code',
+        task: 'On paper, list what native map promises: a TypeError for a null receiver and for a non-function callback, the callback arguments (value, index, array), thisArg, a length captured once, holes skipped, and a new array returned. Then write the same list for filter and reduce. Every edge case you cannot name is one you will miss in the implementation.',
+        learn: 'What is a polyfill, and which details of the built-in contract matter',
+      },
+      {
+        title: 'Implement map against the list',
+        task: 'Write myMap using Object(this), a captured length, an i in O check for holes, and callback.call(thisArg, value, index, array). Test it against the native on a normal array, a sparse array, a string and an array-like object such as { length: 2, 0: "a", 1: "b" }. Do not overwrite Array.prototype.map; use a separate name so both versions are available to compare.',
+        learn: 'How this, prototypes and sparse arrays behave in practice',
+      },
+      {
+        title: 'Implement filter and reduce',
+        task: 'Write myFilter so it skips holes and keeps the original order. Write myReduce so it throws a TypeError on an empty array with no initial value, and so it starts from the first existing index when the initial value is omitted. Use the Pokémon list to compute a result with each, then check the output against the native methods.',
+        learn: 'The edge cases that separate a working polyfill from a spec-shaped one',
+      },
+      {
+        title: 'Rebuild bind, not just call',
+        task: 'Write myBind so it presets this and the leading arguments, then returns a function that merges the remaining arguments. Test it with two calls that pass different trailing arguments. Then try bind with new and explain why a really faithful version has to detect construction and use the new target as this.',
+        learn: 'How call, apply and bind work under the hood',
+      },
+      {
+        title: 'Install it without polluting the page',
+        task: 'Wrap one method in feature detection (if (!Array.prototype.myMap)) and use Object.defineProperty so it is non-enumerable. Confirm with Object.keys(Array.prototype) and a for...in loop that the method does not leak into enumeration, then explain why a library would ship a ponyfill instead of patching the prototype.',
+        learn: 'Feature detection, defineProperty and when a global patch is unsafe',
+      },
+      {
+        title: 'Prove the behaviour with tests',
+        task: 'Write a table-driven test for each method: normal input, empty input, sparse input, a bad callback, thisArg and an array-like receiver. Run the same table against the native and your version and assert that the results and thrown errors match. If a case differs, decide whether your implementation or your test is wrong.',
+        learn: 'How to test a polyfill against the behaviour it is replacing',
+      },
+    ],
+    stretch: [
+      'Polyfill Promise.all, keeping results in input order and rejecting on the first failure.',
+      'Write debounce and throttle with a cancel method, and test them with fake timers.',
+      'Implement a deep clone that handles cycles, arrays and Date, and explain what structuredClone still does better.',
+      'Write Object.create and explain how its prototype argument differs from a class constructor.',
+    ],
+    starter: `// Start with a named ponyfill so the native method stays available.
+function myMap(callback, thisArg) {
+  if (this == null) throw new TypeError('myMap called on null or undefined');
+  if (typeof callback !== 'function') throw new TypeError('callback is not a function');
+
+  const O = Object(this);
+  const len = Math.min(Math.max(Number(O.length) || 0, 0), Number.MAX_SAFE_INTEGER);
+  const result = new Array(len);
+
+  for (let i = 0; i < len; i++) {
+    if (i in O) {
+      result[i] = callback.call(thisArg, O[i], i, O);
+    }
+  }
+  return result;
+}
+
+// The table you have to make pass:
+const cases = [
+  [1, 2, 3],
+  [],
+  [, 1, , 3],
+  'abc',
+  { length: 2, 0: 'a', 1: 'b' },
+];
+
+for (const input of cases) {
+  const native = Array.prototype.map.call(input, (value, index) => ({ value, index }));
+  const mine = myMap.call(input, (value, index) => ({ value, index }));
+  // TODO: compare length, holes and values, not just JSON.stringify
+  console.log({ input, native, mine });
+}
+
+// Next: myFilter, myReduce, myBind, then the feature-detected install.`,
+    covers: ['js-26', 'js-9', 'js-14'],
+  },
 ];

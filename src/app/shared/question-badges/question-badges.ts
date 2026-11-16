@@ -30,16 +30,13 @@ import { Difficulty } from '../../../types/questions-type';
 
     @if (scenarioBased()) {
       <span
-        class="rounded-full bg-(--mat-sys-secondary-container) px-2 py-0.5 text-xs font-medium whitespace-nowrap text-(--mat-sys-on-secondary-container)"
+        class="rounded-full bg-(--mat-sys-primary-container) px-2 py-0.5 text-xs font-medium whitespace-nowrap text-(--mat-sys-on-primary-container)"
         >scenario</span
       >
     }
 
     @for (tag of tags(); track tag) {
-      <span
-        class="rounded-full bg-[#003986] px-2 py-0.5 text-xs font-medium whitespace-nowrap text-white"
-        >{{ tag }}</span
-      >
+      <span [class]="tagClass(tag)">{{ tag }}</span>
     }
   `,
 })
@@ -47,4 +44,12 @@ export class QuestionBadges {
   readonly difficulty = input.required<Difficulty>();
   readonly scenarioBased = input(false);
   readonly tags = input<readonly string[]>([]);
+
+  protected tagClass(tag: string): string {
+    const base = 'rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap';
+
+    return tag === 'NEW'
+      ? `${base} bg-(--mat-sys-tertiary-container) text-(--mat-sys-on-tertiary-container)`
+      : `${base} bg-[#003986] text-white`;
+  }
 }
