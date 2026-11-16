@@ -557,7 +557,7 @@ function myMap(callback, thisArg) {
   if (typeof callback !== 'function') throw new TypeError('callback is not a function');
 
   const O = Object(this);
-  const len = Math.min(Math.max(Number(O.length) || 0, 0), Number.MAX_SAFE_INTEGER);
+  const len = Math.min(Math.max(Math.trunc(Number(O.length)) || 0, 0), Number.MAX_SAFE_INTEGER);
   const result = new Array(len);
 
   for (let i = 0; i < len; i++) {

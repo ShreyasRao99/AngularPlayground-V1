@@ -44,8 +44,8 @@ describe('QuestionBadges', () => {
     expect(badges(fixture)).toEqual(['medium', 'scenario']);
 
     const scenario = pills(fixture)[1];
-    expect(scenario.classList).toContain('bg-(--mat-sys-primary-container)');
-    expect(scenario.classList).toContain('text-(--mat-sys-on-primary-container)');
+    expect(scenario.classList).toContain('bg-violet-100');
+    expect(scenario.classList).toContain('text-violet-900');
   });
 
   it('should show a pill for each tag, after the other badges', async () => {
@@ -65,7 +65,7 @@ describe('QuestionBadges', () => {
     expect(pill.classList).toContain('text-white');
   });
 
-  it('should give the NEW tag the lighter tertiary pill', async () => {
+  it('should give the NEW tag a lighter pill of its own', async () => {
     const fixture = await createBadges('advanced');
 
     fixture.componentRef.setInput('tags', ['NEW']);
@@ -75,8 +75,8 @@ describe('QuestionBadges', () => {
 
     const allPills = pills(fixture);
     const pill = allPills[allPills.length - 1];
-    expect(pill.classList).toContain('bg-(--mat-sys-tertiary-container)');
-    expect(pill.classList).toContain('text-(--mat-sys-on-tertiary-container)');
+    expect(pill.classList).toContain('bg-emerald-100');
+    expect(pill.classList).toContain('text-emerald-900');
     expect(pill.classList).not.toContain('bg-[#003986]');
   });
 });

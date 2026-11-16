@@ -64,7 +64,7 @@ Production is the default configuration; no `--configuration` flag is needed.
 Check the budget line in the build output:
 
 ```
-Initial total | 527.00 kB | ...
+Initial total | 538.21 kB | ...
 ```
 
 Warning at **550 kB**, error at **1 MB**. If it errors, fix the bundle before
