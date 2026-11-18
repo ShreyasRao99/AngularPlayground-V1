@@ -1,103 +1,102 @@
-import{At as WE,B as Iv,Y as LP,bn as ih,dr as xD,kn as kc,lt as Oc,yr as zD}from"./chunk-C3qvLal_.js";var p=[{id:`html-semantic-entry`,category:`html`,title:`Build a semantic Pokédex entry page`,summary:`One page for a single Pokémon, built only from meaningful tags.`,durationMinutes:45,prompt:`Take one Pokémon and build its Pokédex entry page using semantic elements instead of a stack of divs. The data comes from the PokéAPI, so every heading, list and figure you render is real.`,endpoints:[{path:`/pokemon/{name or id}`,note:`Types, stats, height, weight, abilities, sprites`},{path:`/pokemon-species/{name}`,note:`Generation, habitat, flavour text, evolution chain`}],steps:[{title:`Draw the outline with landmarks`,task:`Build the page outline out of header, nav, main, article, section, aside and footer. Put the Pokémon name in a single h1, then group "Base stats", "Abilities" and "Training" into sections, each with its own h2. Nothing on the page should need a class to be understandable.`,learn:`Semantic HTML`},{title:`Choose div or span deliberately`,task:`Start by wrapping everything in div, then go back and fix it: the entry number (#025), the type badges and the weight beside the number are inline, so they are spans or better semantic tags. The stat cards stay block-level divs. Log getComputedStyle(el).display for one of each so you can see block vs inline in the output.`,learn:`Difference between a div and a span`},{title:`Argue article vs section`,task:`Wrap the whole entry in an article (it is independently linkable and shareable) and reserve section for themed groupings inside the dex list. Write a two-line comment saying why the Pokémon entry is an article and why "Base stats" is only a section.`,learn:`Difference between <article> and <section>`},{title:`Show the raw payload as code`,task:`Fetch the same endpoint yourself and print the response into a pre > code block. pre keeps the newlines and whitespace, code marks the actual snippet. Escape the value before injecting it so a name containing angle brackets cannot close the tag, and trim the payload to a readable handful of fields.`,learn:`How to show a block of code on a page`}],stretch:[`Render base stats as dl / dt / dd instead of a table of divs.`,`Put the extra stats behind details > summary so the page is not a wall of numbers.`,`Add a skip link as the first focusable element and confirm it appears on Tab.`,`Wrap the ability names in abbr with a title attribute so the abbreviation is explained.`],starter:`<body>
-  <header>
-    <h1>Pok\xE9dex</h1>
-    <nav aria-label="Pok\xE9dex entries"><!-- generation filter --></nav>
-  </header>
+import{At as WE,B as Iv,Y as LP,bn as ih,dr as xD,kn as kc,lt as Oc,yr as zD}from"./chunk-C3qvLal_.js";var p=[{id:`html-semantic-entry`,category:`html`,title:`Build a semantic Pokédex entry page`,summary:`Build a Pokémon detail page using semantic HTML and real PokéAPI data.`,durationMinutes:45,prompt:`
+Build a Pok\xE9dex entry page for Pikachu inside the existing Angular application.
 
-  <main>
-    <article>
+Fetch Pok\xE9mon data from the Pok\xE9API and display its sprite, Pok\xE9dex number, name, types, description, height, weight, abilities and base stats.
+
+Use semantic HTML elements to structure the page. Avoid using div elements as generic replacements for semantic elements.
+
+The page must be populated using API responses. Do not hardcode Pok\xE9mon information.
+  `,endpoints:[{path:`/pokemon/pikachu`,note:`Main Pokémon data: name, ID, sprite, types, height, weight, abilities and base stats.`},{path:`/pokemon-species/pikachu`,note:`Species data: Pokédex description and generation.`}],steps:[{title:`Build the page structure`,task:`
+Create the following page structure:
+
+1. A header containing the application title "Pok\xE9dex".
+2. A main element containing the Pok\xE9mon entry.
+3. An article representing the complete Pikachu entry.
+4. Inside the article, display:
+   - Pok\xE9mon name and Pok\xE9dex number.
+   - Pok\xE9mon sprite with a caption.
+   - Pok\xE9dex description.
+   - Pok\xE9mon types.
+   - Physical attributes (height and weight).
+   - Abilities.
+   - Base stats.
+5. A footer containing the text "Pok\xE9mon data provided by Pok\xE9API".
+
+Use the appropriate semantic elements:
+header, main, article, section, figure, figcaption and footer.
+
+Use one h1 for the Pok\xE9mon name and h2 elements for the individual sections.
+      `,learn:`Semantic HTML`},{title:`Display Pokémon information`,task:`
+Fetch data from both API endpoints and display the following properties.
+
+From /pokemon/pikachu:
+
+- id: Display as the Pok\xE9dex number (#025).
+- name: Display the Pok\xE9mon name.
+- sprites.front_default: Display the front sprite.
+- types[].type.name: Display all Pok\xE9mon types.
+- height: Convert decimetres to metres (height / 10).
+- weight: Convert hectograms to kilograms (weight / 10).
+- abilities[].ability.name: Display ability names.
+- abilities[].is_hidden: Identify hidden abilities.
+- stats[].stat.name: Display stat names.
+- stats[].base_stat: Display stat values.
+
+From /pokemon-species/pikachu:
+
+- flavor_text_entries: Find an English entry using language.name === 'en' and display its flavor_text.
+- generation.name: Display the Pok\xE9mon's generation.
+
+Use Angular template binding to render the data. Do not hardcode the values.
+      `,learn:`Working with API responses and Angular data binding`}],stretch:[`Add Previous and Next buttons to navigate between Pokémon using their IDs. Fetch the new Pokémon data and update the existing page without reloading.`,`Display a loading message while the API requests are in progress. If either request fails, display an error message instead of a blank page.`],starter:`
+<header>
+  <h1>Pok\xE9dex</h1>
+</header>
+
+<main>
+  <article>
+    <header>
       <h2>Pikachu</h2>
-      <figure>
-        <img src="..." alt="Front sprite of Pikachu" width="96" height="96" />
-        <figcaption>Pikachu, the Electric Mouse Pok\xE9mon</figcaption>
-      </figure>
+      <span>#025</span>
+    </header>
 
-      <section>
-        <h3>Base stats</h3>
-        <!-- dl / dt / dd -->
-      </section>
+    <figure>
+      <img src="..." alt="Pikachu front sprite" />
+      <figcaption>Electric Mouse Pok\xE9mon</figcaption>
+    </figure>
 
-      <section>
-        <h3>Raw API response</h3>
-        <pre><code>{ /* JSON.stringify(response, null, 2) */ }</code></pre>
-      </section>
-    </article>
-  </main>
+    <section>
+      <h2>Pok\xE9dex Description</h2>
+      <p><!-- Description --></p>
+    </section>
 
-  <footer><!-- attribution: data from Pok\xE9API --></footer>
-</body>`,covers:[`html-1`,`html-2`,`html-6`,`html-7`]},{id:`html-filter-form`,category:`html`,title:`Filter form that works without a single line of JavaScript`,summary:`Accessible label association plus native constraint validation.`,durationMinutes:45,prompt:`Build the "find a Pokémon" form on the dex without writing validation yourself: let the browser block the submit and report the first invalid field. Data still comes from the PokéAPI for the results, never for the validation.`,endpoints:[{path:`/pokemon?limit=&offset=`,note:`Submitted as the GET query string`},{path:`/type/{type}`,note:`One request per selected type to get the member list`}],steps:[{title:`Associate every label with its control`,task:`Give each input a unique id and point its label at that id with the for attribute. Deliberately break it once (mismatched id) and show that clicking the label no longer focuses the field. Confirm with document.querySelector("label").control that the association is real.`,learn:`How you correctly associate a <label> with a form control`},{title:`Pick the input type before adding validation`,task:`Use the right type for each field: search for the name, number with min/max for the Pokédex id, checkbox for "legendary only", select for the type. Note which ones give you a picker for free (date, number, colour) and which you would still need to build yourself.`,learn:`Native form controls and input types`},{title:`Constrain, then read the constraint`,task:`Add required, min, max, pattern and step to the fields. On submit, read the validity properties on the invalid element (el.validity.valueMissing, .rangeUnderflow, .patternMismatch) and print them next to the field. Only call reportValidity() after you have read them so the browser bubble does not swallow your message.`,learn:`How native browser form validation works`},{title:`Style hints as emphasis, not decoration`,task:`Put "required" and format hints next to the fields. Mark the ones that carry real meaning with strong / em (they matter, they are read by screen readers) and the purely visual ones with b / i (they are only styling). Explain the difference to yourself out loud: one is content, the other is presentation.`,learn:`Difference between <strong>/<em> and <b>/<i>`},{title:`Decide when to switch it off`,task:`Add novalidate to the form and re-implement the same three checks by hand, then write down when each version is correct: native first for instant feedback, custom when you need async rules (for example "is that name taken") or a bespoke UI.`,learn:`When you would disable native validation`}],stretch:[`Group the type checkboxes in a fieldset with a legend and style the disabled state.`,`Turn on :user-invalid and show that it only matches after interaction, unlike :invalid.`,`Keep the values in the URL query string on submit so the filtered view is shareable.`,`Add a live region that announces the number of results after submit.`],starter:`<form action="https://pokeapi.co/api/v2/pokemon" method="get">
-  <label for="name">Name or number</label>
-  <input id="name" name="name" type="search" required />
+    <section>
+      <h2>Types</h2>
+      <!-- Type labels -->
+    </section>
 
-  <label for="id">Exact Pok\xE9dex id</label>
-  <input id="id" name="id" type="number" min="1" max="1025" step="1" />
+    <section>
+      <h2>Physical Attributes</h2>
+      <!-- Height and weight -->
+    </section>
 
-  <label for="legendary">
-    <input id="legendary" name="legendary" type="checkbox" />
-    Legendary only
-  </label>
+    <section>
+      <h2>Abilities</h2>
+      <!-- Ability list -->
+    </section>
 
-  <label for="type">Type</label>
-  <select id="type" name="type">
-    <option value="">any</option>
-  </select>
+    <section>
+      <h2>Base Stats</h2>
+      <!-- Stat values -->
+    </section>
 
-  <button type="submit">Search</button>
-</form>
+  </article>
+</main>
 
-// read the reason the browser refused to submit
-const field = document.querySelector<HTMLInputElement>('#id')!;
-console.log(field.validity.rangeUnderflow, field.validationMessage);`,covers:[`html-8`,`html-11`,`html-12`]},{id:`html-responsive-sprites`,category:`html`,title:`Serve sprites that look right on every screen`,summary:`srcset, sizes, alt text and the viewport meta tag working together.`,durationMinutes:30,prompt:`One sprite URL does not fit a 320px phone and a 1440px desktop. Use the sprite URLs the PokéAPI returns to build an image that the browser picks the right source for.`,endpoints:[{path:`/pokemon/{name}`,note:`sprites.front_default plus sprites.other renderings`}],steps:[{title:`Give the browser more than one source`,task:`Build a srcset out of the same sprite at 96px, 192px and 384px, add sizes so the browser knows the layout width before CSS loads, and set the src fallback. Throttle the network to "slow 4G" in DevTools and watch which file is actually fetched as you resize.`,learn:`How do I make an image render well on different screen sizes`},{title:`Write alt text that earns its place`,task:`Set alt to what a person needs when the image does not load ("Front sprite of Pikachu"), not to the filename. Then test the decorative case: a background pattern or a type icon next to visible text gets alt="" on purpose, and explain why that is better than leaving alt off.`,learn:`Why is the alt attribute important on images`},{title:`Always declare width and height`,task:`Add width and height attributes matching the real sprite, then watch the layout in DevTools with "Render layout shift regions" on: the card no longer jumps when the image arrives because the space was already reserved.`,learn:`Preventing layout shift from images`},{title:`Tie it back to the viewport meta tag`,task:`Set <meta name="viewport" content="width=device-width, initial-scale=1"> and explain what it changes for a desktop-sized layout viewport on a phone. Then resize to 320px and confirm the srcset picks the small source - that only happens because the viewport is now the device width.`,learn:`Viewport meta tag and why it matters on mobile`}],stretch:[`Wrap the img in picture with avif and webp sources plus the png fallback.`,`Lazy-load everything below the fold with loading="lazy" and fetchpriority="high" on the first sprite.`,`Replace the img with a CSS background and log how the alt text problem comes back.`],starter:`<figure>
-  <img
-    src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png"
-    srcset="
-      https://.../25.png   96w,
-      https://.../25.png  192w,
-      https://.../25.png  384w
-    "
-    sizes="(max-width: 640px) 96px, 192px"
-    width="192"
-    height="192"
-    alt="Front sprite of Pikachu"
-    loading="lazy"
-    decoding="async"
-  />
-  <figcaption>Pikachu</figcaption>
-</figure>`,covers:[`html-4`,`html-5`,`html-10`]},{id:`html-script-strategy`,category:`html`,title:`Load a second script without blocking the first paint`,summary:`See async and defer differ by watching the execution order.`,durationMinutes:30,prompt:`Your dex needs a small script after the first paint. Build the same three script tags (plain, defer, async) and measure exactly when each one executes relative to parsing, DOMContentLoaded and first paint.`,endpoints:[{path:`/pokemon?limit=1`,note:`Used as the data the late script fetches`}],steps:[{title:`Instrument the three loading modes`,task:`Load the same tiny script three ways and have it push { mode, time } to window.__order. A plain script blocks the parser, defer waits for parsing and runs in order before DOMContentLoaded, async runs the moment it lands and in no guaranteed order. Print the resulting array.`,learn:`Difference between async and defer on a <script> tag`},{title:`Make the order problem observable`,task:`Serve two defer scripts that depend on each other and show that order is preserved, then swap one for async and show it can land after them. Move the script into the head and repeat, so you can see why defer-from-head beats plain-body.`,learn:`Execution order of deferred and async scripts`},{title:`Prefetch the API before the script needs it`,task:`Add <link rel="preconnect" href="https://pokeapi.co"> and <link rel="prefetch" href="https://pokeapi.co/api/v2/pokemon?limit=20"> in the head, then measure the fetch with performance.getEntriesByType("resource") and compare against the run without them.`,learn:`Prefetching vs preloading resources`},{title:`Inject a widget script from code`,task:`Create the script element in JavaScript instead of in the template, point it at the endpoint you need, set async or defer explicitly (a dynamically inserted script defaults to async), and resolve a promise on its load event. Then show the encapsulation problem: the widget appends its own <div> to document.body, which lands outside your component, so style it from global.css or ::ng-deep-free CSS rather than the component stylesheet.`,learn:`A third-party script needs injecting and global config loaded without breaking encapsulation`}],stretch:[`Do the same measurement for a module script (type="module") and explain why defer is implied.`,`Add a modulepreload for the bundle you are about to need.`,`Show what happens when you inject a script from JavaScript - async defaults to true there.`],starter:`<!-- head -->
-<link rel="preconnect" href="https://pokeapi.co" />
-<link rel="prefetch" href="https://pokeapi.co/api/v2/pokemon?limit=20" />
-
-<!-- body, in this order -->
-<script src="/blocking.js"><\/script>
-<script src="/deferred-1.js" defer><\/script>
-<script src="/deferred-2.js" defer><\/script>
-<script src="/async-1.js" async><\/script>
-
-<script>
-  // each of the four scripts does the same thing:
-  window.__order.push({ mode: 'defer', at: performance.now() });
-  document.addEventListener('DOMContentLoaded', () =>
-    window.__order.push({ mode: 'defer', event: 'DOMContentLoaded', at: performance.now() }),
-  );
-<\/script>`,covers:[`html-9`,`performance-14`,`angular-29`,`angular-27`]}];var u=[{id:`css-card-box-model`,category:`css`,title:`The Pokédex card, box model and all`,summary:`Padding vs margin, block vs inline vs inline-block, centring without flex.`,durationMinutes:45,prompt:`Style a Pokédex card from the raw sprite and stats the PokéAPI gives you. Do it with the box model, not with a framework, and be able to say what each declaration is doing.`,endpoints:[{path:`/pokemon/{name}`,note:`Sprite, height, weight, types for the card content`}],steps:[{title:`Draw the box`,task:`Give the card explicit content-box dimensions and open the Computed > Box Model overlay in DevTools. Walk the four layers (content, padding, border, margin) with a real card and say which one belongs to the element and which one is outside it.`,learn:`What is the CSS box model`},{title:`Feel the difference between padding and margin`,task:`Put 12px of padding around the sprite inside the card and 12px of margin outside it, then delete both one at a time. Write one sentence for each: padding is space inside the border, margin is space between boxes and it collapses with neighbours.`,learn:`Difference between padding and margin`},{title:`Switch box-sizing and watch the card change`,task:`Set box-sizing: border-box on the card and set the same width again. With content-box the card gets wider when you add padding and border; with border-box the padding eats into the declared width. Print getComputedStyle(card).width for both so you are not guessing.`,learn:`Why border-box is the sane default`},{title:`Place the sprite beside the text`,task:`The sprite is 96px and must sit next to the type badges without forcing the badges onto a new line. Compare a div (block, takes the full width, pushes everything down), a span (inline, flows with the text) and inline-block (flows with the text but still accepts width and height). Log the computed display of each so the difference is measurable, not vibes.`,learn:`Difference between block, inline and inline-block`},{title:`Centre it three different ways`,task:`Centre the card horizontally with margin: 0 auto, then with a flex parent (justify-content: center), then with grid (place-items: center). Explain why margin auto only works on block-level elements that have a width, and why it cannot centre vertically.`,learn:`How to center a block element horizontally`}],stretch:[`Add a focus ring with outline and show why outline does not affect layout while border does.`,`Use logical properties (padding-inline, margin-block) and flip direction: rtl.`,`Read the box model with getBoxQuads() instead of eyeballing it.`],starter:`.card {
-  box-sizing: border-box; /* content-box is the default */
-  width: 260px;
-  padding: 12px;
-  border: 1px solid;
-  border-radius: 12px;
-  margin-inline: auto; /* centred horizontally */
-}
-
-.card__sprite {
-  width: 96px;
-  height: 96px;
-  display: inline-block; /* flows beside the text, still sized */
-  vertical-align: middle;
-}
-
-.card__name {
-  display: inline-block;
-}`,covers:[`css-1`,`css-2`,`css-3`,`css-5`]},{id:`css-dex-layout`,category:`css`,title:`Grid for the dex, Flexbox for the toolbar`,summary:`Choosing between Grid and Flexbox, and reading align-items vs justify-content.`,durationMinutes:60,prompt:`Two layouts in one screen: a wrapping grid of Pokémon cards, and a horizontal toolbar of type filters with a search box at the end. Pick the right tool for each and stop reaching for the wrong one.`,endpoints:[{path:`/pokemon?limit=`,note:`Card data for the grid`},{path:`/type/{type}`,note:`Count of members per filter chip`}],steps:[{title:`Build the card grid with Grid`,task:`Use display: grid with grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) so the number of columns is decided by the container width, not by breakpoints. Then try grid-template-columns: repeat(3, 1fr) and see why that one breaks on a phone. Log the resolved column count with getComputedStyle(grid).gridTemplateColumns.`,learn:`When would you use CSS Grid and when Flexbox`},{title:`Build the toolbar with Flexbox`,task:`The same wrapper as display: flex, with flex-wrap: wrap so the chips wrap instead of overflowing, and margin-left: auto on the search box to push it to the far edge. Explain that Grid lays out in two dimensions and Flexbox lays out in one.`,learn:`Grid vs Flexbox`},{title:`Separate the two axes`,task:`On the flex toolbar, change align-items between center, flex-start and stretch and watch only the cross axis move, then change justify-content between flex-start, center and space-between and watch only the main axis move. Write down which axis is which for row-direction.`,learn:`What do align-items and justify-content do in flexbox`},{title:`Use gap instead of margin hacks`,task:`Space the grid cells and the chips with gap and delete the :nth-child / last-child margin overrides you wrote first. Then add row-gap different from column-gap and explain why margin collapsing never applies inside a grid.`,learn:`Why gap beats margin for spacing`}],stretch:[`Make the first card span two columns and two rows with grid-column / grid-row.`,`Use grid-template-areas to switch the whole layout at a breakpoint with no extra markup.`,`Swap the grid for subgrid so the cards share one row height.`],starter:`.dex {
+<footer>
+  <p>Pok\xE9mon data provided by Pok\xE9API.</p>
+</footer>
+  `,covers:[`html-1`]}];var u=[{id:`css-dex-layout`,category:`css`,title:`Grid for the dex, Flexbox for the toolbar`,summary:`Build a responsive Pokémon card grid and a filter toolbar using CSS Grid and Flexbox.`,durationMinutes:60,prompt:`Build two layouts on the Pokédex screen: a responsive grid displaying Pokémon cards and a toolbar containing Pokémon type filter chips and a search input. Use CSS Grid for the cards and Flexbox for the toolbar. The toolbar should have chips like All (20), Fire (12), Water (35), Grass (14) and Flying (8), with one chip visually selected at a time. Each type chip displays the total number of Pokémon belonging to that type, not the number of Pokémon currently displayed. Clicking a chip changes the selected state. Understand how Grid and Flexbox handle spacing, alignment and responsiveness.`,endpoints:[{path:`/pokemon?limit=20`,note:`Use the results array from the API response to render Pokémon names as individual cards inside the CSS Grid. The search input should filter these 20 Pokémon by name on the client side.`},{path:`/type/{type}`,note:`Use the pokemon array length from each type API response to display the total Pokémon count on the corresponding filter chip. For example, /type/fire gives the count for Fire, /type/water gives the count for Water and /type/grass gives the count for Grass. The count remains the same when a chip is selected. Only the selected chip styling changes.`}],steps:[{title:`Build a responsive Pokémon card grid`,task:`Fetch Pokémon using /pokemon?limit=20. Use the results array to render Pokémon names as individual cards inside a container. Set display: grid and use grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) with gap: 12px. Resize the browser and verify that the number of columns changes automatically without writing media queries. Then try repeat(3, 1fr) and observe what happens on smaller screens.`,learn:`CSS Grid, repeat(), auto-fill, minmax() and responsive layouts`},{title:`Build the filter toolbar with Flexbox`,task:`Create a horizontal toolbar containing type filter chips and a search input. Include chips such as All (20), Fire (12), Water (35), Grass (14) and Flying (8). Fetch the type data using /type/{type} and use the length of its pokemon array to display the count on each corresponding chip. For All, display the total number of Pokémon returned by the list API (results.length). Maintain a selectedType signal so that only one chip appears selected at a time. Clicking another chip should update the selected styling without changing the counts. Set display: flex, flex-wrap: wrap, align-items: center and gap: 8px. Give the search input margin-left: auto so it moves to the right when space is available. Resize the browser and verify that the chips wrap onto another line instead of overflowing.`,learn:`Flexbox, flex-wrap, margin-left: auto, gap and selected states`},{title:`Understand the two alignment axes`,task:`On the toolbar, keep flex-direction: row. Change align-items between center, flex-start and stretch. Observe how the children move vertically. Then change justify-content between flex-start, center and space-between. Observe how the children move horizontally. Identify the main axis and cross axis for row and column directions.`,learn:`Main axis, cross axis, align-items and justify-content`},{title:`Use gap for consistent spacing`,task:`Use gap: 12px on the card grid and gap: 8px on the toolbar. Remove any margins previously added between individual cards or filter buttons. Then replace gap with row-gap and column-gap separately and observe how horizontal and vertical spacing can be controlled independently.`,learn:`CSS gap, row-gap and column-gap`}],stretch:[`Make the first Pokémon card span two columns using grid-column: span 2. Then make it span two rows using grid-row: span 2. Verify that the remaining cards reposition automatically.`,`Use grid-template-areas to create a layout with a header, filter toolbar and Pokémon grid. Change the layout at a mobile breakpoint using a media query without changing the HTML.`,`Use CSS Grid auto-fit instead of auto-fill. Compare the two behaviours when there are only two Pokémon cards in a wide container. Explain the difference.`],starter:`.dex {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 12px;
@@ -105,13 +104,13 @@ console.log(field.validity.rangeUnderflow, field.validationMessage);`,covers:[`h
 
 .toolbar {
   display: flex;
-  flex-wrap: wrap; /* chips wrap instead of overflowing */
-  align-items: center; /* cross axis */
+  flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
 }
 
 .toolbar__search {
-  margin-left: auto; /* pushes the search to the far edge */
+  margin-left: auto;
 }`,covers:[`css-11`,`css-4`]},{id:`css-sticky-filter`,category:`css`,title:`Pin the filter bar while the list scrolls`,summary:`relative, absolute, fixed and sticky, each demonstrated on the same element.`,durationMinutes:30,prompt:`The type filter bar has to stay reachable while you scroll through 151 cards. Take one element and step it through all four position values, watching what each one actually anchors to.`,endpoints:[{path:`/type/{type}`,note:`Filter chip state that stays pinned`}],steps:[{title:`Watch each position value on one element`,task:`Apply static, then relative, then absolute, then fixed, then sticky to the filter bar and log getComputedStyle(bar).position plus its boundingClientRect().top at scroll position 0 and after scrolling 500px. Relative keeps its slot but moves visually; absolute leaves the flow and anchors to the nearest positioned ancestor; fixed anchors to the viewport; sticky only sticks once you hit its threshold and stays inside its parent.`,learn:`Difference between position: relative, absolute, fixed and sticky`},{title:`Find the containing block`,task:`Give the filter bar position: absolute inside a container that is position: relative, then remove the relative and watch it jump to a different ancestor. That is the containing block rule, and it is the whole reason sticky silently fails in half the layouts people write.`,learn:`Containing block and positioned ancestors`},{title:`Make sticky actually work`,task:`Sticky needs three things: position: sticky, a top value, and a scrollable ancestor that is not overflow: hidden or overflow: clip. Reproduce the classic bug by adding overflow: hidden to a wrapper and confirm the bar stops sticking, then remove it.`,learn:`Why position: sticky needs overflow visible on ancestors`},{title:`Keep the sticky header from covering content`,task:`Reserve room for the pinned bar with scroll-margin-top on the anchored section and scroll-padding-top on the scrolling container, so a jump-to-card scroll does not hide the card under the header.`,learn:`scroll-padding-top vs scroll-margin-top`}],stretch:[`Pin the first column of the table with position: sticky on both axes.`,`Compare a sticky header with a fixed header in terms of containing-block width and sidebar behaviour.`,`Use position: sticky for a "back to top" bar that only appears after 400px of scroll.`],starter:`.layout {
   overflow-y: auto; /* the scroll container - never overflow: hidden */
   scroll-padding-top: 56px; /* room for the pinned bar */
@@ -1038,4 +1037,4 @@ export class PokemonCard {
 }
 
 // route
-{ path: 'card', loadComponent: () => import('./pokemon-card/pokemon-card').then((m) => m.PokemonCard) }`,covers:[`misc-6`,`angular-26`]}];var W=[...p,...u,...m,...f,...g,...y,...w,...b];var v=class i{minutes=LP.required();formatted=zD(()=>{let a=this.minutes(),e=Math.floor(a/60),t=a%60;return e?t?`${e} hr ${t} min`:`${e} hr`:`${t} min`});static ɵfac=function(e){return new(e||i)};static ɵcmp=WE({type:i,selectors:[[`app-poc-duration`]],inputs:{minutes:[1,`minutes`]},decls:7,vars:1,consts:[[1,`poc-duration`,`inline-flex`,`items-center`,`gap-1`,`whitespace-nowrap`,`text-(--mat-sys-primary)`],[1,`sr-only`],[`aria-hidden`,`true`,1,`material-symbols-outlined`],[`data-testid`,`duration`]],template:function(e,t){e&1&&(Oc(0,`span`,0)(1,`span`,1),xD(2,`Takes about`),kc(),Oc(3,`span`,2),xD(4,`timer`),kc(),Oc(5,`span`,3),xD(6),kc()()),e&2&&(Iv(6),ih(t.formatted()))},encapsulation:2})};export{v as n,W as t};
+{ path: 'card', loadComponent: () => import('./pokemon-card/pokemon-card').then((m) => m.PokemonCard) }`,covers:[`misc-6`,`angular-26`]}];var U=[...p,...u,...m,...f,...g,...y,...w,...b];var v=class s{minutes=LP.required();formatted=zD(()=>{let a=this.minutes(),e=Math.floor(a/60),t=a%60;return e?t?`${e} hr ${t} min`:`${e} hr`:`${t} min`});static ɵfac=function(e){return new(e||s)};static ɵcmp=WE({type:s,selectors:[[`app-poc-duration`]],inputs:{minutes:[1,`minutes`]},decls:7,vars:1,consts:[[1,`poc-duration`,`inline-flex`,`items-center`,`gap-1`,`whitespace-nowrap`,`text-(--mat-sys-primary)`],[1,`sr-only`],[`aria-hidden`,`true`,1,`material-symbols-outlined`],[`data-testid`,`duration`]],template:function(e,t){e&1&&(Oc(0,`span`,0)(1,`span`,1),xD(2,`Takes about`),kc(),Oc(3,`span`,2),xD(4,`timer`),kc(),Oc(5,`span`,3),xD(6),kc()()),e&2&&(Iv(6),ih(t.formatted()))},encapsulation:2})};export{v as n,U as t};
