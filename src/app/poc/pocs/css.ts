@@ -2,107 +2,50 @@ import { Poc } from '../../../types/poc-type';
 
 export const CSS_POCS: Poc[] = [
   {
-    id: 'css-card-box-model',
-    category: 'css',
-    title: 'The Pokédex card, box model and all',
-    summary: 'Padding vs margin, block vs inline vs inline-block, centring without flex.',
-    durationMinutes: 45,
-    prompt:
-      'Style a Pokédex card from the raw sprite and stats the PokéAPI gives you. Do it with the box model, not with a framework, and be able to say what each declaration is doing.',
-    endpoints: [
-      { path: '/pokemon/{name}', note: 'Sprite, height, weight, types for the card content' },
-    ],
-    steps: [
-      {
-        title: 'Draw the box',
-        task: 'Give the card explicit content-box dimensions and open the Computed > Box Model overlay in DevTools. Walk the four layers (content, padding, border, margin) with a real card and say which one belongs to the element and which one is outside it.',
-        learn: 'What is the CSS box model',
-      },
-      {
-        title: 'Feel the difference between padding and margin',
-        task: 'Put 12px of padding around the sprite inside the card and 12px of margin outside it, then delete both one at a time. Write one sentence for each: padding is space inside the border, margin is space between boxes and it collapses with neighbours.',
-        learn: 'Difference between padding and margin',
-      },
-      {
-        title: 'Switch box-sizing and watch the card change',
-        task: 'Set box-sizing: border-box on the card and set the same width again. With content-box the card gets wider when you add padding and border; with border-box the padding eats into the declared width. Print getComputedStyle(card).width for both so you are not guessing.',
-        learn: 'Why border-box is the sane default',
-      },
-      {
-        title: 'Place the sprite beside the text',
-        task: 'The sprite is 96px and must sit next to the type badges without forcing the badges onto a new line. Compare a div (block, takes the full width, pushes everything down), a span (inline, flows with the text) and inline-block (flows with the text but still accepts width and height). Log the computed display of each so the difference is measurable, not vibes.',
-        learn: 'Difference between block, inline and inline-block',
-      },
-      {
-        title: 'Centre it three different ways',
-        task: 'Centre the card horizontally with margin: 0 auto, then with a flex parent (justify-content: center), then with grid (place-items: center). Explain why margin auto only works on block-level elements that have a width, and why it cannot centre vertically.',
-        learn: 'How to center a block element horizontally',
-      },
-    ],
-    stretch: [
-      'Add a focus ring with outline and show why outline does not affect layout while border does.',
-      'Use logical properties (padding-inline, margin-block) and flip direction: rtl.',
-      'Read the box model with getBoxQuads() instead of eyeballing it.',
-    ],
-    starter: `.card {
-  box-sizing: border-box; /* content-box is the default */
-  width: 260px;
-  padding: 12px;
-  border: 1px solid;
-  border-radius: 12px;
-  margin-inline: auto; /* centred horizontally */
-}
-
-.card__sprite {
-  width: 96px;
-  height: 96px;
-  display: inline-block; /* flows beside the text, still sized */
-  vertical-align: middle;
-}
-
-.card__name {
-  display: inline-block;
-}`,
-    covers: ['css-1', 'css-2', 'css-3', 'css-5'],
-  },
-  {
     id: 'css-dex-layout',
     category: 'css',
     title: 'Grid for the dex, Flexbox for the toolbar',
-    summary: 'Choosing between Grid and Flexbox, and reading align-items vs justify-content.',
+    summary:
+      'Build a responsive Pokémon card grid and a filter toolbar using CSS Grid and Flexbox.',
     durationMinutes: 60,
     prompt:
-      'Two layouts in one screen: a wrapping grid of Pokémon cards, and a horizontal toolbar of type filters with a search box at the end. Pick the right tool for each and stop reaching for the wrong one.',
+      'Build two layouts on the Pokédex screen: a responsive grid displaying Pokémon cards and a toolbar containing Pokémon type filter chips and a search input. Use CSS Grid for the cards and Flexbox for the toolbar. The toolbar should have chips like All (20), Fire (12), Water (35), Grass (14) and Flying (8), with one chip visually selected at a time. Each type chip displays the total number of Pokémon belonging to that type, not the number of Pokémon currently displayed. Clicking a chip changes the selected state. Understand how Grid and Flexbox handle spacing, alignment and responsiveness.',
     endpoints: [
-      { path: '/pokemon?limit=', note: 'Card data for the grid' },
-      { path: '/type/{type}', note: 'Count of members per filter chip' },
+      {
+        path: '/pokemon?limit=20',
+        note: 'Use the results array from the API response to render Pokémon names as individual cards inside the CSS Grid. The search input should filter these 20 Pokémon by name on the client side.',
+      },
+      {
+        path: '/type/{type}',
+        note: 'Use the pokemon array length from each type API response to display the total Pokémon count on the corresponding filter chip. For example, /type/fire gives the count for Fire, /type/water gives the count for Water and /type/grass gives the count for Grass. The count remains the same when a chip is selected. Only the selected chip styling changes.',
+      },
     ],
     steps: [
       {
-        title: 'Build the card grid with Grid',
-        task: 'Use display: grid with grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) so the number of columns is decided by the container width, not by breakpoints. Then try grid-template-columns: repeat(3, 1fr) and see why that one breaks on a phone. Log the resolved column count with getComputedStyle(grid).gridTemplateColumns.',
-        learn: 'When would you use CSS Grid and when Flexbox',
+        title: 'Build a responsive Pokémon card grid',
+        task: 'Fetch Pokémon using /pokemon?limit=20. Use the results array to render Pokémon names as individual cards inside a container. Set display: grid and use grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) with gap: 12px. Resize the browser and verify that the number of columns changes automatically without writing media queries. Then try repeat(3, 1fr) and observe what happens on smaller screens.',
+        learn: 'CSS Grid, repeat(), auto-fill, minmax() and responsive layouts',
       },
       {
-        title: 'Build the toolbar with Flexbox',
-        task: 'The same wrapper as display: flex, with flex-wrap: wrap so the chips wrap instead of overflowing, and margin-left: auto on the search box to push it to the far edge. Explain that Grid lays out in two dimensions and Flexbox lays out in one.',
-        learn: 'Grid vs Flexbox',
+        title: 'Build the filter toolbar with Flexbox',
+        task: 'Create a horizontal toolbar containing type filter chips and a search input. Include chips such as All (20), Fire (12), Water (35), Grass (14) and Flying (8). Fetch the type data using /type/{type} and use the length of its pokemon array to display the count on each corresponding chip. For All, display the total number of Pokémon returned by the list API (results.length). Maintain a selectedType signal so that only one chip appears selected at a time. Clicking another chip should update the selected styling without changing the counts. Set display: flex, flex-wrap: wrap, align-items: center and gap: 8px. Give the search input margin-left: auto so it moves to the right when space is available. Resize the browser and verify that the chips wrap onto another line instead of overflowing.',
+        learn: 'Flexbox, flex-wrap, margin-left: auto, gap and selected states',
       },
       {
-        title: 'Separate the two axes',
-        task: 'On the flex toolbar, change align-items between center, flex-start and stretch and watch only the cross axis move, then change justify-content between flex-start, center and space-between and watch only the main axis move. Write down which axis is which for row-direction.',
-        learn: 'What do align-items and justify-content do in flexbox',
+        title: 'Understand the two alignment axes',
+        task: 'On the toolbar, keep flex-direction: row. Change align-items between center, flex-start and stretch. Observe how the children move vertically. Then change justify-content between flex-start, center and space-between. Observe how the children move horizontally. Identify the main axis and cross axis for row and column directions.',
+        learn: 'Main axis, cross axis, align-items and justify-content',
       },
       {
-        title: 'Use gap instead of margin hacks',
-        task: 'Space the grid cells and the chips with gap and delete the :nth-child / last-child margin overrides you wrote first. Then add row-gap different from column-gap and explain why margin collapsing never applies inside a grid.',
-        learn: 'Why gap beats margin for spacing',
+        title: 'Use gap for consistent spacing',
+        task: 'Use gap: 12px on the card grid and gap: 8px on the toolbar. Remove any margins previously added between individual cards or filter buttons. Then replace gap with row-gap and column-gap separately and observe how horizontal and vertical spacing can be controlled independently.',
+        learn: 'CSS gap, row-gap and column-gap',
       },
     ],
     stretch: [
-      'Make the first card span two columns and two rows with grid-column / grid-row.',
-      'Use grid-template-areas to switch the whole layout at a breakpoint with no extra markup.',
-      'Swap the grid for subgrid so the cards share one row height.',
+      'Make the first Pokémon card span two columns using grid-column: span 2. Then make it span two rows using grid-row: span 2. Verify that the remaining cards reposition automatically.',
+      'Use grid-template-areas to create a layout with a header, filter toolbar and Pokémon grid. Change the layout at a mobile breakpoint using a media query without changing the HTML.',
+      'Use CSS Grid auto-fit instead of auto-fill. Compare the two behaviours when there are only two Pokémon cards in a wide container. Explain the difference.',
     ],
     starter: `.dex {
   display: grid;
@@ -112,16 +55,17 @@ export const CSS_POCS: Poc[] = [
 
 .toolbar {
   display: flex;
-  flex-wrap: wrap; /* chips wrap instead of overflowing */
-  align-items: center; /* cross axis */
+  flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
 }
 
 .toolbar__search {
-  margin-left: auto; /* pushes the search to the far edge */
+  margin-left: auto;
 }`,
     covers: ['css-11', 'css-4'],
   },
+
   {
     id: 'css-sticky-filter',
     category: 'css',
