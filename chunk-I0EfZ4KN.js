@@ -367,40 +367,85 @@ export class FavouritesSyncService implements OnDestroy {
 }
 
 // Production code should also validate incoming message data
-// and handle storage/JSON errors. This service is a learning starter.`,covers:[`js-25`]},{id:`js-polyfill-map`,category:`javascript`,title:`Rebuild array methods and bind as JavaScript practice in Angular`,summary:`Implement map, filter, reduce and bind as standalone utilities, then test their edge cases.`,durationMinutes:60,prompt:`Use your Angular Pokédex project as the test environment, but implement these exercises as standalone JavaScript or TypeScript utility functions. Rebuild selected native methods and compare them with the built-ins. Do not overwrite built-in prototypes in your application; keep your implementations as named utilities and test them independently.`,endpoints:[{path:`/pokemon?limit=151`,note:`The list you transform with your own methods`},{path:`/pokemon/{id}`,note:`Per-Pokémon data for the reduce and bind exercises`}],steps:[{title:`Write the contract before the code`,task:`Before coding, write down the behaviour you intend to support for map, filter and reduce: what happens when the receiver is null or undefined, when the callback is not a function, which arguments the callback receives, how thisArg works, how sparse-array holes are handled, and what happens when reduce receives an empty array without an initial value. Use MDN or the ECMAScript specification to check your list before implementing.`,learn:`What is a polyfill, and which details of the built-in contract matter`},{title:`Implement map against the list`,task:`Implement a named myMap() utility. Validate the receiver and callback, capture the array-like length once, skip indexes that do not exist, call the callback with value, index and the original collection, and return a new array. Test normal arrays, sparse arrays, strings and array-like objects. Keep the function separate from Array.prototype.map so you can compare both implementations.`,learn:`How this, prototypes and sparse arrays behave in practice`},{title:`Implement filter and reduce`,task:`Implement myFilter() so it skips holes and preserves the order of matching values. Implement myReduce() so it throws when the collection is empty and no initial value is supplied, and so it starts with the first present index when the initial value is omitted. Test both functions with your Pokémon data and compare their results with the native methods.`,learn:`The edge cases that separate a working polyfill from a spec-shaped one`},{title:`Rebuild bind, not just call`,task:`Implement myBind() as a separate utility that presets a receiver and optional leading arguments, then returns a function that accepts the remaining arguments. Test multiple calls with different trailing arguments. Then use the returned function with new and investigate why a faithful bind implementation must account for constructor calls and the new.target behaviour. Do not treat a simplified implementation as a complete polyfill.`,learn:`How call, apply and bind work under the hood`},{title:`Install it without polluting the page`,task:`Do not install your methods on Array.prototype in the Angular application. As a separate experiment only, feature-detect a custom method and use Object.defineProperty() to make it non-enumerable. Inspect Object.keys(Array.prototype) and a for...in loop. Explain why production libraries usually prefer ponyfills (standalone functions) over modifying built-in prototypes.`,learn:`Feature detection, defineProperty and when a global patch is unsafe`},{title:`Prove the behaviour with tests`,task:`Write unit tests for normal input, empty input, sparse input, invalid callbacks, thisArg and array-like receivers. Run each test against both the native method and your implementation. Compare array length, missing indexes, returned values and thrown errors; JSON.stringify alone is not sufficient to detect sparse-array differences. Use the test runner configured in your Angular project.`,learn:`How to test a polyfill against the behaviour it is replacing`}],stretch:[`Polyfill Promise.all, keeping results in input order and rejecting on the first failure.`,`Write debounce and throttle with a cancel method, and test them with fake timers.`,`Implement a deep clone that handles cycles, arrays and Date, and explain what structuredClone still does better.`,`Write Object.create and explain how its prototype argument differs from a class constructor.`],starter:`// Start with a named ponyfill so the native method stays available.
-function myMap(callback, thisArg) {
-  if (this == null) throw new TypeError('myMap called on null or undefined');
-  if (typeof callback !== 'function') throw new TypeError('callback is not a function');
-
-  const O = Object(this);
-  const len = Math.min(Math.max(Math.trunc(Number(O.length)) || 0, 0), Number.MAX_SAFE_INTEGER);
-  const result = new Array(len);
-
-  for (let i = 0; i < len; i++) {
-    if (i in O) {
-      result[i] = callback.call(thisArg, O[i], i, O);
-    }
+// and handle storage/JSON errors. This service is a learning starter.`,covers:[`js-25`]},{id:`js-polyfill-map`,category:`javascript`,title:`Implement map, filter, reduce and bind`,summary:`Rebuild common JavaScript methods with basic validation, error handling and practical test cases.`,durationMinutes:45,prompt:`Use your Angular Pokédex project as a testing environment. Implement simplified versions of map, filter, reduce and bind as standalone utility functions. Include input validation, meaningful error handling and basic edge cases. Do not modify native JavaScript prototypes.`,endpoints:[{path:`/pokemon?limit=151`,note:`Use Pokémon data for array transformations`}],steps:[{title:`Implement map()`,task:`Create myMap(array, callback). Validate that the input is an array and the callback is a function. Return a new array containing the callback results. Handle empty arrays and callback errors gracefully. Test with Pokémon names and IDs.`,learn:`Array transformation, callbacks, validation and error propagation.`},{title:`Implement filter()`,task:`Create myFilter(array, callback). Validate the inputs, return a new array containing matching elements, and preserve the original array. Test filtering Pokémon by type, name and ID. Check what happens when the callback throws an error.`,learn:`Conditional filtering and callback execution.`},{title:`Implement reduce()`,task:`Create myReduce(array, callback, initialValue). Validate the array and callback. Require an initial value in your simplified implementation. Accumulate a result and handle empty arrays. Use it to count Pokémon by type and calculate totals.`,learn:`Accumulation, initial values and error handling.`},{title:`Implement bind()`,task:`Create myBind(fn, context). Validate that fn is a function and context is an object or function. Return a new function that invokes the original function with the supplied context. Support passing additional arguments when the returned function is called. Test using a Pokémon object and a method that accesses its properties.`,learn:`The this keyword, closures, function context and arguments.`},{title:`Test edge cases`,task:`Test all implementations with empty arrays, invalid inputs, missing callbacks and callbacks that throw errors. Verify that the original arrays remain unchanged. Compare your implementations with the native JavaScript methods and understand the differences.`,learn:`Defensive programming, error propagation and native JavaScript behaviour.`}],stretch:[`Implement forEach() with input validation.`,`Implement find() and some() using loops.`,`Extend myReduce() to support an optional initial value.`,`Investigate how native bind() behaves when used with the new keyword.`],starter:`// myMap
+function myMap(array, callback) {
+  if (!Array.isArray(array)) {
+    throw new TypeError('Expected an array');
   }
+
+  if (typeof callback !== 'function') {
+    throw new TypeError('Callback must be a function');
+  }
+
+  const result = [];
+
+  for (let i = 0; i < array.length; i++) {
+    result.push(callback(array[i], i, array));
+  }
+
   return result;
 }
 
-// The table you have to make pass:
-const cases = [
-  [1, 2, 3],
-  [],
-  [, 1, , 3],
-  'abc',
-  { length: 2, 0: 'a', 1: 'b' },
-];
+// myFilter
+function myFilter(array, callback) {
+  if (!Array.isArray(array)) {
+    throw new TypeError('Expected an array');
+  }
 
-for (const input of cases) {
-  const native = Array.prototype.map.call(input, (value, index) => ({ value, index }));
-  const mine = myMap.call(input, (value, index) => ({ value, index }));
-  // TODO: compare length, holes and values, not just JSON.stringify
-  console.log({ input, native, mine });
+  if (typeof callback !== 'function') {
+    throw new TypeError('Callback must be a function');
+  }
+
+  const result = [];
+
+  for (let i = 0; i < array.length; i++) {
+    if (callback(array[i], i, array)) {
+      result.push(array[i]);
+    }
+  }
+
+  return result;
 }
 
-// Next: myFilter, myReduce, myBind, then the feature-detected install.`,covers:[`js-26`,`js-9`,`js-14`]}];var g=[{id:`css-theme-tokens-angular`,category:`angular`,title:`Build a Light and Dark Theme System in Angular`,summary:`Learn CSS custom properties, Angular signals, component styling, specificity and cascade layers by building a complete theme system.`,durationMinutes:60,prompt:`Build a light and dark theme system for the Angular Pokédex application. The user should be able to switch themes using a button. All colours, shadows, borders and border radii must be controlled through CSS custom properties. Angular signals should manage the selected theme, and CSS should handle the actual appearance changes. The theme must apply consistently across all components without duplicating styles or using !important.`,endpoints:[{path:`/type/{type}`,note:`Use the selected type as a theme key; colours are local CSS tokens.`}],steps:[{title:`Create a central place for theme variables`,task:`Open src/styles.scss, which contains the global styles for your Angular application. Inside :root, define CSS custom properties for the following: --surface, --text-color, --accent-color, --border-color, --card-radius and --card-shadow. Give each variable a light-theme value. Next, open the SCSS file of an existing component, such as your Pokémon card, and replace its hardcoded background and text colours with var(--surface) and var(--text-color). Do the same for its border, radius and shadow. Finally, change the value of --surface in styles.scss and verify that the card updates without modifying its component stylesheet.`,learn:`What are CSS custom properties? What does var() do? Why should shared design tokens be declared globally rather than separately in every component?`},{title:`Add a dark theme using CSS attributes`,task:`In src/styles.scss, create a [data-theme="dark"] selector. Inside it, redefine the same custom properties you created in :root, but give them dark-theme values. Do not create new component selectors or duplicate your existing card styles. For example, change --surface from white to a dark colour and --text-color from dark to white. Manually add data-theme="dark" to your applications root container in app.component.html and verify that the existing components automatically adopt the dark theme. Remove the attribute and verify that the light theme returns.`,learn:`How do CSS custom properties inherit? How does an attribute selector work? Why can the same component stylesheet support multiple themes without duplicating CSS rules?`},{title:`Connect the theme to Angular signals`,task:`Open app.component.ts and create a signal named theme with an initial value of light. Create a toggleTheme() method that switches the signal between light and dark. In app.component.html, bind the root container attribute using [attr.data-theme]="theme()". Add a button with (click)="toggleTheme()". Click the button and verify that the data-theme attribute changes in the browser Elements panel and that the entire application switches themes. Make sure the button remains visible and usable in both themes.`,learn:`How do Angular signals work? What is the difference between [attr.data-theme] and [data-theme]? How does Angular event binding work?`},{title:`Make theme variables available to every component`,task:`Open the SCSS files of at least two different components, such as the Pokémon card and Pokémon details components. Use the global variables you created earlier for their backgrounds, text, borders and shadows. Do not redeclare these variables inside either component. Inspect the rendered elements in browser DevTools and understand how Angulars default ViewEncapsulation.Emulated scopes component styles while still allowing inherited CSS custom properties to reach child elements. As a test, change a global token and verify that both components update.`,learn:`What is ViewEncapsulation.Emulated? How does Angular scope component styles? Why can global CSS custom properties be consumed inside component stylesheets?`},{title:`Understand CSS specificity and fix conflicting styles`,task:`In your global styles.scss, create a .type-chip rule that sets the chip background to red. Then create another rule using #pokemon-details .type-chip that sets the background to blue. Add a chip inside an element with the ID pokemon-details and observe which colour wins. Open browser DevTools, inspect the chip and identify the winning declaration in the Styles panel. Now replace #pokemon-details with a class selector and experiment with the order of the rules. Your goal is to understand why the ID selector wins and why avoiding unnecessary IDs makes styles easier to override. Do not solve the conflict using !important.`,learn:`How is CSS specificity calculated? What happens when two selectors have different specificity? What happens when they have equal specificity? Why are classes generally better than IDs for styling?`},{title:`Organise styles using CSS cascade layers`,task:`In src/styles.scss, declare the following layers in this exact order: @layer base, components, utilities. Move your basic application styles into base, reusable component styles into components, and helper classes into utilities. Now create the same .type-chip selector in both base and utilities, but give each a different background colour. Verify that the utilities declaration wins. Next, increase the specificity of the selector in base and verify that the normal declaration in utilities still wins. This demonstrates that normal declarations in later layers take precedence over earlier layers, even when the earlier selector has higher specificity.`,learn:`What are CSS cascade layers? How do layers affect specificity? How does the order of layers differ from the order of selectors?`}],stretch:[`Use prefers-color-scheme to detect whether the users operating system prefers light or dark mode. Apply that preference when the application first loads.`,`Persist the selected theme in localStorage so refreshing the browser does not reset the users choice.`,`Create a ThemeService using Angular signals. Move the theme signal and toggleTheme() method into the service, then inject it into AppComponent.`,`Add a --type-color CSS custom property and dynamically assign Pokémon type colours using Angular [style.--type-color] binding.`,`Use color-mix() to generate hover and border colours from existing theme tokens instead of defining additional hex values.`,`Use a CSS container query to change the card radius when a Pokémon card is displayed inside a narrow container.`],starter:`/* src/styles.scss */
+// myReduce
+function myReduce(array, callback, initialValue) {
+  if (!Array.isArray(array)) {
+    throw new TypeError('Expected an array');
+  }
+
+  if (typeof callback !== 'function') {
+    throw new TypeError('Callback must be a function');
+  }
+
+  if (arguments.length < 3) {
+    throw new Error('An initial value is required');
+  }
+
+  let accumulator = initialValue;
+
+  for (let i = 0; i < array.length; i++) {
+    accumulator = callback(accumulator, array[i], i, array);
+  }
+
+  return accumulator;
+}
+
+// myBind
+function myBind(fn, context, ...presetArgs) {
+  if (typeof fn !== 'function') {
+    throw new TypeError('Expected a function');
+  }
+
+  return function (...args) {
+    return fn.apply(context, [...presetArgs, ...args]);
+  };
+}
+
+// TODO:
+// 1. Implement myBind tests.
+// 2. Test invalid inputs.
+// 3. Test callbacks that throw errors.
+// 4. Compare results with native methods.`,covers:[`js-26`,`js-9`,`js-14`]}];var g=[{id:`css-theme-tokens-angular`,category:`angular`,title:`Build a Light and Dark Theme System in Angular`,summary:`Learn CSS custom properties, Angular signals, component styling, specificity and cascade layers by building a complete theme system.`,durationMinutes:60,prompt:`Build a light and dark theme system for the Angular Pokédex application. The user should be able to switch themes using a button. All colours, shadows, borders and border radii must be controlled through CSS custom properties. Angular signals should manage the selected theme, and CSS should handle the actual appearance changes. The theme must apply consistently across all components without duplicating styles or using !important.`,endpoints:[{path:`/type/{type}`,note:`Use the selected type as a theme key; colours are local CSS tokens.`}],steps:[{title:`Create a central place for theme variables`,task:`Open src/styles.scss, which contains the global styles for your Angular application. Inside :root, define CSS custom properties for the following: --surface, --text-color, --accent-color, --border-color, --card-radius and --card-shadow. Give each variable a light-theme value. Next, open the SCSS file of an existing component, such as your Pokémon card, and replace its hardcoded background and text colours with var(--surface) and var(--text-color). Do the same for its border, radius and shadow. Finally, change the value of --surface in styles.scss and verify that the card updates without modifying its component stylesheet.`,learn:`What are CSS custom properties? What does var() do? Why should shared design tokens be declared globally rather than separately in every component?`},{title:`Add a dark theme using CSS attributes`,task:`In src/styles.scss, create a [data-theme="dark"] selector. Inside it, redefine the same custom properties you created in :root, but give them dark-theme values. Do not create new component selectors or duplicate your existing card styles. For example, change --surface from white to a dark colour and --text-color from dark to white. Manually add data-theme="dark" to your applications root container in app.component.html and verify that the existing components automatically adopt the dark theme. Remove the attribute and verify that the light theme returns.`,learn:`How do CSS custom properties inherit? How does an attribute selector work? Why can the same component stylesheet support multiple themes without duplicating CSS rules?`},{title:`Connect the theme to Angular signals`,task:`Open app.component.ts and create a signal named theme with an initial value of light. Create a toggleTheme() method that switches the signal between light and dark. In app.component.html, bind the root container attribute using [attr.data-theme]="theme()". Add a button with (click)="toggleTheme()". Click the button and verify that the data-theme attribute changes in the browser Elements panel and that the entire application switches themes. Make sure the button remains visible and usable in both themes.`,learn:`How do Angular signals work? What is the difference between [attr.data-theme] and [data-theme]? How does Angular event binding work?`},{title:`Make theme variables available to every component`,task:`Open the SCSS files of at least two different components, such as the Pokémon card and Pokémon details components. Use the global variables you created earlier for their backgrounds, text, borders and shadows. Do not redeclare these variables inside either component. Inspect the rendered elements in browser DevTools and understand how Angulars default ViewEncapsulation.Emulated scopes component styles while still allowing inherited CSS custom properties to reach child elements. As a test, change a global token and verify that both components update.`,learn:`What is ViewEncapsulation.Emulated? How does Angular scope component styles? Why can global CSS custom properties be consumed inside component stylesheets?`},{title:`Understand CSS specificity and fix conflicting styles`,task:`In your global styles.scss, create a .type-chip rule that sets the chip background to red. Then create another rule using #pokemon-details .type-chip that sets the background to blue. Add a chip inside an element with the ID pokemon-details and observe which colour wins. Open browser DevTools, inspect the chip and identify the winning declaration in the Styles panel. Now replace #pokemon-details with a class selector and experiment with the order of the rules. Your goal is to understand why the ID selector wins and why avoiding unnecessary IDs makes styles easier to override. Do not solve the conflict using !important.`,learn:`How is CSS specificity calculated? What happens when two selectors have different specificity? What happens when they have equal specificity? Why are classes generally better than IDs for styling?`},{title:`Organise styles using CSS cascade layers`,task:`In src/styles.scss, declare the following layers in this exact order: @layer base, components, utilities. Move your basic application styles into base, reusable component styles into components, and helper classes into utilities. Now create the same .type-chip selector in both base and utilities, but give each a different background colour. Verify that the utilities declaration wins. Next, increase the specificity of the selector in base and verify that the normal declaration in utilities still wins. This demonstrates that normal declarations in later layers take precedence over earlier layers, even when the earlier selector has higher specificity.`,learn:`What are CSS cascade layers? How do layers affect specificity? How does the order of layers differ from the order of selectors?`}],stretch:[`Use prefers-color-scheme to detect whether the users operating system prefers light or dark mode. Apply that preference when the application first loads.`,`Persist the selected theme in localStorage so refreshing the browser does not reset the users choice.`,`Create a ThemeService using Angular signals. Move the theme signal and toggleTheme() method into the service, then inject it into AppComponent.`,`Add a --type-color CSS custom property and dynamically assign Pokémon type colours using Angular [style.--type-color] binding.`,`Use color-mix() to generate hover and border colours from existing theme tokens instead of defining additional hex values.`,`Use a CSS container query to change the card radius when a Pokémon card is displayed inside a narrow container.`],starter:`/* src/styles.scss */
 
 :root {
   color-scheme: light;
@@ -470,24 +515,132 @@ export class PokemonCard {}
   <img card-media [src]="pokemon.sprites.front_default" [alt]="pokemon.name" />
   <h3 card-body>{{ pokemon.name }}</h3>
   <button card-actions (click)="remove(pokemon)">Remove</button>
-</app-pokemon-card>`,covers:[`angular-21`,`angular-2`,`angular-1`]},{id:`angular-signal-paginator`,category:`angular`,title:`Reusable pagination component`,summary:`Pull your pagination out of the list so any list can use it.`,durationMinutes:90,prompt:`Paginate the PokéAPI list, then pull the pagination out into an <app-paginator> that any list can use. No page index logic is allowed to live inside the list.`,endpoints:[{path:`/pokemon?limit=&offset=`,note:`limit and offset come straight from the component`},{path:`/pokemon/{name}`,note:`Optional detail fetch when the page changes`}],steps:[{title:`Reusable pagination component`,task:`Pull your pagination out into a <app-paginator> that any list can use. Use input.required<number>() for totalItems, input(20) for pageSize, output<number>() for pageChange, and a linkedSignal for the current page. Use computed for totalPages and the page-number buttons (1 2 3 ... 10), so the button list is never state you have to keep in sync by hand.`,learn:`Components, data binding, and the signal input/output APIs`},{title:`linkedSignal for the reset`,task:`Make the current page reset to 1 whenever pageSize changes. Use linkedSignal with pageSize as its source, and make that linkedSignal the paginator’s page state. Because linkedSignal is a writable signal but is not a model() input/output pair, expose pageChange separately if the parent must be notified, or keep page state in the parent and reset it in the page-size change handler. Choose one ownership model and do not maintain two competing page signals. Explain why an effect is unnecessary for this derived reset.`,learn:`linkedSignal, and derived state that resets with its source`},{title:`Keep the data fetch honest`,task:`In the parent, derive offset from the current page and pageSize: offset = (page - 1) * pageSize. Convert the changing request state to an Observable with toObservable(), then use switchMap() to call HttpClient; finally convert the result back to a signal with toSignal(), or bind the Observable with async. Do not call .pipe() directly on a signal or use an effect just to fetch data. Log the offset for three page changes to verify the calculation.`,learn:`constructor vs ngOnInit, and async pipe / toSignal for async data`}],stretch:[`Jump-to-page input that clamps to totalPages.`,`Ellipsis logic so 200 pages still render as 1 ... 24 25 26 ... 200.`,`Disable or hide the edges instead of rendering dead buttons.`,`Keyboard support: Home, End, PageUp, PageDown.`],starter:`@Component({
+</app-pokemon-card>`,covers:[`angular-21`,`angular-2`,`angular-1`]},{id:`angular-signal-paginator`,category:`angular`,title:`Reusable pagination component`,summary:`Extract pagination into a reusable component that any list can use.`,durationMinutes:90,prompt:`Paginate the PokéAPI list, then extract the pagination controls into an <app-paginator> component. The paginator manages its own current page, while the parent manages API requests and data. No page index state or pagination controls should live inside the list component.`,endpoints:[{path:`/pokemon?limit=&offset=`,note:`The parent calculates limit from pageSize and offset from the current page. Both are passed as query parameters to the API.`},{path:`/pokemon/{name}`,note:`Optional detail fetch when a Pokémon is selected.`}],steps:[{title:`Define the reusable paginator component`,task:`Create an <app-paginator> component with a clear parent-child communication contract.
+
+INPUTS (Parent \u2192 Paginator):
+- totalItems: input.required<number>() \u2014 total number of records available. The parent must provide this value using the API response count property.
+- pageSize: input(20) \u2014 number of records displayed per page. This input is optional and defaults to 20 when the parent does not provide it.
+
+OUTPUTS (Paginator \u2192 Parent):
+- pageChange: output<number>() \u2014 emits the newly selected page number whenever the user navigates.
+
+INTERNAL STATE (Paginator only):
+- page: linkedSignal \u2014 tracks the current page and resets to 1 whenever pageSize changes.
+- totalPages: computed \u2014 calculates the total number of pages using totalItems and pageSize.
+- pageNumbers: computed \u2014 generates the page-number buttons.
+
+Implement Previous, numbered page buttons, and Next controls. The parent must not maintain a separate current-page signal. The paginator must not make API requests.`,learn:`Angular component communication, required inputs, default inputs, outputs, and signal APIs.`},{title:`Manage page state using linkedSignal`,task:`Implement the current page using linkedSignal, with pageSize as its source and 1 as its initial/reset value.
+
+Whenever the parent changes pageSize, the paginator must automatically reset its current page to 1.
+
+Implement a setPage() method that:
+1. Accepts the requested page number.
+2. Clamps it between 1 and totalPages.
+3. Updates the internal page signal.
+4. Emits the selected page through pageChange.
+
+Do not emit pageChange if the selected page has not changed.
+
+IMPORTANT: linkedSignal is writable, but it does not automatically emit an output. You must explicitly emit pageChange when the user navigates. Do not create a second page signal in the parent just to track the same state.
+
+Explain why linkedSignal is more appropriate than an effect for resetting derived state.`,learn:`linkedSignal, writable derived state, state ownership, and avoiding unnecessary effects.`},{title:`Connect limit and offset to the PokéAPI`,task:`Implement API pagination in the parent list component. The parent is responsible for constructing the API request using the page information received from the paginator.
+
+FIRST: Understand the API response.
+
+The initial request to /pokemon returns an object containing:
+- count: total number of Pok\xE9mon available.
+- results: Pok\xE9mon returned for the current page.
+- next: URL for the next page, if available.
+- previous: URL for the previous page, if available.
+
+Use count as the totalItems input for the paginator. Do not use results.length because it only represents the records on the current page.
+
+SECOND: Connect the parent to the paginator.
+
+- Pass the API count property into [totalItems].
+- Pass a page size of 20 into [pageSize], or omit it to use the default.
+- Listen to (pageChange) to receive the selected page number.
+
+THIRD: Calculate the API query parameters.
+
+Use these formulas in the parent:
+
+limit = pageSize
+offset = (currentPage - 1) * pageSize
+
+The limit determines how many Pok\xE9mon the API returns per request. The offset determines how many records to skip before returning results.
+
+For pageSize = 20, the requests should be:
+
+Page 1 \u2192 limit=20, offset=0
+Page 2 \u2192 limit=20, offset=20
+Page 3 \u2192 limit=20, offset=40
+Page 4 \u2192 limit=20, offset=60
+
+For example, selecting page 3 should produce:
+GET /pokemon?limit=20&offset=40
+
+FOURTH: Implement reactive API fetching.
+
+1. Maintain the current API request parameters in the parent using signals. The parent does not need to maintain the paginator current-page state; it only needs the latest request parameters.
+2. Use toObservable() to convert the changing request state into an Observable.
+3. Use switchMap() to call HttpClient whenever the request parameters change.
+4. Convert the resulting Observable back into a signal using toSignal(), or bind it with the async pipe.
+5. When pageChange emits a new page, update the request parameters with the new limit and calculated offset.
+6. When pageSize changes, reset the request to page 1 with offset 0 and the new limit.
+
+IMPORTANT:
+- The paginator never calls the API.
+- The parent never duplicates the paginator current-page signal.
+- limit comes from pageSize.
+- offset comes from (currentPage - 1) * pageSize.
+- Use switchMap so outdated requests are cancelled when the user changes pages quickly.
+- Do not call .pipe() directly on a signal or use an effect just to fetch data.
+
+FINALLY: Log the limit and offset for three different page changes and verify that the API returns the expected records.`,learn:`PokéAPI pagination, limit and offset, reactive request state, toObservable, switchMap, toSignal, and async pipe.`},{title:`Verify component reusability`,task:`Test the paginator independently from the Pok\xE9dex list.
+
+1. Use the same <app-paginator> with a different list of data.
+2. Pass a different totalItems value.
+3. Pass a different pageSize value, such as 10.
+4. Verify that the page count updates automatically.
+5. Verify that changing pageSize resets the current page to 1.
+6. Verify that the parent receives pageChange whenever the user navigates.
+
+The paginator must work without knowing anything about Pok\xE9mon or Pok\xE9API.`,learn:`Reusable component design, separation of concerns, and testing component contracts.`}],stretch:[`Add a jump-to-page input that clamps values between 1 and totalPages.`,`Implement ellipsis logic so 200 pages render as 1 ... 24 25 26 ... 200.`,`Disable or hide navigation edges instead of rendering dead buttons.`,`Add keyboard support: Home, End, PageUp, PageDown.`,`Allow the parent to configure pageSize options such as 10, 20, 50, and 100.`],starter:`@Component({
   selector: 'app-paginator',
   template: \`
-    <button [disabled]="page() === 1" (click)="setPage(page() - 1)">Previous</button>
+    <button
+      [disabled]="page() === 1"
+      (click)="setPage(page() - 1)">
+      Previous
+    </button>
 
     @for (p of pageNumbers(); track p) {
-      <button [attr.aria-current]="p === page() ? 'page' : null" (click)="setPage(p)">{{ p }}</button>
+      <button
+        [attr.aria-current]="p === page() ? 'page' : null"
+        (click)="setPage(p)">
+        {{ p }}
+      </button>
     } @empty {
       <span>No results</span>
     }
 
-    <button [disabled]="page() === totalPages()" (click)="setPage(page() + 1)">Next</button>
+    <button
+      [disabled]="page() === totalPages()"
+      (click)="setPage(page() + 1)">
+      Next
+    </button>
   \`,
 })
 export class Paginator {
+  // INPUTS: Parent \u2192 Paginator
   readonly totalItems = input.required<number>();
   readonly pageSize = input(20);
+
+  // OUTPUT: Paginator \u2192 Parent
   readonly pageChange = output<number>();
+
+  // INTERNAL STATE
   readonly page = linkedSignal({
     source: this.pageSize,
     computation: () => 1,
@@ -496,23 +649,48 @@ export class Paginator {
   readonly totalPages = computed(() =>
     Math.max(1, Math.ceil(this.totalItems() / this.pageSize())),
   );
+
   readonly pageNumbers = computed(() =>
-    Array.from({ length: this.totalPages() }, (_, index) => index + 1),
+    Array.from(
+      { length: this.totalPages() },
+      (_, index) => index + 1,
+    ),
   );
 
   setPage(nextPage: number): void {
-    const clamped = Math.min(this.totalPages(), Math.max(1, nextPage));
+    const clamped = Math.min(
+      this.totalPages(),
+      Math.max(1, nextPage),
+    );
+
+    if (clamped === this.page()) return;
+
     this.page.set(clamped);
     this.pageChange.emit(clamped);
   }
 }
 
-// This version keeps page state inside the paginator.
-// Parent listens to (pageChange) and combines the emitted page with its
-// pageSize input to calculate offset = (page - 1) * pageSize.
-// When pageSize changes, the linkedSignal resets the page to 1 but does not
-// emit pageChange, so the parent should reset its request state when it
-// changes pageSize.`,covers:[`angular-5`,`angular-16`,`angular-17`,`angular-1`,`signals-1`,`signals-8`]},{id:`angular-star-rating`,category:`angular`,title:`Star rating component that works inside a form`,summary:`Signal inputs for configuration, then ControlValueAccessor for reactive-form integration.`,durationMinutes:75,prompt:`Build a 5-star rating with a hover preview, then make it work inside a reactive form. The hover state must never leak into the saved value.`,endpoints:[{path:`/pokemon/{name}`,note:`Persist the rating per Pokémon`},{path:`/pokemon?limit=`,note:`Show the average rating in a summary row`}],steps:[{title:`Star rating component`,task:`A 5-star rating with hover preview, usable in a form. Start with a local signal for the value and transformed input() values for max and readonly. Then implement ControlValueAccessor for reactive forms. Do not combine model() as the public value API with ControlValueAccessor for the same value; choose one integration contract for each usage.`,learn:`@Input and @Output, and how the signal APIs change them`},{title:`Local hover state plus one computed`,task:`Keep a local signal for the hovered star, and a computed for what to display (hover preview while hovering, actual value otherwise). The computed is what the template reads, so the rule "hover never becomes the value" lives in one readable line instead of scattered ngIfs.`,learn:`Data binding and derived state`},{title:`Make it form-compatible`,task:`Wrap it in a form with FormControl and control.valueChanges. Then add NG_VALUE_ACCESSOR to the star component: writeValue, registerOnChange, registerOnTouched, setDisabledState. Push the value from registerOnChange, never by writing to the control directly, and decide whether 0 is valid; add Validators.min(1) if a rating is required, or leave 0 valid for an optional rating.`,learn:`Reusable form input that works with ngModel and reactive forms`}],stretch:[`Half stars by splitting each star into two hit areas and storing 0.5 steps.`,`Keyboard support: arrow keys change the value, Home resets, Space sets it.`,`Use a labelled radiogroup with an accessible name for each star and aria-checked/aria-pressed state; do not put interactive buttons inside an element with role="slider".`,`Disable the component from the parent form and see setDisabledState fire.`],starter:`@Component({
+// COMPONENT CONTRACT:
+//
+// Parent \u2192 Paginator:
+//   [totalItems]="totalItems()"
+//   [pageSize]="20"
+//
+// Paginator \u2192 Parent:
+//   (pageChange)="onPageChange($event)"
+//
+// API REQUEST (Parent):
+//   limit = pageSize
+//   offset = (currentPage - 1) * pageSize
+//
+// Example:
+//   Page 1 \u2192 /pokemon?limit=20&offset=0
+//   Page 2 \u2192 /pokemon?limit=20&offset=20
+//   Page 3 \u2192 /pokemon?limit=20&offset=40
+//
+// The paginator owns its page state.
+// The parent owns the API request state.
+// The paginator never calls the API.`,covers:[`angular-5`,`angular-16`,`angular-17`,`angular-1`,`signals-1`,`signals-8`]},{id:`angular-star-rating`,category:`angular`,title:`Star rating component that works inside a form`,summary:`Signal inputs for configuration, then ControlValueAccessor for reactive-form integration.`,durationMinutes:75,prompt:`Build a 5-star rating with a hover preview, then make it work inside a reactive form. The hover state must never leak into the saved value.`,endpoints:[{path:`/pokemon/{name}`,note:`Persist the rating per Pokémon`},{path:`/pokemon?limit=`,note:`Show the average rating in a summary row`}],steps:[{title:`Star rating component`,task:`A 5-star rating with hover preview, usable in a form. Start with a local signal for the value and transformed input() values for max and readonly. Then implement ControlValueAccessor for reactive forms. Do not combine model() as the public value API with ControlValueAccessor for the same value; choose one integration contract for each usage.`,learn:`@Input and @Output, and how the signal APIs change them`},{title:`Local hover state plus one computed`,task:`Keep a local signal for the hovered star, and a computed for what to display (hover preview while hovering, actual value otherwise). The computed is what the template reads, so the rule "hover never becomes the value" lives in one readable line instead of scattered ngIfs.`,learn:`Data binding and derived state`},{title:`Make it form-compatible`,task:`Wrap it in a form with FormControl and control.valueChanges. Then add NG_VALUE_ACCESSOR to the star component: writeValue, registerOnChange, registerOnTouched, setDisabledState. Push the value from registerOnChange, never by writing to the control directly, and decide whether 0 is valid; add Validators.min(1) if a rating is required, or leave 0 valid for an optional rating.`,learn:`Reusable form input that works with ngModel and reactive forms`}],stretch:[`Half stars by splitting each star into two hit areas and storing 0.5 steps.`,`Keyboard support: arrow keys change the value, Home resets, Space sets it.`,`Use a labelled radiogroup with an accessible name for each star and aria-checked/aria-pressed state; do not put interactive buttons inside an element with role="slider".`,`Disable the component from the parent form and see setDisabledState fire.`],starter:`@Component({
   selector: 'app-star-rating',
   imports: [Icon],
   providers: [
