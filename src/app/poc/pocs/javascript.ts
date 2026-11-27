@@ -646,88 +646,125 @@ export class FavouritesSyncService implements OnDestroy {
   {
     id: 'js-polyfill-map',
     category: 'javascript',
-    title: 'Rebuild array methods and bind as JavaScript practice in Angular',
+    title: 'Implement map, filter, reduce and bind',
     summary:
-      'Implement map, filter, reduce and bind as standalone utilities, then test their edge cases.',
-    durationMinutes: 60,
+      'Rebuild common JavaScript methods with basic validation, error handling and practical test cases.',
+    durationMinutes: 45,
     prompt:
-      'Use your Angular Pokédex project as the test environment, but implement these exercises as standalone JavaScript or TypeScript utility functions. Rebuild selected native methods and compare them with the built-ins. Do not overwrite built-in prototypes in your application; keep your implementations as named utilities and test them independently.',
-    endpoints: [
-      { path: '/pokemon?limit=151', note: 'The list you transform with your own methods' },
-      { path: '/pokemon/{id}', note: 'Per-Pokémon data for the reduce and bind exercises' },
-    ],
+      'Use your Angular Pokédex project as a testing environment. Implement simplified versions of map, filter, reduce and bind as standalone utility functions. Include input validation, meaningful error handling and basic edge cases. Do not modify native JavaScript prototypes.',
+    endpoints: [{ path: '/pokemon?limit=151', note: 'Use Pokémon data for array transformations' }],
     steps: [
       {
-        title: 'Write the contract before the code',
-        task: `Before coding, write down the behaviour you intend to support for map, filter and reduce: what happens when the receiver is null or undefined, when the callback is not a function, which arguments the callback receives, how thisArg works, how sparse-array holes are handled, and what happens when reduce receives an empty array without an initial value. Use MDN or the ECMAScript specification to check your list before implementing.`,
-        learn: 'What is a polyfill, and which details of the built-in contract matter',
+        title: 'Implement map()',
+        task: `Create myMap(array, callback). Validate that the input is an array and the callback is a function. Return a new array containing the callback results. Handle empty arrays and callback errors gracefully. Test with Pokémon names and IDs.`,
+        learn: 'Array transformation, callbacks, validation and error propagation.',
       },
       {
-        title: 'Implement map against the list',
-        task: `Implement a named myMap() utility. Validate the receiver and callback, capture the array-like length once, skip indexes that do not exist, call the callback with value, index and the original collection, and return a new array. Test normal arrays, sparse arrays, strings and array-like objects. Keep the function separate from Array.prototype.map so you can compare both implementations.`,
-        learn: 'How this, prototypes and sparse arrays behave in practice',
+        title: 'Implement filter()',
+        task: `Create myFilter(array, callback). Validate the inputs, return a new array containing matching elements, and preserve the original array. Test filtering Pokémon by type, name and ID. Check what happens when the callback throws an error.`,
+        learn: 'Conditional filtering and callback execution.',
       },
       {
-        title: 'Implement filter and reduce',
-        task: `Implement myFilter() so it skips holes and preserves the order of matching values. Implement myReduce() so it throws when the collection is empty and no initial value is supplied, and so it starts with the first present index when the initial value is omitted. Test both functions with your Pokémon data and compare their results with the native methods.`,
-        learn: 'The edge cases that separate a working polyfill from a spec-shaped one',
+        title: 'Implement reduce()',
+        task: `Create myReduce(array, callback, initialValue). Validate the array and callback. Require an initial value in your simplified implementation. Accumulate a result and handle empty arrays. Use it to count Pokémon by type and calculate totals.`,
+        learn: 'Accumulation, initial values and error handling.',
       },
       {
-        title: 'Rebuild bind, not just call',
-        task: `Implement myBind() as a separate utility that presets a receiver and optional leading arguments, then returns a function that accepts the remaining arguments. Test multiple calls with different trailing arguments. Then use the returned function with new and investigate why a faithful bind implementation must account for constructor calls and the new.target behaviour. Do not treat a simplified implementation as a complete polyfill.`,
-        learn: 'How call, apply and bind work under the hood',
+        title: 'Implement bind()',
+        task: `Create myBind(fn, context). Validate that fn is a function and context is an object or function. Return a new function that invokes the original function with the supplied context. Support passing additional arguments when the returned function is called. Test using a Pokémon object and a method that accesses its properties.`,
+        learn: 'The this keyword, closures, function context and arguments.',
       },
       {
-        title: 'Install it without polluting the page',
-        task: `Do not install your methods on Array.prototype in the Angular application. As a separate experiment only, feature-detect a custom method and use Object.defineProperty() to make it non-enumerable. Inspect Object.keys(Array.prototype) and a for...in loop. Explain why production libraries usually prefer ponyfills (standalone functions) over modifying built-in prototypes.`,
-        learn: 'Feature detection, defineProperty and when a global patch is unsafe',
-      },
-      {
-        title: 'Prove the behaviour with tests',
-        task: `Write unit tests for normal input, empty input, sparse input, invalid callbacks, thisArg and array-like receivers. Run each test against both the native method and your implementation. Compare array length, missing indexes, returned values and thrown errors; JSON.stringify alone is not sufficient to detect sparse-array differences. Use the test runner configured in your Angular project.`,
-        learn: 'How to test a polyfill against the behaviour it is replacing',
+        title: 'Test edge cases',
+        task: `Test all implementations with empty arrays, invalid inputs, missing callbacks and callbacks that throw errors. Verify that the original arrays remain unchanged. Compare your implementations with the native JavaScript methods and understand the differences.`,
+        learn: 'Defensive programming, error propagation and native JavaScript behaviour.',
       },
     ],
     stretch: [
-      'Polyfill Promise.all, keeping results in input order and rejecting on the first failure.',
-      'Write debounce and throttle with a cancel method, and test them with fake timers.',
-      'Implement a deep clone that handles cycles, arrays and Date, and explain what structuredClone still does better.',
-      'Write Object.create and explain how its prototype argument differs from a class constructor.',
+      'Implement forEach() with input validation.',
+      'Implement find() and some() using loops.',
+      'Extend myReduce() to support an optional initial value.',
+      'Investigate how native bind() behaves when used with the new keyword.',
     ],
-    starter: `// Start with a named ponyfill so the native method stays available.
-function myMap(callback, thisArg) {
-  if (this == null) throw new TypeError('myMap called on null or undefined');
-  if (typeof callback !== 'function') throw new TypeError('callback is not a function');
-
-  const O = Object(this);
-  const len = Math.min(Math.max(Math.trunc(Number(O.length)) || 0, 0), Number.MAX_SAFE_INTEGER);
-  const result = new Array(len);
-
-  for (let i = 0; i < len; i++) {
-    if (i in O) {
-      result[i] = callback.call(thisArg, O[i], i, O);
-    }
+    starter: `// myMap
+function myMap(array, callback) {
+  if (!Array.isArray(array)) {
+    throw new TypeError('Expected an array');
   }
+
+  if (typeof callback !== 'function') {
+    throw new TypeError('Callback must be a function');
+  }
+
+  const result = [];
+
+  for (let i = 0; i < array.length; i++) {
+    result.push(callback(array[i], i, array));
+  }
+
   return result;
 }
 
-// The table you have to make pass:
-const cases = [
-  [1, 2, 3],
-  [],
-  [, 1, , 3],
-  'abc',
-  { length: 2, 0: 'a', 1: 'b' },
-];
+// myFilter
+function myFilter(array, callback) {
+  if (!Array.isArray(array)) {
+    throw new TypeError('Expected an array');
+  }
 
-for (const input of cases) {
-  const native = Array.prototype.map.call(input, (value, index) => ({ value, index }));
-  const mine = myMap.call(input, (value, index) => ({ value, index }));
-  // TODO: compare length, holes and values, not just JSON.stringify
-  console.log({ input, native, mine });
+  if (typeof callback !== 'function') {
+    throw new TypeError('Callback must be a function');
+  }
+
+  const result = [];
+
+  for (let i = 0; i < array.length; i++) {
+    if (callback(array[i], i, array)) {
+      result.push(array[i]);
+    }
+  }
+
+  return result;
 }
 
-// Next: myFilter, myReduce, myBind, then the feature-detected install.`,
+// myReduce
+function myReduce(array, callback, initialValue) {
+  if (!Array.isArray(array)) {
+    throw new TypeError('Expected an array');
+  }
+
+  if (typeof callback !== 'function') {
+    throw new TypeError('Callback must be a function');
+  }
+
+  if (arguments.length < 3) {
+    throw new Error('An initial value is required');
+  }
+
+  let accumulator = initialValue;
+
+  for (let i = 0; i < array.length; i++) {
+    accumulator = callback(accumulator, array[i], i, array);
+  }
+
+  return accumulator;
+}
+
+// myBind
+function myBind(fn, context, ...presetArgs) {
+  if (typeof fn !== 'function') {
+    throw new TypeError('Expected a function');
+  }
+
+  return function (...args) {
+    return fn.apply(context, [...presetArgs, ...args]);
+  };
+}
+
+// TODO:
+// 1. Implement myBind tests.
+// 2. Test invalid inputs.
+// 3. Test callbacks that throw errors.
+// 4. Compare results with native methods.`,
     covers: ['js-26', 'js-9', 'js-14'],
   },
 ];

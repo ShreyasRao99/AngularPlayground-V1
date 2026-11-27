@@ -187,58 +187,100 @@ export class PokemonCard {}
     id: 'angular-signal-paginator',
     category: 'angular',
     title: 'Reusable pagination component',
-    summary: 'Pull your pagination out of the list so any list can use it.',
+    summary: 'Extract pagination into a reusable component that any list can use.',
     durationMinutes: 90,
+
     prompt:
-      'Paginate the PokéAPI list, then pull the pagination out into an <app-paginator> that any list can use. No page index logic is allowed to live inside the list.',
+      'Paginate the PokéAPI list, then extract the pagination controls into an <app-paginator> component. The paginator manages its own current page, while the parent manages API requests and data. No page index state or pagination controls should live inside the list component.',
+
     endpoints: [
       {
         path: '/pokemon?limit=&offset=',
-        note: 'limit and offset come straight from the component',
+        note: 'The parent calculates limit from pageSize and offset from the current page. Both are passed as query parameters to the API.',
       },
-      { path: '/pokemon/{name}', note: 'Optional detail fetch when the page changes' },
+      {
+        path: '/pokemon/{name}',
+        note: 'Optional detail fetch when a Pokémon is selected.',
+      },
     ],
+
     steps: [
       {
-        title: 'Reusable pagination component',
-        task: 'Pull your pagination out into a <app-paginator> that any list can use. Use input.required<number>() for totalItems, input(20) for pageSize, output<number>() for pageChange, and a linkedSignal for the current page. Use computed for totalPages and the page-number buttons (1 2 3 ... 10), so the button list is never state you have to keep in sync by hand.',
-        learn: 'Components, data binding, and the signal input/output APIs',
+        title: 'Define the reusable paginator component',
+        task: 'Create an <app-paginator> component with a clear parent-child communication contract.\n\nINPUTS (Parent → Paginator):\n- totalItems: input.required<number>() — total number of records available. The parent must provide this value using the API response count property.\n- pageSize: input(20) — number of records displayed per page. This input is optional and defaults to 20 when the parent does not provide it.\n\nOUTPUTS (Paginator → Parent):\n- pageChange: output<number>() — emits the newly selected page number whenever the user navigates.\n\nINTERNAL STATE (Paginator only):\n- page: linkedSignal — tracks the current page and resets to 1 whenever pageSize changes.\n- totalPages: computed — calculates the total number of pages using totalItems and pageSize.\n- pageNumbers: computed — generates the page-number buttons.\n\nImplement Previous, numbered page buttons, and Next controls. The parent must not maintain a separate current-page signal. The paginator must not make API requests.',
+
+        learn:
+          'Angular component communication, required inputs, default inputs, outputs, and signal APIs.',
       },
+
       {
-        title: 'linkedSignal for the reset',
-        task: 'Make the current page reset to 1 whenever pageSize changes. Use linkedSignal with pageSize as its source, and make that linkedSignal the paginator’s page state. Because linkedSignal is a writable signal but is not a model() input/output pair, expose pageChange separately if the parent must be notified, or keep page state in the parent and reset it in the page-size change handler. Choose one ownership model and do not maintain two competing page signals. Explain why an effect is unnecessary for this derived reset.',
-        learn: 'linkedSignal, and derived state that resets with its source',
+        title: 'Manage page state using linkedSignal',
+        task: 'Implement the current page using linkedSignal, with pageSize as its source and 1 as its initial/reset value.\n\nWhenever the parent changes pageSize, the paginator must automatically reset its current page to 1.\n\nImplement a setPage() method that:\n1. Accepts the requested page number.\n2. Clamps it between 1 and totalPages.\n3. Updates the internal page signal.\n4. Emits the selected page through pageChange.\n\nDo not emit pageChange if the selected page has not changed.\n\nIMPORTANT: linkedSignal is writable, but it does not automatically emit an output. You must explicitly emit pageChange when the user navigates. Do not create a second page signal in the parent just to track the same state.\n\nExplain why linkedSignal is more appropriate than an effect for resetting derived state.',
+
+        learn:
+          'linkedSignal, writable derived state, state ownership, and avoiding unnecessary effects.',
       },
+
       {
-        title: 'Keep the data fetch honest',
-        task: 'In the parent, derive offset from the current page and pageSize: offset = (page - 1) * pageSize. Convert the changing request state to an Observable with toObservable(), then use switchMap() to call HttpClient; finally convert the result back to a signal with toSignal(), or bind the Observable with async. Do not call .pipe() directly on a signal or use an effect just to fetch data. Log the offset for three page changes to verify the calculation.',
-        learn: 'constructor vs ngOnInit, and async pipe / toSignal for async data',
+        title: 'Connect limit and offset to the PokéAPI',
+        task: 'Implement API pagination in the parent list component. The parent is responsible for constructing the API request using the page information received from the paginator.\n\nFIRST: Understand the API response.\n\nThe initial request to /pokemon returns an object containing:\n- count: total number of Pokémon available.\n- results: Pokémon returned for the current page.\n- next: URL for the next page, if available.\n- previous: URL for the previous page, if available.\n\nUse count as the totalItems input for the paginator. Do not use results.length because it only represents the records on the current page.\n\nSECOND: Connect the parent to the paginator.\n\n- Pass the API count property into [totalItems].\n- Pass a page size of 20 into [pageSize], or omit it to use the default.\n- Listen to (pageChange) to receive the selected page number.\n\nTHIRD: Calculate the API query parameters.\n\nUse these formulas in the parent:\n\nlimit = pageSize\noffset = (currentPage - 1) * pageSize\n\nThe limit determines how many Pokémon the API returns per request. The offset determines how many records to skip before returning results.\n\nFor pageSize = 20, the requests should be:\n\nPage 1 → limit=20, offset=0\nPage 2 → limit=20, offset=20\nPage 3 → limit=20, offset=40\nPage 4 → limit=20, offset=60\n\nFor example, selecting page 3 should produce:\nGET /pokemon?limit=20&offset=40\n\nFOURTH: Implement reactive API fetching.\n\n1. Maintain the current API request parameters in the parent using signals. The parent does not need to maintain the paginator current-page state; it only needs the latest request parameters.\n2. Use toObservable() to convert the changing request state into an Observable.\n3. Use switchMap() to call HttpClient whenever the request parameters change.\n4. Convert the resulting Observable back into a signal using toSignal(), or bind it with the async pipe.\n5. When pageChange emits a new page, update the request parameters with the new limit and calculated offset.\n6. When pageSize changes, reset the request to page 1 with offset 0 and the new limit.\n\nIMPORTANT:\n- The paginator never calls the API.\n- The parent never duplicates the paginator current-page signal.\n- limit comes from pageSize.\n- offset comes from (currentPage - 1) * pageSize.\n- Use switchMap so outdated requests are cancelled when the user changes pages quickly.\n- Do not call .pipe() directly on a signal or use an effect just to fetch data.\n\nFINALLY: Log the limit and offset for three different page changes and verify that the API returns the expected records.',
+
+        learn:
+          'PokéAPI pagination, limit and offset, reactive request state, toObservable, switchMap, toSignal, and async pipe.',
+      },
+
+      {
+        title: 'Verify component reusability',
+        task: 'Test the paginator independently from the Pokédex list.\n\n1. Use the same <app-paginator> with a different list of data.\n2. Pass a different totalItems value.\n3. Pass a different pageSize value, such as 10.\n4. Verify that the page count updates automatically.\n5. Verify that changing pageSize resets the current page to 1.\n6. Verify that the parent receives pageChange whenever the user navigates.\n\nThe paginator must work without knowing anything about Pokémon or PokéAPI.',
+
+        learn:
+          'Reusable component design, separation of concerns, and testing component contracts.',
       },
     ],
+
     stretch: [
-      'Jump-to-page input that clamps to totalPages.',
-      'Ellipsis logic so 200 pages still render as 1 ... 24 25 26 ... 200.',
-      'Disable or hide the edges instead of rendering dead buttons.',
-      'Keyboard support: Home, End, PageUp, PageDown.',
+      'Add a jump-to-page input that clamps values between 1 and totalPages.',
+      'Implement ellipsis logic so 200 pages render as 1 ... 24 25 26 ... 200.',
+      'Disable or hide navigation edges instead of rendering dead buttons.',
+      'Add keyboard support: Home, End, PageUp, PageDown.',
+      'Allow the parent to configure pageSize options such as 10, 20, 50, and 100.',
     ],
+
     starter: `@Component({
   selector: 'app-paginator',
   template: \`
-    <button [disabled]="page() === 1" (click)="setPage(page() - 1)">Previous</button>
+    <button
+      [disabled]="page() === 1"
+      (click)="setPage(page() - 1)">
+      Previous
+    </button>
 
     @for (p of pageNumbers(); track p) {
-      <button [attr.aria-current]="p === page() ? 'page' : null" (click)="setPage(p)">{{ p }}</button>
+      <button
+        [attr.aria-current]="p === page() ? 'page' : null"
+        (click)="setPage(p)">
+        {{ p }}
+      </button>
     } @empty {
       <span>No results</span>
     }
 
-    <button [disabled]="page() === totalPages()" (click)="setPage(page() + 1)">Next</button>
+    <button
+      [disabled]="page() === totalPages()"
+      (click)="setPage(page() + 1)">
+      Next
+    </button>
   \`,
 })
 export class Paginator {
+  // INPUTS: Parent → Paginator
   readonly totalItems = input.required<number>();
   readonly pageSize = input(20);
+
+  // OUTPUT: Paginator → Parent
   readonly pageChange = output<number>();
+
+  // INTERNAL STATE
   readonly page = linkedSignal({
     source: this.pageSize,
     computation: () => 1,
@@ -247,23 +289,49 @@ export class Paginator {
   readonly totalPages = computed(() =>
     Math.max(1, Math.ceil(this.totalItems() / this.pageSize())),
   );
+
   readonly pageNumbers = computed(() =>
-    Array.from({ length: this.totalPages() }, (_, index) => index + 1),
+    Array.from(
+      { length: this.totalPages() },
+      (_, index) => index + 1,
+    ),
   );
 
   setPage(nextPage: number): void {
-    const clamped = Math.min(this.totalPages(), Math.max(1, nextPage));
+    const clamped = Math.min(
+      this.totalPages(),
+      Math.max(1, nextPage),
+    );
+
+    if (clamped === this.page()) return;
+
     this.page.set(clamped);
     this.pageChange.emit(clamped);
   }
 }
 
-// This version keeps page state inside the paginator.
-// Parent listens to (pageChange) and combines the emitted page with its
-// pageSize input to calculate offset = (page - 1) * pageSize.
-// When pageSize changes, the linkedSignal resets the page to 1 but does not
-// emit pageChange, so the parent should reset its request state when it
-// changes pageSize.`,
+// COMPONENT CONTRACT:
+//
+// Parent → Paginator:
+//   [totalItems]="totalItems()"
+//   [pageSize]="20"
+//
+// Paginator → Parent:
+//   (pageChange)="onPageChange($event)"
+//
+// API REQUEST (Parent):
+//   limit = pageSize
+//   offset = (currentPage - 1) * pageSize
+//
+// Example:
+//   Page 1 → /pokemon?limit=20&offset=0
+//   Page 2 → /pokemon?limit=20&offset=20
+//   Page 3 → /pokemon?limit=20&offset=40
+//
+// The paginator owns its page state.
+// The parent owns the API request state.
+// The paginator never calls the API.`,
+
     covers: ['angular-5', 'angular-16', 'angular-17', 'angular-1', 'signals-1', 'signals-8'],
   },
   {
