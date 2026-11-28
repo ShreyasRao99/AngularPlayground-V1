@@ -1000,7 +1000,50 @@ export class PokemonWeightEager implements PipeTransform {
     console.count('impure pipe'); // watch this climb
     return \`\${hectograms ?? 0} hg\`;
   }
-}`,covers:[`angular-3`,`angular-35`,`angular-2`]}];var f=[{id:`perf-large-dex-table`,category:`performance`,title:`A 500+ row Pokédex table that stays smooth`,summary:`Change detection, track keys and paging, applied to one real table.`,durationMinutes:90,prompt:`Render a sortable, filterable table of every Pokémon the PokéAPI knows about. Measure it before and after, and be able to name the cost of every change you made.`,endpoints:[{path:`/pokemon?limit=1000&offset=0`,note:`The full list to render`},{path:`/pokemon/{id}`,note:`Per-row detail, if you join it in`}],steps:[{title:`Measure before you touch anything`,task:`Record the time from request start to painted rows with performance.mark/measure around the fetch and the render, and count DOM nodes. Write the number down. Any optimisation you cannot measure is a guess.`,learn:`How do you profile an Angular app and find out what is actually slow`},{title:`Find out how often change detection runs`,task:`Enable the Angular DevTools profiler and watch a single keystroke in the filter box. Count the ticks and how many of them re-render the whole table. Explain why the default strategy checks every component in the tree on every event.`,learn:`How does change detection affect Angular performance`},{title:`OnPush plus a stable track key`,task:`Switch the table to OnPush and make the row data immutable (a new array reference on every change), then give the @for a track expression of the pokemon id rather than $index. Show that re-sorting no longer recreates every row. Note the trap: tracking by $index with mutable data means rows are reused with the wrong identity.`,learn:`The ways to reduce the cost of change detection`},{title:`Keep the template cheap`,task:`Remove the arrow functions from the template ({{ totalWeight() }}) that Angular cannot memoise, replace a method call in the template with a computed, and confirm the pure pipe cache is doing its job by logging inside the pipe. Then do the opposite with impure: true and watch the counter explode.`,learn:`Pure vs impure work in a template`},{title:`Render less instead of rendering faster`,task:`Paginate or window the rows, and defer the off-screen chart or detail panel. Measure again and report the new numbers next to the old ones. Explain why pagination usually beats micro-optimising the row template.`,learn:`Usual causes of a slow app, and how to prioritise which to fix`},{title:`Prove the fix in the numbers`,task:`Re-measure with the same tooling and the same data. Write the summary a stakeholder would read: before, after, what you changed, what you decided not to change.`,learn:`Prioritising performance work`}],stretch:[`Add a virtual scroll viewport so only the visible rows exist in the DOM.`,`Use @defer (on viewport) for a row detail panel and on interaction for the export button.`,`Throttle the sort handler so dragging a column does not thrash the store.`,`Compare zoneless change detection against zone.js for the same interaction.`],starter:`<table mat-table [dataSource]="rows()" class="mat-elevation-z1">
+}`,covers:[`angular-3`,`angular-35`,`angular-2`]},{id:`angular-browse-page`,category:`angular`,title:`Build a browse homepage from a real interview brief`,summary:`Hero, horizontal rows, keyboard navigation and a detail route - the streaming-homepage take-home, in Angular.`,durationMinutes:180,prompt:`A common front-end take-home is "build a streaming service browse page"; interview reports also ask for image carousels, searchable data tables and product pages with loading, empty and error states. Build that page in Angular from PokéAPI data: a hero, several horizontal discovery rows, focus and hover previews, a lazy detail route, search, and keyboard navigation. Keep a short README of your component boundaries and trade-offs, because the code walkthrough is half the exercise.`,endpoints:[{path:`/pokemon?limit=151&offset=0`,note:`The discovery rows`},{path:`/pokemon/{name}`,note:`Detail data for a selected card`},{path:`/pokemon/{name}/encounters`,note:`A slow section to defer`}],steps:[{title:`Clarify the brief and list the edges`,task:`Timebox ten minutes before coding. Write down what happens with no search results, a failed sprite, a very long name, a keyboard-only user, a slow network, an empty row and a deep link to a detail page. Interviewers grade the edges and the questions you ask as much as the happy path.`,learn:`What interviewers grade in a take-home`},{title:`Break the page into components`,task:`Draw the tree: shell, hero, discovery row, card, detail page. Keep the page as the container that fetches and holds one query signal, and make the row and card presentational with signal inputs and an output for selection. Add a second row using the same component to prove it is reusable, and check that no child reaches into a service directly.`,learn:`Component boundaries, inputs and outputs`},{title:`Build the hero and the horizontal rows`,task:`Use Grid for the page sections and Flexbox inside a card. Give every sprite an aspect-ratio box and explicit dimensions so nothing jumps, use overflow-x: auto with scroll-snap for a row, and add previous/next buttons that scroll by roughly one card width. Truncate long names with a title attribute, and check the layout at 360px and at desktop width.`,learn:`Grid versus Flexbox and responsive layout`},{title:`Search with one source of truth`,task:`Hold the query in a single signal and derive the visible rows with computed(). If a keystroke triggers a request instead, debounce the query, distinctUntilChanged it and switchMap so stale responses cannot land. Never store both the query and a separate filtered copy that can drift; add a test that types, deletes a character and gets the same rows back.`,learn:`Derived state instead of duplicated state`},{title:`Make it usable without a mouse`,task:`Make every card a real button or link so Enter opens the detail route, add visible focus rings, arrow keys to move focus across a row, and aria-labels that say which Pokémon a card opens. Add a skip link to the rows. Tab through the whole page with the mouse unplugged and fix anything you cannot reach.`,learn:`Accessibility in a component-based UI`},{title:`Make it feel finished`,task:`Add a skeleton while the first page loads, an empty state for a search with no matches, and a Retry button when the request fails. Lazy-load sprites, defer the slow encounters section with @defer (on viewport), and route to /browse/:name with loadComponent so a deep link opens the detail directly and an unknown name shows a not-found state.`,learn:`Loading, empty and error states, lazy routes`},{title:`Write the walkthrough notes`,task:`Write a README with what you built, the component boundaries, two trade-offs you accepted and what you would do with another hour. Rehearse explaining why the state lives where it does and how you would change the page for 10,000 cards or a slower API. That explanation is the interview.`,learn:`Defending architectural decisions`}],stretch:[`Add infinite scroll on the last row with an IntersectionObserver sentinel and a stable track key.`,`Add a watchlist persisted to localStorage and synced across tabs with BroadcastChannel.`,`Measure LCP and CLS before and after the image changes, and report the numbers in the README.`],starter:`// browse/browse-page.ts - a small container, presentational children
+@Component({
+  selector: 'app-browse-page',
+  standalone: true,
+  imports: [RouterLink, PokemonCard],
+  template: \`
+    <label>
+      Search
+      <input type="search" [value]="query()" (input)="query.set(valueOf($event))" />
+    </label>
+
+    @for (row of visibleRows(); track row.title) {
+      <section [attr.aria-label]="row.title">
+        <h2>{{ row.title }}</h2>
+        <div class="row" role="list">
+          @for (card of row.cards; track card.id) {
+            <app-pokemon-card [card]="card" (open)="open(card)" />
+          }
+        </div>
+      </section>
+    } @empty {
+      <p>No Pok\xE9mon match that search.</p>
+    }
+
+    @if (loading()) { <p role="status">Loading discoveries...</p> }
+    @if (error()) { <button type="button" (click)="reload()">Retry</button> }
+  \`,
+})
+export class BrowsePage {
+  readonly query = signal('');
+  readonly loading = signal(true);
+  readonly error = signal(false);
+  readonly visibleRows = computed(() => this.rows().map((row) => ({
+    ...row,
+    cards: row.cards.filter((card) => card.name.includes(this.query())),
+  })));
+
+  private readonly rows = signal<BrowseRow[]>([]);
+
+  protected valueOf(event: Event): string {
+    return (event.target as HTMLInputElement).value;
+  }
+  // fetch the list once with HttpClient, map it into rows, then clear loading
+}`,covers:[`angular-1`,`angular-5`,`angular-48`,`angular-46`,`css-11`,`html-4`,`performance-16`]}];var f=[{id:`perf-large-dex-table`,category:`performance`,title:`A 500+ row Pokédex table that stays smooth`,summary:`Change detection, track keys and paging, applied to one real table.`,durationMinutes:90,prompt:`Render a sortable, filterable table of every Pokémon the PokéAPI knows about. Measure it before and after, and be able to name the cost of every change you made.`,endpoints:[{path:`/pokemon?limit=1000&offset=0`,note:`The full list to render`},{path:`/pokemon/{id}`,note:`Per-row detail, if you join it in`}],steps:[{title:`Measure before you touch anything`,task:`Record the time from request start to painted rows with performance.mark/measure around the fetch and the render, and count DOM nodes. Write the number down. Any optimisation you cannot measure is a guess.`,learn:`How do you profile an Angular app and find out what is actually slow`},{title:`Find out how often change detection runs`,task:`Enable the Angular DevTools profiler and watch a single keystroke in the filter box. Count the ticks and how many of them re-render the whole table. Explain why the default strategy checks every component in the tree on every event.`,learn:`How does change detection affect Angular performance`},{title:`OnPush plus a stable track key`,task:`Switch the table to OnPush and make the row data immutable (a new array reference on every change), then give the @for a track expression of the pokemon id rather than $index. Show that re-sorting no longer recreates every row. Note the trap: tracking by $index with mutable data means rows are reused with the wrong identity.`,learn:`The ways to reduce the cost of change detection`},{title:`Keep the template cheap`,task:`Remove the arrow functions from the template ({{ totalWeight() }}) that Angular cannot memoise, replace a method call in the template with a computed, and confirm the pure pipe cache is doing its job by logging inside the pipe. Then do the opposite with impure: true and watch the counter explode.`,learn:`Pure vs impure work in a template`},{title:`Render less instead of rendering faster`,task:`Paginate or window the rows, and defer the off-screen chart or detail panel. Measure again and report the new numbers next to the old ones. Explain why pagination usually beats micro-optimising the row template.`,learn:`Usual causes of a slow app, and how to prioritise which to fix`},{title:`Prove the fix in the numbers`,task:`Re-measure with the same tooling and the same data. Write the summary a stakeholder would read: before, after, what you changed, what you decided not to change.`,learn:`Prioritising performance work`}],stretch:[`Add a virtual scroll viewport so only the visible rows exist in the DOM.`,`Use @defer (on viewport) for a row detail panel and on interaction for the export button.`,`Throttle the sort handler so dragging a column does not thrash the store.`,`Compare zoneless change detection against zone.js for the same interaction.`],starter:`<table mat-table [dataSource]="rows()" class="mat-elevation-z1">
   <ng-container matColumnDef="id">
     <th mat-header-cell *matHeaderCellDef>#idHeader (click)="sort('id')">#</th>
     <td mat-cell *matCellDef="let row">{{ row.id }}</td>
@@ -1415,4 +1458,79 @@ export class PokemonCard {
 }
 
 // route
-{ path: 'card', loadComponent: () => import('./pokemon-card/pokemon-card').then((m) => m.PokemonCard) }`,covers:[`misc-6`,`angular-26`]}];var L=[...p,...u,...m,...g,...f,...y,...w,...b];var v=class s{minutes=LP.required();formatted=zD(()=>{let a=this.minutes(),e=Math.floor(a/60),t=a%60;return e?t?`${e} hr ${t} min`:`${e} hr`:`${t} min`});static ɵfac=function(e){return new(e||s)};static ɵcmp=WE({type:s,selectors:[[`app-poc-duration`]],inputs:{minutes:[1,`minutes`]},decls:7,vars:1,consts:[[1,`poc-duration`,`inline-flex`,`items-center`,`gap-1`,`whitespace-nowrap`,`text-(--mat-sys-primary)`],[1,`sr-only`],[`aria-hidden`,`true`,1,`material-symbols-outlined`],[`data-testid`,`duration`]],template:function(e,t){e&1&&(Oc(0,`span`,0)(1,`span`,1),xD(2,`Takes about`),kc(),Oc(3,`span`,2),xD(4,`timer`),kc(),Oc(5,`span`,3),xD(6),kc()()),e&2&&(Iv(6),ih(t.formatted()))},encapsulation:2})};export{v as n,L as t};
+{ path: 'card', loadComponent: () => import('./pokemon-card/pokemon-card').then((m) => m.PokemonCard) }`,covers:[`misc-6`,`angular-26`]},{id:`misc-sse-stream`,category:`misc`,title:`Stream a ChatGPT-style answer with SSE`,summary:`A tiny SSE backend, a fetch stream reader in Angular, and an honest stop and retry state.`,durationMinutes:90,prompt:`A chat UI has to paint a token stream as it arrives, not after the whole response. Put a small local endpoint in front of PokéAPI, stream its data as SSE events, and consume it in Angular with a ReadableStream reader, a working stop button and a real error state.`,endpoints:[{path:`/pokemon?limit=20`,note:`Source data for your local endpoint to stream`},{path:`/api/pokedex-stream`,note:`Local endpoint you write; replies with text/event-stream`}],steps:[{title:`See the wire format before writing any UI`,task:`Start your local endpoint and run curl -N -X POST against it. Write down the response headers, the data: lines, the blank line that ends each event and the id: values. Add a colon-prefixed heartbeat comment every 15 seconds and watch the connection stay open. Nothing in the UI will make sense until you have seen the stream raw.`,learn:`What are Server-Sent Events (SSE)`},{title:`Write the endpoint`,task:`In a small local server, read /pokemon?limit=20 from PokéAPI once, then write one event per name: id: with an increasing counter, event: token, and a JSON data: payload. End with an event: done block. Set Content-Type: text/event-stream and Cache-Control: no-cache, and make sure no proxy buffers the response. Confirm with curl that characters arrive over time rather than all at once.`,learn:`A one-way HTTP stream with named events and resume ids`},{title:`Consume it in Angular with fetch, not EventSource`,task:`Create an Angular service that POSTs a prompt with fetch and an AbortController. Take response.body!.getReader(), decode with TextDecoder({ stream: true }), buffer the text, split on blank lines and parse the data: lines into a signal. Render the signal in the template. Explain why EventSource cannot be used here: it is GET-only and cannot send a body or custom headers.`,learn:`EventSource versus fetch streaming`},{title:`Add a second GET stream with EventSource`,task:`Add a GET variant of the endpoint and consume it with new EventSource(). Listen for the token and done named events, close on done, and log the browser's automatic reconnect after you kill the server. Explain how Last-Event-ID lets the server resume, and why the browser gives you this for free while fetch does not.`,learn:`Automatic reconnect and Last-Event-ID`},{title:`Stop, fail and retry honestly`,task:`Wire a Stop button to AbortController.abort() and show that the reader stops. Force a 500 on the endpoint and put the error into a signal that renders a message with Retry, instead of leaving a half-written answer on screen. Add an empty state for a prompt with no tokens. Check that stopping and retrying never leaves two readers appending to the same signal.`,learn:`Streaming UI states and cancellation`}],stretch:[`Send id: on every event and resume from the Last-Event-ID header after a forced disconnect.`,`Batch token writes with requestAnimationFrame so 100 tokens do not cause 100 renders.`,`Compare SSE with a WebSocket for the same stream and name what each one makes you implement yourself.`],starter:`// server.js - a small local endpoint, no auth and no API key in the browser
+app.post('/api/pokedex-stream', async (req, res) => {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    Connection: 'keep-alive',
+  });
+
+  const data = await fetch('https://pokeapi.co/api/v2/pokemon?limit=20').then((r) => r.json());
+  const names = data.results.map((item) => item.name);
+  let id = 0;
+
+  for (const token of names) {
+    res.write(
+      'id: ' + ++id + '\\nevent: token\\ndata: ' +
+        JSON.stringify({ text: token + ' ' }) + '\\n\\n'
+    );
+    await new Promise((resolve) => setTimeout(resolve, 120));
+  }
+  res.write('event: done\\ndata: {}\\n\\n');
+  res.end();
+});
+
+// chat.service.ts - EventSource cannot POST, so use fetch
+async stream(prompt: string, signal: AbortSignal) {
+  const response = await fetch('/api/pokedex-stream', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt }),
+    signal,
+  });
+  const reader = response.body!.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const blocks = buffer.split('\\n\\n');
+    buffer = blocks.pop() ?? '';
+    for (const block of blocks) {
+      const line = block.split('\\n').find((part) => part.startsWith('data:'));
+      if (line) {
+        const chunk = JSON.parse(line.slice(5).trim());
+        this.answer.update((text) => text + chunk.text);
+      }
+    }
+  }
+}`,covers:[`misc-20`,`misc-7`,`angular-55`,`angular-49`]},{id:`misc-workers`,category:`misc`,title:`Two workers, two jobs: web worker and service worker`,summary:`Keep a 1000-row filter off the main thread, then make the built app load offline.`,durationMinutes:120,prompt:`Build the same PokéAPI browse page twice: first with a heavy filter that janks the main thread, then with that filter moved into a web worker. After that, add an Angular service worker so the production build loads offline. Measure both changes and explain why the two workers are not alternatives to each other.`,endpoints:[{path:`/pokemon?limit=1000`,note:`A payload big enough to make the main thread stutter`}],steps:[{title:`Measure the jank first`,task:`Fetch 1000 Pokémon and filter them in the component on every keystroke. Record long tasks with new PerformanceObserver((list) => ...).observe({ type: 'longtask' }), then type quickly and feel the lag. Write down the longest task before changing anything; an optimisation you cannot measure is a guess.`,learn:`Why long synchronous work blocks the single thread`},{title:`Move the filter into a web worker`,task:`Create filter.worker.ts and construct it with new Worker(new URL('./filter.worker.ts', import.meta.url), { type: 'module' }). Send the list and query with postMessage, receive matches in onmessage and write them into a signal. Note that the data is copied by structured clone, so very large payloads have a transfer cost, and that there is no DOM, window or Angular DI inside the worker.`,learn:`What a web worker is and how it talks to the page`},{title:`Handle stale replies and teardown`,task:`Add a request id to each postMessage and ignore any reply whose id is not the latest, so slow responses cannot overwrite fresh results. Debounce the input. Terminate the worker in ngOnDestroy (or tie it to DestroyRef) and confirm no message arrives after the component is destroyed.`,learn:`Cancellation and ownership of a worker`},{title:`Install the Angular service worker`,task:`Run ng add @angular/pwa on a production build, inspect the generated ngsw-worker.js and ngsw-config.json, and register the service worker. Explain assetGroups with installMode prefetch versus dataGroups with stale-while-revalidate, and why HTTPS (or localhost) is required.`,learn:`What a service worker does for loading performance`},{title:`Prove offline, then break it on purpose`,task:`Load the app once, switch DevTools to offline and reload - the shell should still come up. Now deploy a new hashed chunk while keeping an old cached index.html and watch the version mismatch 404. Fix it by versioning cache names and deleting old caches on activate, and explain why hashed chunks should go network-first.`,learn:`Cache versioning and the stale shell failure`}],stretch:[`Try a SharedWorker from two tabs and explain why BroadcastChannel is usually simpler.`,`Transfer an ArrayBuffer instead of cloning 1000 objects and measure the difference.`,`Add a push notification and list the permission, HTTPS and user-gesture constraints it brings.`],starter:`// filter.worker.ts - its own thread, no DOM
+self.onmessage = ({ data }) => {
+  const { id, items, query } = data;
+  const matches = items.filter((item: { name: string }) => item.name.includes(query));
+  self.postMessage({ id, matches });
+};
+
+// browse-page.ts
+private readonly worker = new Worker(
+  new URL('./filter.worker.ts', import.meta.url),
+  { type: 'module' },
+);
+private latest = 0;
+
+constructor() {
+  this.worker.onmessage = ({ data }) => {
+    if (data.id === this.latest) this.results.set(data.matches);
+  };
+}
+
+search(items: unknown[], query: string) {
+  this.worker.postMessage({ id: ++this.latest, items, query });
+}
+
+ngOnDestroy() {
+  this.worker.terminate();
+}`,covers:[`misc-21`,`js-21`,`performance-15`,`performance-7`]}];var L=[...p,...u,...m,...g,...f,...y,...w,...b];var v=class s{minutes=LP.required();formatted=zD(()=>{let a=this.minutes(),e=Math.floor(a/60),t=a%60;return e?t?`${e} hr ${t} min`:`${e} hr`:`${t} min`});static ɵfac=function(e){return new(e||s)};static ɵcmp=WE({type:s,selectors:[[`app-poc-duration`]],inputs:{minutes:[1,`minutes`]},decls:7,vars:1,consts:[[1,`poc-duration`,`inline-flex`,`items-center`,`gap-1`,`whitespace-nowrap`,`text-(--mat-sys-primary)`],[1,`sr-only`],[`aria-hidden`,`true`,1,`material-symbols-outlined`],[`data-testid`,`duration`]],template:function(e,t){e&1&&(Oc(0,`span`,0)(1,`span`,1),xD(2,`Takes about`),kc(),Oc(3,`span`,2),xD(4,`timer`),kc(),Oc(5,`span`,3),xD(6),kc()()),e&2&&(Iv(6),ih(t.formatted()))},encapsulation:2})};export{v as n,L as t};
