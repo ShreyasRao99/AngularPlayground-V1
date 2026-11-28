@@ -187,13 +187,15 @@ Read this before editing `questions.json` or a POC.
 | Answer rendering          | `src/app/shared/answer-markdown.ts` + `question-detail.html`   |
 
 - The JSON is an object keyed by category, each an array of questions. Category
-  order is html, css, javascript, angular, performance, rxjs, signals, misc,
-  behavioural.
+  order is html, system-design, css, javascript, angular, performance, rxjs,
+  signals, misc, behavioural.
 - Question ids are `<category>-<n>`, except javascript which is `js-<n>`
-  (`js-28`). Ids are referenced by POC `covers` and persisted in localStorage, so
-  never renumber a question and never reuse a removed id.
-- Current bank is **219** questions: html 16, css 12, javascript 27, angular 49,
-  performance 27, rxjs 13, signals 10, misc 15, behavioural 50.
+  (`js-28`) and system-design which is `sd-<n>` (`sd-10`). Ids are referenced by
+  POC `covers` and persisted in localStorage, so never renumber a question and
+  never reuse a removed id.
+- Current bank is **231** questions: html 16, system-design 10, css 12,
+  javascript 27, angular 49, performance 27, rxjs 13, signals 10, misc 17,
+  behavioural 50.
 - Behavioural is the only category with triage: a curated 20 of the 50 carry
   `mostAsked: true`, and the question list shows a **Most asked** toggle for that
   category alone (see the `showMostAskedFilter` guard). It is an editorial core,
@@ -248,7 +250,7 @@ Read this before editing `questions.json` or a POC.
   **development** build. The deployed site is a production build, so any POC or
   demo that asks the reader to profile must send them to `ng serve` / a dev
   build and say so, rather than implying it works on the live page.
-- Behavioural has no POCs - `POC_CATEGORIES` excludes it.
+- Behavioural and system-design have no POCs - `POC_CATEGORIES` excludes both.
 
 ### Tests that pin content (update them with the content)
 
@@ -258,6 +260,8 @@ Read this before editing `questions.json` or a POC.
 - `question-detail.spec.ts` derives prev/next from the data via its own
   `SEQUENCE`, so it follows the bank; it only hard-codes a few ids.
 - `poc.spec.ts` asserts against `POCS.length`, so it follows the data.
+- `tabs.spec.ts` and `app.routes.spec.ts` pin the tab and literal route lists, so
+  adding a category means updating both.
 
 ### Prev/next navigate across sections
 
@@ -270,7 +274,7 @@ Y" counter stays per-section.
 ### Verify
 
 ```bash
-npx ng test                                   # expect 174 passed, 0 failed
+npx ng test                                   # expect 176 passed, 0 failed
 npx ng build --base-href /AngularPlayground-V1/
 ```
 

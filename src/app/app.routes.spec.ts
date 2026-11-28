@@ -43,6 +43,13 @@ describe('app routes', () => {
     expect(outlet(fixture).querySelector('li > a')).toBeTruthy();
   });
 
+  it('should resolve the system design index to the list', async () => {
+    const { fixture } = await navigate('/system-design');
+
+    expect(outlet(fixture).querySelector('h1')?.textContent).toContain('System Design Questions');
+    expect(outlet(fixture).querySelector('li > a')).toBeTruthy();
+  });
+
   it('should resolve a question detail route with both of its params bound', async () => {
     const { fixture } = await navigate('/performance/performance-1');
     const root = outlet(fixture);

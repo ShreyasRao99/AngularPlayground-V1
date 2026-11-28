@@ -5,6 +5,7 @@ import { Category } from '../../types/questions-type';
 // and the labels can never drift apart.
 export const CATEGORIES: readonly Category[] = [
   'html',
+  'system-design',
   'css',
   'javascript',
   'angular',
@@ -19,6 +20,7 @@ export const CATEGORIES: readonly Category[] = [
 // is a compile error - while the lookup below can accept an untrusted string.
 const CATEGORY_LABELS = {
   html: 'HTML',
+  'system-design': 'System Design',
   css: 'CSS',
   javascript: 'JavaScript',
   angular: 'Angular',
@@ -36,9 +38,11 @@ export function categoryLabel(category: string): string {
   return (CATEGORY_LABELS as Record<string, string>)[category] ?? category;
 }
 
-// No POC is behavioural - those are conversation, not something you can build.
-export type PocCategory = Exclude<Category, 'behavioural'>;
+// No POC is behavioural or system-design - those are conversations and design
+// prompts, not something you can build in this app.
+export type PocCategory = Exclude<Category, 'behavioural' | 'system-design'>;
 
 export const POC_CATEGORIES: readonly PocCategory[] = CATEGORIES.filter(
-  (category): category is PocCategory => category !== 'behavioural',
+  (category): category is PocCategory =>
+    category !== 'behavioural' && category !== 'system-design',
 );

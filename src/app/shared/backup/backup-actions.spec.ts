@@ -24,11 +24,11 @@ async function create(): Promise<ComponentFixture<BackupActions>> {
 
 /**
  * The component loads its overlay modules on demand, and both the dialog and the
- * snackbar settle a few turns of the macrotask queue after their promise. Waiting
- * on the fixture alone would race either one.
+ * snackbar settle asynchronously after their promise. Waiting on the fixture alone
+ * would race either one.
  */
 async function settle(fixture: ComponentFixture<BackupActions>): Promise<void> {
-  for (let turn = 0; turn < 10; turn++) {
+  for (let turn = 0; turn < 50; turn++) {
     await new Promise((resolve) => setTimeout(resolve, 0));
     await fixture.whenStable();
   }

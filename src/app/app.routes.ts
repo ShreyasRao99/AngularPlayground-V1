@@ -8,6 +8,11 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
   { path: 'html', loadComponent: () => import('./html/html').then((c) => c.Html) },
+  {
+    path: 'system-design',
+    loadComponent: () =>
+      import('./system-design/system-design').then((c) => c.SystemDesign),
+  },
   { path: 'css', loadComponent: () => import('./css/css').then((c) => c.Css) },
   { path: 'angular', loadComponent: () => import('./angular/angular').then((c) => c.Angular) },
   {
