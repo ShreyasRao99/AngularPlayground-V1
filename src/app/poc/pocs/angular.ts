@@ -952,4 +952,106 @@ export class PokemonWeightEager implements PipeTransform {
 }`,
     covers: ['angular-3', 'angular-35', 'angular-2'],
   },
+  {
+    id: 'angular-browse-page',
+    category: 'angular',
+    title: 'Build a browse homepage from a real interview brief',
+    summary:
+      'Hero, horizontal rows, keyboard navigation and a detail route - the streaming-homepage take-home, in Angular.',
+    durationMinutes: 180,
+    prompt:
+      'A common front-end take-home is "build a streaming service browse page"; interview reports also ask for image carousels, searchable data tables and product pages with loading, empty and error states. Build that page in Angular from PokéAPI data: a hero, several horizontal discovery rows, focus and hover previews, a lazy detail route, search, and keyboard navigation. Keep a short README of your component boundaries and trade-offs, because the code walkthrough is half the exercise.',
+    endpoints: [
+      { path: '/pokemon?limit=151&offset=0', note: 'The discovery rows' },
+      { path: '/pokemon/{name}', note: 'Detail data for a selected card' },
+      { path: '/pokemon/{name}/encounters', note: 'A slow section to defer' },
+    ],
+    steps: [
+      {
+        title: 'Clarify the brief and list the edges',
+        task: `Timebox ten minutes before coding. Write down what happens with no search results, a failed sprite, a very long name, a keyboard-only user, a slow network, an empty row and a deep link to a detail page. Interviewers grade the edges and the questions you ask as much as the happy path.`,
+        learn: 'What interviewers grade in a take-home',
+      },
+      {
+        title: 'Break the page into components',
+        task: `Draw the tree: shell, hero, discovery row, card, detail page. Keep the page as the container that fetches and holds one query signal, and make the row and card presentational with signal inputs and an output for selection. Add a second row using the same component to prove it is reusable, and check that no child reaches into a service directly.`,
+        learn: 'Component boundaries, inputs and outputs',
+      },
+      {
+        title: 'Build the hero and the horizontal rows',
+        task: `Use Grid for the page sections and Flexbox inside a card. Give every sprite an aspect-ratio box and explicit dimensions so nothing jumps, use overflow-x: auto with scroll-snap for a row, and add previous/next buttons that scroll by roughly one card width. Truncate long names with a title attribute, and check the layout at 360px and at desktop width.`,
+        learn: 'Grid versus Flexbox and responsive layout',
+      },
+      {
+        title: 'Search with one source of truth',
+        task: `Hold the query in a single signal and derive the visible rows with computed(). If a keystroke triggers a request instead, debounce the query, distinctUntilChanged it and switchMap so stale responses cannot land. Never store both the query and a separate filtered copy that can drift; add a test that types, deletes a character and gets the same rows back.`,
+        learn: 'Derived state instead of duplicated state',
+      },
+      {
+        title: 'Make it usable without a mouse',
+        task: `Make every card a real button or link so Enter opens the detail route, add visible focus rings, arrow keys to move focus across a row, and aria-labels that say which Pokémon a card opens. Add a skip link to the rows. Tab through the whole page with the mouse unplugged and fix anything you cannot reach.`,
+        learn: 'Accessibility in a component-based UI',
+      },
+      {
+        title: 'Make it feel finished',
+        task: `Add a skeleton while the first page loads, an empty state for a search with no matches, and a Retry button when the request fails. Lazy-load sprites, defer the slow encounters section with @defer (on viewport), and route to /browse/:name with loadComponent so a deep link opens the detail directly and an unknown name shows a not-found state.`,
+        learn: 'Loading, empty and error states, lazy routes',
+      },
+      {
+        title: 'Write the walkthrough notes',
+        task: `Write a README with what you built, the component boundaries, two trade-offs you accepted and what you would do with another hour. Rehearse explaining why the state lives where it does and how you would change the page for 10,000 cards or a slower API. That explanation is the interview.`,
+        learn: 'Defending architectural decisions',
+      },
+    ],
+    stretch: [
+      'Add infinite scroll on the last row with an IntersectionObserver sentinel and a stable track key.',
+      'Add a watchlist persisted to localStorage and synced across tabs with BroadcastChannel.',
+      'Measure LCP and CLS before and after the image changes, and report the numbers in the README.',
+    ],
+    starter: `// browse/browse-page.ts - a small container, presentational children
+@Component({
+  selector: 'app-browse-page',
+  standalone: true,
+  imports: [RouterLink, PokemonCard],
+  template: \`
+    <label>
+      Search
+      <input type="search" [value]="query()" (input)="query.set(valueOf(\$event))" />
+    </label>
+
+    @for (row of visibleRows(); track row.title) {
+      <section [attr.aria-label]="row.title">
+        <h2>{{ row.title }}</h2>
+        <div class="row" role="list">
+          @for (card of row.cards; track card.id) {
+            <app-pokemon-card [card]="card" (open)="open(card)" />
+          }
+        </div>
+      </section>
+    } @empty {
+      <p>No Pokémon match that search.</p>
+    }
+
+    @if (loading()) { <p role="status">Loading discoveries...</p> }
+    @if (error()) { <button type="button" (click)="reload()">Retry</button> }
+  \`,
+})
+export class BrowsePage {
+  readonly query = signal('');
+  readonly loading = signal(true);
+  readonly error = signal(false);
+  readonly visibleRows = computed(() => this.rows().map((row) => ({
+    ...row,
+    cards: row.cards.filter((card) => card.name.includes(this.query())),
+  })));
+
+  private readonly rows = signal<BrowseRow[]>([]);
+
+  protected valueOf(event: Event): string {
+    return (event.target as HTMLInputElement).value;
+  }
+  // fetch the list once with HttpClient, map it into rows, then clear loading
+}`,
+    covers: ['angular-1', 'angular-5', 'angular-48', 'angular-46', 'css-11', 'html-4', 'performance-16'],
+  },
 ];

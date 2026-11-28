@@ -1,6 +1,7 @@
 export type Difficulty = 'basic' | 'medium' | 'advanced';
 export type Category =
   | 'html'
+  | 'system-design'
   | 'css'
   | 'javascript'
   | 'angular'

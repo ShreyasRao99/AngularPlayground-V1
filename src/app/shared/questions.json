@@ -553,6 +553,11 @@
           "title": "var vs let before declaration",
           "code": "console.log(a); // undefined\nvar a = 1;\n\nconsole.log(b); // ReferenceError: Cannot access 'b' before initialization\nlet b = 2;\n\nconsole.log(c); // ReferenceError\nconst c = 3;",
           "explanation": "var is initialised to undefined at scope start; let/const live in the temporal dead zone until their declaration runs."
+        },
+        {
+          "title": "Hoisting in Angular: why forwardRef exists",
+          "code": "import { Inject, Injectable, forwardRef } from '@angular/core';\n\n@Injectable()\nexport class PokemonService {\n  constructor(@Inject(forwardRef(() => AnalyticsService)) private analytics: AnalyticsService) {}\n}\n\n@Injectable()\nexport class AnalyticsService {\n  constructor(@Inject(forwardRef(() => PokemonService)) private pokemon: PokemonService) {}\n}\n\n// forwardRef stores a function, not the class. Angular calls it later,\n// after both declarations have run. Reading AnalyticsService directly\n// in the decorator would be a TDZ ReferenceError: a class declaration\n// is hoisted like let/const, not like a function declaration.",
+          "explanation": "Angular emits this wrapper automatically when it sees a dependency declared later in the file, or two classes that refer to each other. The closure defers the binding read until injection time - the temporal dead zone is used deliberately here, not worked around with var."
         }
       ]
     },
@@ -593,6 +598,11 @@
           "title": "Counter with private state",
           "code": "function createCounter() {\n  let count = 0;\n  return {\n    inc: () => ++count,\n    get: () => count,\n  };\n}\nconst c = createCounter();\nc.inc(); c.inc();\nconsole.log(c.get()); // 2  (count is unreachable from outside)",
           "explanation": "count survives after createCounter returned because the returned functions captured its scope."
+        },
+        {
+          "title": "Closures are how Angular keeps context",
+          "code": "// Simplified AOT output: a factory that closes over the component class.\n// The optional t is an override, used by TestBed and subclassing.\nPokemonCard.ɵfac = function PokemonCard_Factory(t) {\n  return new (t || PokemonCard)();\n};\n\n// DI factories and teardown helpers are closures too.\nproviders: [{ provide: LOGGER, useFactory: () => inject(LoggerService) }];\nsource$.pipe(takeUntilDestroyed()).subscribe((value) => this.rows.set(value));\n\n// The Angular version of React's \"infinite re-render from a closure\":\neffect(() => count.set(count() + 1)); // NG0600 - writing to a signal it reads",
+          "explanation": "React loops when a callback closes over stale state and sets it again; Angular has the same shape when an effect writes to a signal it reads, but detects it and throws NG0600 instead of spinning. The factories, forwardRef and takeUntilDestroyed are ordinary closures capturing a binding from the scope where they were created."
         }
       ],
       "tags": [
@@ -643,6 +653,11 @@
           "title": "A class field arrow: the pattern that avoids a bound handler",
           "code": "class User {\n  name = 'Shreyas';\n\n  // field initialiser: the arrow captures the instance as this\n  greet = () => {\n    console.log(this.name); // 'Shreyas', even when passed around\n  };\n}\n\nconst user = new User();\nconst detached = user.greet;\ndetached(); // 'Shreyas' - an ordinary method here would log undefined",
           "explanation": "A class field whose value is an arrow is created per instance with this already bound to that instance, so it survives being detached, passed as a callback or handed to addEventListener — the job bind() used to do in the constructor. The cost is one function per instance instead of one shared on the prototype, which matters only when you create very many of them."
+        },
+        {
+          "title": "Why Angular generates a function, not an arrow",
+          "code": "// Simplified AOT output - a normal function on purpose:\nPokemonCard.ɵfac = function PokemonCard_Factory(t) {\n  return new (t || PokemonCard)(); // invoked with new\n};\n// const factory = (t) => new (t || PokemonCard)(); // TypeError: not a constructor\n\n// Your own callbacks usually want the opposite: the arrow keeps this.\nfromEvent(button, 'click').subscribe(this.onSave);        // this is lost\nfromEvent(button, 'click').subscribe(() => this.onSave()); // arrow keeps the component",
+          "explanation": "Angular calls the generated factory with new, and only a normal function can be a constructor - an arrow has no prototype. In application code a template listener already calls ctx.onSave() with the right this, but once the method is handed to another API an arrow (or bind) is what preserves it."
         }
       ],
       "tags": [
@@ -925,6 +940,11 @@
           "title": "Why one thread does not block: the event loop",
           "code": "// The event loop, simplified:\nwhile (true) {\n  drain the ENTIRE microtask queue;  // promises, queueMicrotask\n  if (stack is empty) run ONE macrotask; // timers, I/O, DOM events\n  render if needed;                  // layout + paint\n}\n\n// Callbacks only run when the stack is empty, which is the yield point\n// that keeps the UI responsive - provided no single sync task runs\n// so long that it never yields.",
           "explanation": "The microtask queue empties fully after each task; the macrotask queue runs one task at a time. Callbacks never interrupt running code, so the page stays interactive for async-heavy work."
+        },
+        {
+          "title": "The escape hatch: a web worker",
+          "code": "// main thread - stays responsive while the worker computes\nconst worker = new Worker(new URL('./filter.worker.ts', import.meta.url), { type: 'module' });\nworker.postMessage({ id: ++requestId, items: allPokemon, query });\nworker.onmessage = ({ data }) => {\n  if (data.id === requestId) filtered.set(data.matches);\n};\n\n// filter.worker.ts - its own thread and event loop\nself.onmessage = ({ data }) => {\n  self.postMessage({ id: data.id, matches: data.items.filter((p) => p.name.includes(data.query)) });\n};",
+          "explanation": "A worker has a separate call stack, so a long filter no longer blocks paint or input. postMessage copies data with the structured clone algorithm (hence the transfer cost for large payloads), and there is no DOM, window or Angular DI inside the worker - only pure compute."
         }
       ]
     },
@@ -3349,6 +3369,59 @@
       "tags": [
         "NEW"
       ]
+    },
+    {
+      "id": "misc-20",
+      "category": "misc",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "What are Server-Sent Events (SSE), and how do they compare with WebSockets and polling?",
+      "answer": "**Server-Sent Events (SSE)** is a one-way stream from the server to the browser over a single long-lived HTTP GET. The server answers with Content-Type: text/event-stream, keeps the response open and writes newline-delimited events as they happen. The browser's EventSource parses them, reconnects automatically after a drop and sends the last event id back in Last-Event-ID so the server can resume.\n\nAn event is a few text fields: `data:` for the payload (several data lines join with newlines), `event:` for a custom event name, `id:` for the resume cursor and `retry:` for the reconnect delay in milliseconds. A blank line ends the event. A line starting with a colon is a heartbeat comment, which keeps proxies and idle timeouts from closing a quiet connection.\n\nCompare the options you could have picked.\n- **Polling:** repeated plain requests; simple and cacheable, but wasteful and only as fresh as the interval.\n- **Long polling:** the server holds each request until something happens, then the client immediately opens another; near-real-time but chatty and awkward to resume.\n- **SSE:** automatic reconnect, event ids, names and heartbeats come from the browser, but it is text-only and strictly server to client. It is plain HTTP, so ordinary proxies, auth and CDNs work.\n- **WebSocket:** a separate protocol after an HTTP upgrade, bidirectional and binary-capable. You own reconnection, heartbeats and auth on the upgraded socket.\n\nThe interview sentence: choose SSE when the server pushes a token stream, feed, progress bar or notification and the client talks back with a normal POST; choose a WebSocket when both sides stream, as in chat or multiplayer. EventSource cannot POST or set headers, so a chat-style UI uses fetch() with a ReadableStream reader and an AbortController instead.\n\nThat ChatGPT-style case is the canonical SSE use: the browser POSTs a prompt to your own backend, the backend streams tokens from the model provider, and it forwards each one as an SSE data block so the UI paints as tokens arrive. The API key stays on the server, the backend validates and buffers, and the UI shows loading, stop and retry. Do not assume network chunks line up with SSE events - buffer partial blocks and split on blank lines.",
+      "examples": [
+        {
+          "title": "The wire format",
+          "code": "GET /api/answer?id=42 HTTP/1.1\nAccept: text/event-stream\n\nHTTP/1.1 200 OK\nContent-Type: text/event-stream\nCache-Control: no-cache\nConnection: keep-alive\n\nid: 17\nevent: token\ndata: {\"text\":\"Hello\"}\n\nid: 18\nevent: token\ndata: {\"text\":\" world\"}\n\nevent: done\ndata: {}",
+          "explanation": "A blank line ends each event. The id is a resume cursor, and a named event lets the client subscribe to tokens without parsing every message."
+        },
+        {
+          "title": "EventSource for a GET stream",
+          "code": "const stream = new EventSource('/api/answer?id=42');\nstream.addEventListener('token', (event) => {\n  answer.update((text) => text + JSON.parse(event.data).text);\n});\nstream.addEventListener('done', () => stream.close());\nstream.onerror = () => {\n  // the browser reconnects and sends Last-Event-ID automatically\n};",
+          "explanation": "EventSource gives you reconnect and resume for free, but it is GET-only and cannot send custom headers, so it is not the right tool for a prompt POST."
+        },
+        {
+          "title": "Angular: POST and read the stream yourself",
+          "code": "async streamAnswer(prompt: string, abort: AbortSignal) {\n  const response = await fetch('/api/answer', {\n    method: 'POST',\n    headers: { 'Content-Type': 'application/json' },\n    body: JSON.stringify({ prompt }),\n    signal: abort,\n  });\n  const reader = response.body!.getReader();\n  const decoder = new TextDecoder();\n  let buffer = '';\n\n  while (true) {\n    const { value, done } = await reader.read();\n    if (done) break;\n    buffer += decoder.decode(value, { stream: true });\n    const blocks = buffer.split('\\n\\n');\n    buffer = blocks.pop() ?? '';\n    for (const block of blocks) {\n      const line = block.split('\\n').find((part) => part.startsWith('data:')) ?? '';\n      const chunk = JSON.parse(line.slice(5).trim());\n      this.answer.update((text) => text + chunk.text);\n    }\n  }\n}",
+          "explanation": "fetch can POST and abort; you give up EventSource's automatic reconnect, so you track the last id yourself. The buffer matters because TCP chunks do not align with SSE event boundaries."
+        }
+      ],
+      "tags": [
+        "NEW"
+      ]
+    },
+    {
+      "id": "misc-21",
+      "category": "misc",
+      "difficulty": "medium",
+      "scenarioBased": false,
+      "isMarked": false,
+      "question": "What is the difference between a service worker and a web worker?",
+      "answer": "Both are scripts the browser runs off the page's main thread, so neither can touch the DOM or window directly and both exchange data with postMessage using structured cloning. That is where the similarity ends.\n\nA **web worker** is a compute helper owned by one page. `new Worker(new URL('./filter.worker.ts', import.meta.url), { type: 'module' })` creates a dedicated worker; it lives as long as that page, has no control over network requests and no shared cache. Use it for CPU-heavy work - parsing a big payload, filtering thousands of rows, image processing - so scrolling and typing stay smooth. A SharedWorker can serve several same-origin pages but is rare.\n\nA **service worker** is a network proxy for an origin, registered with `navigator.serviceWorker.register('/ngsw-worker.js')`. It outlives the page, has its own lifecycle (install, activate, fetch), intercepts requests under its scope and can answer from Cache Storage, receive push notifications and do background sync. It needs HTTPS (localhost is exempt) and only affects URLs in its scope. Use it for offline support, caching the app shell and stale-while-revalidate for data.\n\nThe short version: a worker does work off the main thread; a service worker sits between the app and the network. A web worker is created by the page and dies with it, while a service worker is installed by the browser, outlives the page and can answer a request before any page code runs. Neither has DOM access; a service worker also has no localStorage, though both can use IndexedDB where it applies.\n\nIn Angular, `ng add @angular/pwa` generates ngsw-worker.js and ngsw-config.json: asset groups with installMode prefetch cache the shell, and data groups with stale-while-revalidate cache API reads. The classic failure is a cached index.html asking for a hashed chunk that is no longer cached, so version the caches, delete old ones on activate and keep hashed assets network-first.",
+      "examples": [
+        {
+          "title": "Creating each one",
+          "code": "// Web worker: owned by this page, for CPU work\nconst worker = new Worker(new URL('./filter.worker.ts', import.meta.url), { type: 'module' });\nworker.postMessage({ pokemon, query });\nworker.onmessage = ({ data }) => results.set(data);\n\n// Service worker: installed once for the origin, intercepts its requests\nawait navigator.serviceWorker.register('/ngsw-worker.js');",
+          "explanation": "The web worker is constructed by application code and is scoped to that page. The service worker is registered with the browser once and then handles requests for the whole origin, including navigations that happen before Angular boots."
+        },
+        {
+          "title": "Inside a service worker",
+          "code": "self.addEventListener('install', (event) => {\n  event.waitUntil(caches.open('shell-v2').then((cache) => cache.addAll(['/', '/index.html'])));\n});\nself.addEventListener('activate', (event) => {\n  event.waitUntil(caches.keys().then((keys) =>\n    Promise.all(keys.filter((key) => key !== 'shell-v2').map((key) => caches.delete(key)))));\n});\nself.addEventListener('fetch', (event) => {\n  if (event.request.mode === 'navigate') {\n    event.respondWith(fetch(event.request).catch(() => caches.match('/index.html')));\n  }\n});",
+          "explanation": "install precaches the shell, activate removes old cache versions and fetch serves the offline fallback for navigations. That lifecycle has no equivalent in a web worker."
+        }
+      ],
+      "tags": [
+        "NEW"
+      ]
     }
   ],
   "behavioural": [
@@ -4178,6 +4251,248 @@
           "code": "P - Point\nI decide the non-negotiable first, then rank the rest, and I say out loud what\nI will not trade.\nR - Reason\nOptimising everything equally is not a priority, it is an avoidance. And if I\ncannot say what I refuse to trade, I have not made a decision - I have deferred\nit.\nE - Example\nOn the checkout work: user trust and payment correctness are non-negotiable, so\nlatency is where the pressure goes. I said that explicitly to the team, which\nmeant a complaint about latency got a this is the trade I chose answer instead\nof an argument. Latency was the thing I gave up, not correctness. Later, when a\ncache could remove 400ms without risking either, that was a pure win and we took\nit.\nP - Point\nThe thing I watch for is when the ranking was set by a deadline rather than by\nthe problem. That is worth revisiting out loud.",
           "explanation": "Naming what you refuse to trade, and separating binding constraints from\nnegotiable ones, is the actual senior answer."
         }
+      ]
+    }
+  ],
+  "system-design": [
+    {
+      "id": "sd-1",
+      "category": "system-design",
+      "difficulty": "advanced",
+      "scenarioBased": true,
+      "isMarked": false,
+      "question": "Design Google Docs - Collaborative Document Editor",
+      "answer": "**The brief.** Design a web-based document editor where multiple users can open and edit the same document simultaneously. Users should see other users' changes in real time, see their cursors, and continue working even when their internet connection temporarily drops.\n\n**How I would think about it.** Start at the editor boundary: an edit is a small operation, not a whole document posted on every keystroke. Apply it locally for an instant feel, send it over a WebSocket, and rebase remote operations against your pending ones (OT or CRDT) so two people can type in the same paragraph. Autosave is debounced and batched, drafts live in IndexedDB, and reconnection replays the pending queue from the last acknowledged revision. The frontend owns responsiveness; the server owns the final ordering.\n\n**Requirements to pin down first.**\n- Multiple users can edit the same document.\n- Changes should appear on other users' screens in real time.\n- Display other users' cursors and selections.\n- Automatically save document changes.\n- Handle simultaneous edits to the same paragraph.\n- Recover unsaved changes after a network interruption.\n- Support large documents without degrading performance.\n\n**Core frontend concepts.**\n- WebSockets for bidirectional real-time communication.\n- Operational Transformation (OT) or CRDT for collaborative editing.\n- Optimistic UI updates.\n- Local state versus server-synchronized state.\n- Debouncing and batching document changes.\n- Conflict resolution.\n- Offline-first architecture.\n- IndexedDB for local document persistence.\n- Reconnection and message synchronization.\n- Virtualization for large documents.\n\n**Angular structure.**\n- Components: DocumentEditorComponent, ToolbarComponent, CollaboratorsComponent, UserCursorComponent, DocumentSidebarComponent.\n- Services: DocumentService, WebSocketService, CollaborationService, AutoSaveService.\n- NgRx or Signal Store for document and collaboration state.\n- Signals for editor UI state.\n- RxJS streams for incoming socket events.\n- IndexedDB for locally persisted document changes.\n\n**Follow-ups to rehearse.**\n- Why would you choose WebSockets instead of HTTP polling?\n- What happens if two users edit the same sentence simultaneously?\n- How would you recover changes after losing internet connectivity?\n- Would you save every keystroke to the server?\n- How would you prevent unnecessary Angular component re-renders?\n- How would you synchronize a document when a user reconnects?",
+      "examples": [
+        {
+          "title": "Angular component and service split",
+          "code": "src/app/system-design/google docs/\n  document-editor-component/\n  toolbar-component/\n  collaborators-component/\n  user-cursor-component/\n  document-sidebar-component/\nservices/\n  document-service.service.ts\n  web-socket-service.service.ts\n  collaboration-service.service.ts\n  auto-save-service.service.ts\n\nstate: NgRx or Signal Store for document and collaboration state. Signals for editor UI state. RxJS streams for incoming socket events. IndexedDB for locally persisted document changes.",
+          "explanation": "A container component owns fetching and state; presentational children render the view. Services keep protocol and persistence concerns out of templates, and the state choices are stated explicitly so you can defend them."
+        },
+        {
+          "title": "The mechanism that matters",
+          "code": "const op = { type: 'insert', pos: cursor(), text, rev: revision() };\ndoc.update((d) => applyOp(d, op));\nsocket.send(JSON.stringify({ kind: 'op', docId, op }));\n\nsocketMessages$.pipe(filter((m) => m.docId === docId())).subscribe((m) => {\n  doc.update((d) => applyRemoteOp(d, rebase(m.op, pendingOps())));\n});",
+          "explanation": "Never send the whole document per keystroke. Send small operations, apply locally for an instant feel, keep the pending queue for rebasing and for replay after reconnect, and let the server own the final ordering."
+        }
+      ],
+      "tags": [
+        "NEW"
+      ]
+    },
+    {
+      "id": "sd-2",
+      "category": "system-design",
+      "difficulty": "advanced",
+      "scenarioBased": true,
+      "isMarked": false,
+      "question": "Design Google Sheets - Collaborative Spreadsheet",
+      "answer": "**The brief.** Design a spreadsheet application where multiple users can edit cells simultaneously. It should support formulas, large datasets, multiple sheets, cell formatting, and real-time updates.\n\n**How I would think about it.** A spreadsheet is a grid problem before it is a collaboration problem. Keep cells in a normalised map keyed by A1 notation, derive values with computed signals, and render only the visible window with virtual scrolling or canvas. A formula is a dependency graph: recalculate the affected subgraph in a Web Worker, not during change detection. Cell edits then ride the same socket and conflict-resolution path as any collaborative document, with bulk paste sent as one batched operation.\n\n**Requirements to pin down first.**\n- Display spreadsheet rows and columns.\n- Allow users to edit individual cells.\n- Support formulas and dependent cell calculations.\n- Show other users' changes immediately.\n- Support multiple worksheets.\n- Handle large spreadsheets containing thousands of rows.\n- Support copy, paste, and bulk cell updates.\n- Recover changes after network interruptions.\n\n**Core frontend concepts.**\n- WebSockets for real-time cell updates.\n- Cell-level state management.\n- State normalization using Maps or objects.\n- Virtual scrolling for large spreadsheets.\n- Canvas rendering versus DOM rendering.\n- Formula dependency graphs.\n- Optimistic updates.\n- Conflict resolution.\n- Debouncing and batching.\n- Web Workers for expensive calculations.\n- IndexedDB for offline persistence.\n\n**Angular structure.**\n- Components: SpreadsheetComponent, SpreadsheetToolbarComponent, SpreadsheetGridComponent, SpreadsheetCellComponent, SheetTabsComponent.\n- Services: SpreadsheetService, CellCalculationService, CollaborationService, WebSocketService.\n- Store cell data in a normalized structure.\n- Use signals for selected cell and editing state.\n- Use RxJS for real-time cell update streams.\n- Use computed signals for derived UI state.\n\n**Follow-ups to rehearse.**\n- How would you render 100,000 rows without freezing the browser?\n- Why is rendering every cell as an Angular component potentially expensive?\n- How would you calculate formulas that depend on other cells?\n- How would you synchronize changes made by two users to the same cell?\n- Would you use DOM, Canvas, or WebGL for rendering?\n- How would you avoid recalculating an entire spreadsheet when one cell changes?",
+      "examples": [
+        {
+          "title": "Angular component and service split",
+          "code": "src/app/system-design/google sheets/\n  spreadsheet-component/\n  spreadsheet-toolbar-component/\n  spreadsheet-grid-component/\n  spreadsheet-cell-component/\n  sheet-tabs-component/\nservices/\n  spreadsheet-service.service.ts\n  cell-calculation-service.service.ts\n  collaboration-service.service.ts\n  web-socket-service.service.ts\n\nstate: Store cell data in a normalized structure. Use signals for selected cell and editing state. Use RxJS for real-time cell update streams. Use computed signals for derived UI state.",
+          "explanation": "A container component owns fetching and state; presentational children render the view. Services keep protocol and persistence concerns out of templates, and the state choices are stated explicitly so you can defend them."
+        },
+        {
+          "title": "The mechanism that matters",
+          "code": "readonly cells = signal(new Map<string, Cell>());\nreadonly selected = signal<CellRef>('A1');\nreadonly total = computed(() => sumColumn('B', this.cells()));\n\ncalcWorker.postMessage({ cells: [...this.cells()], changed: 'B7' });",
+          "explanation": "Normalised cells plus virtual scrolling means a single edit does not re-render 100,000 DOM nodes. Recalculate the affected subgraph in a worker and batch a pasted range into one operation."
+        }
+      ],
+      "tags": [
+        "NEW"
+      ]
+    },
+    {
+      "id": "sd-3",
+      "category": "system-design",
+      "difficulty": "advanced",
+      "scenarioBased": true,
+      "isMarked": false,
+      "question": "Design WhatsApp or Slack - Real-Time Chat Application",
+      "answer": "**The brief.** Design a messaging application that supports individual chats, group conversations, real-time messaging, typing indicators, read receipts, file sharing, and online presence.\n\n**How I would think about it.** Split the protocol by job: REST loads history and initial data, a WebSocket carries new messages, typing, read receipts and presence. Sending is optimistic with a client-generated temporary id, and the server echo is deduplicated against it. History is cursor-paginated and virtualised, older messages are cached in IndexedDB, and a reconnect uses a last-seen id to fetch the gap. Multiple tabs of the same account sync unread counts through BroadcastChannel or storage events.\n\n**Requirements to pin down first.**\n- Send and receive messages instantly.\n- Display message delivery and read status.\n- Display typing indicators.\n- Show online and offline status.\n- Support group conversations.\n- Load previous messages using pagination.\n- Support image and file attachments.\n- Display unread message counts.\n- Handle reconnection and missed messages.\n\n**Core frontend concepts.**\n- WebSockets for real-time messaging.\n- REST APIs for chat history and initial data.\n- Optimistic UI for sending messages.\n- Temporary client-generated message IDs.\n- Message deduplication.\n- Cursor-based pagination.\n- Virtual scrolling for long conversations.\n- IndexedDB for local message caching.\n- File uploads and progress tracking.\n- Browser Notifications API.\n- Connection lifecycle management.\n- Retry mechanisms and exponential backoff.\n\n**Angular structure.**\n- Components: ChatLayoutComponent, ConversationListComponent, ChatWindowComponent, MessageListComponent, MessageInputComponent, TypingIndicatorComponent.\n- Services: ChatService, MessageService, WebSocketService, NotificationService, FileUploadService.\n- Normalize conversations and messages.\n- Maintain selected conversation in application state.\n- Maintain unread counts centrally.\n- Use RxJS for socket events.\n- Use signals for local UI state.\n\n**Follow-ups to rehearse.**\n- How would you handle a message being sent while offline?\n- How would you prevent duplicate messages?\n- How would you display messages in the correct order?\n- How would you implement infinite scrolling for chat history?\n- What happens if a WebSocket disconnects?\n- How would you implement read receipts?\n- How would you handle multiple browser tabs open for the same account?",
+      "examples": [
+        {
+          "title": "Angular component and service split",
+          "code": "src/app/system-design/whats-app or slack/\n  chat-layout-component/\n  conversation-list-component/\n  chat-window-component/\n  message-list-component/\n  message-input-component/\n  typing-indicator-component/\nservices/\n  chat-service.service.ts\n  message-service.service.ts\n  web-socket-service.service.ts\n  notification-service.service.ts\n  file-upload-service.service.ts\n\nstate: Normalize conversations and messages. Maintain selected conversation in application state. Maintain unread counts centrally. Use RxJS for socket events. Use signals for local UI state.",
+          "explanation": "A container component owns fetching and state; presentational children render the view. Services keep protocol and persistence concerns out of templates, and the state choices are stated explicitly so you can defend them."
+        },
+        {
+          "title": "The mechanism that matters",
+          "code": "const tempId = crypto.randomUUID();\nmessages.update((list) => [...list, { id: tempId, body, status: 'sending' }]);\nsocket.send(JSON.stringify({ kind: 'message', tempId, body, roomId }));\n\nsocketMessages$.subscribe((msg) => {\n  messages.update((list) =>\n    list.some((m) => m.id === msg.id)\n      ? list\n      : list.map((m) => (m.tempId === msg.tempId ? msg : m)),\n  );\n});",
+          "explanation": "REST loads history, the socket carries live events. A client-generated id makes sending optimistic and deduplication deterministic, including after a reconnect that replays missed messages."
+        }
+      ],
+      "tags": [
+        "NEW"
+      ]
+    },
+    {
+      "id": "sd-4",
+      "category": "system-design",
+      "difficulty": "advanced",
+      "scenarioBased": true,
+      "isMarked": false,
+      "question": "Design Twitter/X - Social Media Platform",
+      "answer": "**The brief.** Design a social media platform where users can create posts, follow other users, like and comment on posts, and receive a continuously updating personalized feed.\n\n**How I would think about it.** Treat the feed as a paginated list with engagement layered on top. Fetch pages with a cursor rather than an offset, deduplicate by post id, and load more with an IntersectionObserver sentinel. Images and video come from a CDN with lazy loading and reserved dimensions so the page does not shift. Likes and reposts update optimistically with rollback on failure, notifications arrive over SSE when the push is one-way, and posts live in a normalised entity map so one update appears everywhere.\n\n**Requirements to pin down first.**\n- Display a personalized home feed.\n- Support infinite scrolling.\n- Allow users to create posts.\n- Support likes, comments, and reposts.\n- Display notifications in real time.\n- Support images and videos.\n- Allow users to follow and unfollow accounts.\n- Update engagement counts without refreshing the page.\n\n**Core frontend concepts.**\n- Cursor-based pagination.\n- Infinite scrolling using Intersection Observer.\n- CDN for images and videos.\n- Image lazy loading.\n- Optimistic updates for likes and reposts.\n- Redis-backed caching as a backend capability consumed by the frontend.\n- HTTP caching and browser caching.\n- WebSockets or SSE for live notifications.\n- State normalization.\n- Virtual scrolling.\n- Debouncing search.\n- Code splitting and lazy-loaded routes.\n\n**Angular structure.**\n- Components: HomeFeedComponent, PostComponent, PostComposerComponent, CommentSectionComponent, NotificationPanelComponent, UserProfileComponent.\n- Services: FeedService, PostService, UserService, NotificationService.\n- Centralized feed state.\n- Normalized post and user entities.\n- Signals for UI state.\n- RxJS for API requests and notification streams.\n\n**Follow-ups to rehearse.**\n- Why would you use cursor pagination instead of offset pagination?\n- How would you implement infinite scrolling?\n- How would you prevent duplicate posts during pagination?\n- How would you update a like count optimistically?\n- How would you handle a failed optimistic update?\n- How would you optimize a feed containing thousands of posts?\n- How would you cache feed data?",
+      "examples": [
+        {
+          "title": "Angular component and service split",
+          "code": "src/app/system-design/twitter/x/\n  home-feed-component/\n  post-component/\n  post-composer-component/\n  comment-section-component/\n  notification-panel-component/\n  user-profile-component/\nservices/\n  feed-service.service.ts\n  post-service.service.ts\n  user-service.service.ts\n  notification-service.service.ts\n\nstate: Centralized feed state. Normalized post and user entities. Signals for UI state. RxJS for API requests and notification streams.",
+          "explanation": "A container component owns fetching and state; presentational children render the view. Services keep protocol and persistence concerns out of templates, and the state choices are stated explicitly so you can defend them."
+        },
+        {
+          "title": "The mechanism that matters",
+          "code": "this.route.queryParamMap.pipe(\n  map((params) => ({ q: params.get('q') ?? '', sort: params.get('sort') ?? 'new' })),\n  distinctUntilChanged(),\n  switchMap((query) => this.feed.page(query, this.cursor())),\n).subscribe((page) => {\n  posts.update((items) => dedupeById([...items, ...page.items]));\n  cursor.set(page.nextCursor);\n});\n\nnew IntersectionObserver(([entry]) => {\n  if (entry.isIntersecting) this.loadMore();\n}).observe(sentinel);",
+          "explanation": "Cursor pagination avoids the shifting-offset duplicate problem, and dedupe by id covers newly inserted posts. Likes are optimistic with rollback; notifications arrive over SSE or a socket."
+        }
+      ],
+      "tags": [
+        "NEW"
+      ]
+    },
+    {
+      "id": "sd-5",
+      "category": "system-design",
+      "difficulty": "advanced",
+      "scenarioBased": true,
+      "isMarked": false,
+      "question": "Design BookMyShow - Movie Ticket Booking",
+      "answer": "**The brief.** Design a movie ticket booking platform where thousands of users may attempt to book seats for the same show simultaneously. Users should see real-time seat availability and complete payments without accidentally booking an already reserved seat.\n\n**How I would think about it.** The core rule is that the browser never owns seat truth. Selected seats are local and optimistic; the server confirms a short-lived reservation and pushes availability changes over a WebSocket, with polling as a fallback. Two users choosing the same seat is resolved server-side and the UI rolls back when a reservation or payment fails. The countdown is driven by server-provided expiry rather than a local timer alone, and the payment call carries an idempotency key.\n\n**Requirements to pin down first.**\n- Display movies and available showtimes.\n- Display an interactive seat layout.\n- Show available, selected, and booked seats.\n- Update seat availability in real time.\n- Temporarily reserve selected seats.\n- Implement a seat selection countdown.\n- Handle payment success and failure.\n- Prevent users from proceeding with expired reservations.\n\n**Core frontend concepts.**\n- WebSockets for real-time seat availability.\n- HTTP polling as an alternative or fallback.\n- Server-authoritative seat availability.\n- Optimistic UI with rollback.\n- Race condition handling.\n- Countdown timers.\n- Idempotent payment submission from the client perspective.\n- Payment status polling or event updates.\n- State synchronization.\n- Route guards.\n- Session persistence.\n- Error and retry handling.\n\n**Angular structure.**\n- Components: MovieListingComponent, ShowtimeSelectionComponent, SeatLayoutComponent, SeatComponent, BookingSummaryComponent, PaymentComponent.\n- Services: MovieService, SeatService, BookingService, PaymentService, WebSocketService.\n- Maintain selected seats in booking state.\n- Track reservation expiration.\n- Keep server-confirmed and locally selected seats separate.\n- Use RxJS for availability updates.\n\n**Follow-ups to rehearse.**\n- What happens if two users select the same seat?\n- Should the frontend be responsible for locking a seat?\n- What happens when the reservation countdown expires?\n- How would you handle payment success when the user closes the browser?\n- Would you use WebSockets or polling for seat availability?\n- How would you prevent duplicate payment requests?\n- How would you handle a stale seat layout?",
+      "examples": [
+        {
+          "title": "Angular component and service split",
+          "code": "src/app/system-design/book-my-show/\n  movie-listing-component/\n  showtime-selection-component/\n  seat-layout-component/\n  seat-component/\n  booking-summary-component/\n  payment-component/\nservices/\n  movie-service.service.ts\n  seat-service.service.ts\n  booking-service.service.ts\n  payment-service.service.ts\n  web-socket-service.service.ts\n\nstate: Maintain selected seats in booking state. Track reservation expiration. Keep server-confirmed and locally selected seats separate. Use RxJS for availability updates.",
+          "explanation": "A container component owns fetching and state; presentational children render the view. Services keep protocol and persistence concerns out of templates, and the state choices are stated explicitly so you can defend them."
+        },
+        {
+          "title": "The mechanism that matters",
+          "code": "readonly selected = signal(new Set<string>());\nreadonly confirmed = signal(new Set<string>());\nreadonly expiresAt = signal(0);\n\ntoggle(seat: string) {\n  if (this.confirmed().has(seat) || this.expired()) return;\n  this.selected.update((set) => flip(set, seat));\n  this.booking.reserve([...this.selected()]).subscribe({\n    next: (res) => this.expiresAt.set(res.expiresAt),\n    error: () => this.selected.update((set) => flip(set, seat)),\n  });\n}",
+          "explanation": "Two users choosing the same seat is resolved server-side; the UI rolls back on failure. The countdown comes from server-provided expiry, and payment uses an idempotency key so a retry cannot charge twice."
+        }
+      ],
+      "tags": [
+        "NEW"
+      ]
+    },
+    {
+      "id": "sd-6",
+      "category": "system-design",
+      "difficulty": "medium",
+      "scenarioBased": true,
+      "isMarked": false,
+      "question": "Design Spotify - Music Streaming Application",
+      "answer": "**The brief.** Design a music streaming application where users can search songs, create playlists, stream music, and navigate between pages without interrupting currently playing audio.\n\n**How I would think about it.** Playback has to survive routing, so the audio element and playback state belong to a root-provided singleton service rather than a route component. Track lists and the queue are signals the mini-player reads, while RxJS wraps audio events with throttling so progress does not thrash change detection. Preload the next track, lazy-load artwork, and use the Media Session API for OS controls. Persist the queue for reload, but remember autoplay still needs a user gesture.\n\n**Requirements to pin down first.**\n- Search for songs and artists.\n- Play and pause audio.\n- Maintain playback while navigating between routes.\n- Support playlists and queues.\n- Display playback progress.\n- Support previous and next track.\n- Allow users to favorite songs.\n- Handle network interruptions.\n- Support album artwork and metadata.\n\n**Core frontend concepts.**\n- HTML Audio API.\n- Media Source Extensions where appropriate.\n- Global application state.\n- Singleton audio service.\n- CDN and media delivery.\n- Browser caching.\n- Lazy loading.\n- Preloading upcoming tracks.\n- Media Session API.\n- Persistent playback state.\n- Background playback considerations.\n- Error handling for unavailable media.\n\n**Angular structure.**\n- Components: MusicPlayerComponent, PlayerControlsComponent, SongListComponent, PlaylistComponent, SearchComponent, MiniPlayerComponent.\n- Services: AudioPlayerService, MusicService, PlaylistService, MediaSessionService.\n- Maintain playback state globally.\n- Use signals for current track and playback progress.\n- Use RxJS for audio events.\n- Keep audio element lifecycle outside route-specific components.\n\n**Follow-ups to rehearse.**\n- How would you keep audio playing while changing routes?\n- Where would you maintain the currently playing song?\n- How would you preload the next song?\n- How would you handle a failed audio request?\n- What is the difference between lazy loading and preloading?\n- How would you update playback progress efficiently?",
+      "examples": [
+        {
+          "title": "Angular component and service split",
+          "code": "src/app/system-design/spotify/\n  music-player-component/\n  player-controls-component/\n  song-list-component/\n  playlist-component/\n  search-component/\n  mini-player-component/\nservices/\n  audio-player-service.service.ts\n  music-service.service.ts\n  playlist-service.service.ts\n  media-session-service.service.ts\n\nstate: Maintain playback state globally. Use signals for current track and playback progress. Use RxJS for audio events. Keep audio element lifecycle outside route-specific components.",
+          "explanation": "A container component owns fetching and state; presentational children render the view. Services keep protocol and persistence concerns out of templates, and the state choices are stated explicitly so you can defend them."
+        },
+        {
+          "title": "The mechanism that matters",
+          "code": "@Injectable({ providedIn: 'root' })\nexport class AudioPlayerService {\n  private readonly audio = new Audio();\n  readonly current = signal<Track | null>(null);\n  readonly progress = signal(0);\n\n  constructor() {\n    fromEvent(this.audio, 'timeupdate').pipe(\n      throttleTime(250),\n      takeUntilDestroyed(),\n    ).subscribe(() => this.progress.set(this.audio.currentTime));\n  }\n\n  play(track: Track) {\n    this.current.set(track);\n    this.audio.src = track.url;\n    return this.audio.play();\n  }\n}",
+          "explanation": "The audio element and its state live in a root singleton, not a routed component. Throttling timeupdate keeps progress from thrashing change detection, and the Media Session API hands controls to the OS."
+        }
+      ],
+      "tags": [
+        "NEW"
+      ]
+    },
+    {
+      "id": "sd-7",
+      "category": "system-design",
+      "difficulty": "advanced",
+      "scenarioBased": true,
+      "isMarked": false,
+      "question": "Design CodeSandbox or Online Compiler Playground",
+      "answer": "**The brief.** Design an online coding playground where users can write code in different programming languages, execute it, see output, manage multiple files, and receive compilation errors in real time.\n\n**How I would think about it.** There are three separate concerns: editing, execution and persistence. Monaco runs in the page with language support lazy-loaded on demand; autosave is debounced to IndexedDB rather than POSTing every keystroke. Execution output is streamed from a remote runner so logs appear while the program runs. Never execute user code in the app origin: use a sandboxed iframe for previews and a server-side container for real compilation, and put heavy frontend work like formatting in a Web Worker.\n\n**Requirements to pin down first.**\n- Support multiple programming languages.\n- Provide syntax highlighting and code completion.\n- Allow multiple files within a project.\n- Execute code and display output.\n- Display compilation errors.\n- Stream execution logs.\n- Save projects automatically.\n- Support resizable editor and terminal panels.\n- Prevent expensive operations from blocking the UI.\n\n**Core frontend concepts.**\n- Monaco Editor integration.\n- Web Workers for CPU-intensive frontend processing.\n- WebSockets or SSE for streaming execution output.\n- Debouncing editor changes.\n- Code splitting for language-specific features.\n- IndexedDB for local drafts.\n- Resizable panel layouts.\n- Virtual file system representation.\n- Streaming response handling.\n- Execution lifecycle state management.\n- Sandboxed iframe for isolated frontend previews.\n\n**Angular structure.**\n- Components: CodeEditorComponent, FileExplorerComponent, TerminalComponent, OutputPanelComponent, LanguageSelectorComponent, EditorToolbarComponent.\n- Services: EditorService, ExecutionService, ProjectService, AutoSaveService.\n- Maintain open files and active file in application state.\n- Track execution status.\n- Separate editor state from execution state.\n- Use RxJS for execution streams.\n- Use signals for UI layout and selected language.\n\n**Follow-ups to rehearse.**\n- How would you stream output while a program is running?\n- Would you use WebSockets or SSE?\n- How would you prevent the editor from freezing?\n- How would you implement autosave without sending every keystroke?\n- How would you load language-specific editor features on demand?\n- What is the difference between Web Workers and WebSockets?\n- Why is executing arbitrary user code inside the main application unsafe?",
+      "examples": [
+        {
+          "title": "Angular component and service split",
+          "code": "src/app/system-design/code-sandbox or online compiler playground/\n  code-editor-component/\n  file-explorer-component/\n  terminal-component/\n  output-panel-component/\n  language-selector-component/\n  editor-toolbar-component/\nservices/\n  editor-service.service.ts\n  execution-service.service.ts\n  project-service.service.ts\n  auto-save-service.service.ts\n\nstate: Maintain open files and active file in application state. Track execution status. Separate editor state from execution state. Use RxJS for execution streams. Use signals for UI layout and selected language.",
+          "explanation": "A container component owns fetching and state; presentational children render the view. Services keep protocol and persistence concerns out of templates, and the state choices are stated explicitly so you can defend them."
+        },
+        {
+          "title": "The mechanism that matters",
+          "code": "editor.onDidChangeModelContent(debounce(() => this.projects.saveDraft(), 800));\n\nconst { setup } = await import('./languages/' + language);\nsetup(editor);\n\nconst reader = await this.execution.stream({ language, files });\nfor await (const chunk of reader) this.terminal.append(chunk.text);",
+          "explanation": "Autosave is debounced to IndexedDB, language packs are lazy chunks, and output arrives as a stream. Never run user code in the app origin: real compilation belongs in a remote sandbox, previews in a sandboxed iframe."
+        }
+      ],
+      "tags": [
+        "NEW"
+      ]
+    },
+    {
+      "id": "sd-8",
+      "category": "system-design",
+      "difficulty": "advanced",
+      "scenarioBased": true,
+      "isMarked": false,
+      "question": "Design Google Maps - Interactive Mapping Application",
+      "answer": "**The brief.** Design a map application where users can search locations, display thousands of markers, zoom and pan, filter results, and receive real-time location updates.\n\n**How I would think about it.** Frequent map events are the main thread enemy. Throttle move and zoom, derive the viewport, and request only that bounding box with switchMap so old responses cannot overwrite new ones. Render thousands of markers on canvas or WebGL with clustering instead of mounting DOM nodes, and use an IntersectionObserver only for the detail cards that are actually visible. Geolocation and live-tracking feeds go into the same state store, while map tiles are cached by the browser and CDN.\n\n**Requirements to pin down first.**\n- Render an interactive map.\n- Display thousands of locations.\n- Support location search.\n- Support filters and categories.\n- Update markers when the viewport changes.\n- Display the user's current location.\n- Support live tracking.\n- Avoid loading unnecessary geographical data.\n\n**Core frontend concepts.**\n- Geolocation API.\n- Intersection Observer where applicable.\n- Debouncing map movement and search.\n- Viewport-based data fetching.\n- Marker clustering.\n- Canvas or WebGL rendering.\n- Map tile caching.\n- CDN for static map assets.\n- WebSockets for live tracking.\n- Lazy loading geographical data.\n- Throttling frequent events.\n\n**Angular structure.**\n- Components: MapContainerComponent, MapSearchComponent, MapFiltersComponent, LocationDetailsComponent, LocationMarkerComponent.\n- Services: MapService, GeolocationService, LocationService, LiveTrackingService.\n- Maintain current viewport and zoom.\n- Cache previously fetched map results.\n- Separate map UI state from location data.\n- Use RxJS for frequent map events.\n\n**Follow-ups to rehearse.**\n- How would you render 50,000 markers efficiently?\n- What is marker clustering?\n- Why would Canvas or WebGL be better than thousands of DOM elements?\n- How would you avoid API requests on every map movement?\n- How would you implement live location tracking?\n- How would you cache previously loaded map data?",
+      "examples": [
+        {
+          "title": "Angular component and service split",
+          "code": "src/app/system-design/google maps/\n  map-container-component/\n  map-search-component/\n  map-filters-component/\n  location-details-component/\n  location-marker-component/\nservices/\n  map-service.service.ts\n  geolocation-service.service.ts\n  location-service.service.ts\n  live-tracking-service.service.ts\n\nstate: Maintain current viewport and zoom. Cache previously fetched map results. Separate map UI state from location data. Use RxJS for frequent map events.",
+          "explanation": "A container component owns fetching and state; presentational children render the view. Services keep protocol and persistence concerns out of templates, and the state choices are stated explicitly so you can defend them."
+        },
+        {
+          "title": "The mechanism that matters",
+          "code": "const bounds$ = mapMoves$.pipe(throttleTime(200), map((m) => m.bounds));\nbounds$.pipe(switchMap((bounds) => this.api.locations(bounds)))\n  .subscribe((results) => this.markers.set(cluster(results)));\n\nthis.canvasLayer.draw(this.markers(), this.viewport());",
+          "explanation": "Throttling and switchMap stop stale viewport requests from overwriting fresh ones, and clustering on canvas/WebGL avoids a huge DOM tree. Tiles are cached by the browser and CDN."
+        }
+      ],
+      "tags": [
+        "NEW"
+      ]
+    },
+    {
+      "id": "sd-9",
+      "category": "system-design",
+      "difficulty": "medium",
+      "scenarioBased": true,
+      "isMarked": false,
+      "question": "Design Trello or Jira - Collaborative Task Management",
+      "answer": "**The brief.** Design a project management application with boards, columns, tasks, drag-and-drop functionality, task assignments, comments, and real-time collaboration.\n\n**How I would think about it.** Model the board as normalised data: tasks in a map and columns as ordered arrays of task ids. Angular CDK Drag and Drop gives a local reorder you apply optimistically, then send just the move event over a socket; remote moves merge by id so the whole board never reloads. Signals or a SignalStore hold selection and UI state, computed signals derive counts, and a permission service answers visibility questions without pretending to be authorisation. Virtualise long columns and keep components OnPush.\n\n**Requirements to pin down first.**\n- Create multiple project boards.\n- Create and edit task cards.\n- Move tasks between columns.\n- Reorder tasks using drag and drop.\n- Assign tasks to users.\n- Support comments and activity history.\n- Display updates made by other users.\n- Support role-based permissions.\n\n**Core frontend concepts.**\n- Angular CDK Drag and Drop.\n- Normalized state management.\n- Optimistic updates.\n- WebSockets for collaborative updates.\n- Role-based UI permissions.\n- Lazy-loaded feature modules or routes.\n- Virtual scrolling.\n- Event-driven state updates.\n- Undo and redo patterns.\n- Change detection optimization.\n\n**Angular structure.**\n- Components: BoardComponent, BoardColumnComponent, TaskCardComponent, TaskDetailsComponent, TaskCommentsComponent, BoardMembersComponent.\n- Services: BoardService, TaskService, PermissionService, CollaborationService.\n- Normalize boards, columns, and tasks.\n- Keep task IDs inside column ordering arrays.\n- Use optimistic updates for drag and drop.\n- Synchronize remote board changes using RxJS.\n\n**Follow-ups to rehearse.**\n- How would you implement drag and drop in Angular?\n- How would you update the UI without reloading the entire board?\n- How would you handle two users moving the same task?\n- How would you implement undo and redo?\n- How would you manage permissions at component level?\n- How would you avoid unnecessary change detection?",
+      "examples": [
+        {
+          "title": "Angular component and service split",
+          "code": "src/app/system-design/trello or jira/\n  board-component/\n  board-column-component/\n  task-card-component/\n  task-details-component/\n  task-comments-component/\n  board-members-component/\nservices/\n  board-service.service.ts\n  task-service.service.ts\n  permission-service.service.ts\n  collaboration-service.service.ts\n\nstate: Normalize boards, columns, and tasks. Keep task IDs inside column ordering arrays. Use optimistic updates for drag and drop. Synchronize remote board changes using RxJS.",
+          "explanation": "A container component owns fetching and state; presentational children render the view. Services keep protocol and persistence concerns out of templates, and the state choices are stated explicitly so you can defend them."
+        },
+        {
+          "title": "The mechanism that matters",
+          "code": "type BoardState = {\n  tasks: Record<string, Task>;\n  columns: Record<string, string[]>;\n};\n\ndrop(event: CdkDragDrop<string[]>) {\n  moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);\n  this.board.applyOptimisticMove(event);\n  this.collab.send({ kind: 'move', taskId, toColumn, index });\n}",
+          "explanation": "CDK Drag and Drop plus an optimistic move keeps the board responsive; remote moves merge by id so the whole board never reloads. Keep permission checks in a service, never as the only security boundary."
+        }
+      ],
+      "tags": [
+        "NEW"
+      ]
+    },
+    {
+      "id": "sd-10",
+      "category": "system-design",
+      "difficulty": "medium",
+      "scenarioBased": true,
+      "isMarked": false,
+      "question": "Design Amazon - Large-Scale E-commerce Application",
+      "answer": "**The brief.** Design an e-commerce frontend supporting millions of products, search, filtering, sorting, product details, shopping carts, checkout, and order tracking.\n\n**How I would think about it.** Make the URL the source of truth for search, filters and sort so results are shareable and the back button works; map queryParamMap into a request with switchMap. Images come from a CDN with lazy loading and fixed dimensions, listings are paginated and virtualised past a few hundred rows, and the cart is global, optimistic and persisted across reloads. SSR and hydration make the first paint useful before JavaScript finishes. Redis caching is a backend capability the frontend benefits from but does not control.\n\n**Requirements to pin down first.**\n- Display product listings.\n- Support search and autocomplete.\n- Support multiple filters and sorting.\n- Implement pagination or infinite scrolling.\n- Display product images efficiently.\n- Maintain shopping cart across sessions.\n- Support authentication.\n- Handle checkout and payment.\n- Display live order status.\n\n**Core frontend concepts.**\n- CDN for static assets and product images.\n- Redis-backed server caching consumed through APIs.\n- HTTP caching and cache-control headers.\n- Debouncing search input.\n- URL query parameters for filters and sorting.\n- Cursor-based or offset-based pagination.\n- Lazy loading images.\n- Responsive design.\n- Optimistic cart updates.\n- Route guards.\n- JWT authentication and token refresh.\n- Code splitting.\n- SSR and hydration.\n- Core Web Vitals optimization.\n\n**Angular structure.**\n- Components: ProductListingComponent, ProductCardComponent, ProductDetailsComponent, ProductFiltersComponent, ShoppingCartComponent, CheckoutComponent, OrderTrackingComponent.\n- Services: ProductService, SearchService, CartService, AuthService, PaymentService, OrderService.\n- Maintain cart state globally.\n- Use URL state for search and filters.\n- Cache product details where appropriate.\n- Use signals or NgRx for application state.\n- Use RxJS for API orchestration.\n\n**Follow-ups to rehearse.**\n- How would you optimize a page containing 1,000 products?\n- Why should filters be reflected in URL query parameters?\n- How would you implement debounced search?\n- What is the role of a CDN?\n- What is the difference between browser caching and Redis caching?\n- How would you preserve cart state after refreshing the page?\n- What is SSR and how does it improve initial rendering?\n- How would you prevent duplicate API calls?",
+      "examples": [
+        {
+          "title": "Angular component and service split",
+          "code": "src/app/system-design/amazon/\n  product-listing-component/\n  product-card-component/\n  product-details-component/\n  product-filters-component/\n  shopping-cart-component/\n  checkout-component/\n  order-tracking-component/\nservices/\n  product-service.service.ts\n  search-service.service.ts\n  cart-service.service.ts\n  auth-service.service.ts\n  payment-service.service.ts\n  order-service.service.ts\n\nstate: Maintain cart state globally. Use URL state for search and filters. Cache product details where appropriate. Use signals or NgRx for application state. Use RxJS for API orchestration.",
+          "explanation": "A container component owns fetching and state; presentational children render the view. Services keep protocol and persistence concerns out of templates, and the state choices are stated explicitly so you can defend them."
+        },
+        {
+          "title": "The mechanism that matters",
+          "code": "this.route.queryParamMap.pipe(\n  map((params) => ({ q: params.get('q') ?? '', sort: params.get('sort') ?? 'relevance' })),\n  distinctUntilChanged(),\n  switchMap((query) => this.products.search(query)),\n).subscribe((page) => this.results.set(page));\n\n<img [src]=\"product.image | cdn:'w=300'\" loading=\"lazy\" width=\"300\" height=\"300\" />",
+          "explanation": "URL state plus switchMap deduplicates calls and cancels stale searches. CDN images, virtualised listings, a persisted global cart and SSR for the first paint are the frontend levers; Redis caching is a backend capability you consume, not implement."
+        }
+      ],
+      "tags": [
+        "NEW"
       ]
     }
   ]

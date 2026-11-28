@@ -20,6 +20,10 @@ export class Tabs {
       route: '/html',
     },
     {
+      label: 'System Design',
+      route: '/system-design',
+    },
+    {
       label: 'CSS',
       route: '/css',
     },

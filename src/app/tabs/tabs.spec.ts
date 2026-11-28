@@ -26,6 +26,7 @@ describe('Tabs', () => {
     const routes = component['links'].map((link) => link.route);
     expect(routes).toEqual([
       '/html',
+      '/system-design',
       '/css',
       '/angular',
       '/javascript',
